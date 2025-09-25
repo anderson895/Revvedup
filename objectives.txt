@@ -1,0 +1,65 @@
+POS & INVENTORY
+
+pos (ADMIN) (EMPLOYEE)
+   	1. proceed to payment (ADMIN) (EMPLOYEE)
+		-merge service and item on the receipt
+		-add VAT 12%
+	2. generate receipt (ADMIN) (EMPLOYEE)
+	3. record pdf report (weekly, monthly, yearly) and generate BAR GRAPH for Product sales and Total sales Revenue  (ADMIN)
+	4. record on transaction history (ADMIN)
+   	5. Refund (ADMIN)
+		-set 7 days validity
+		-complete transactions
+		-refund all
+		-exchange all
+
+inventory (ADMIN)
+	1.Item ID start 1
+	2.Sales feed 
+		-Slow moving (9pcs < per week)
+		-Fast Moving (10pcs > per week)
+	3.Status 
+		-10 > In stock
+		-10 < Low stock
+		-0 == NO stock
+	4.Stock in
+		- Updating Qty
+
+employee management (ADMIN)
+
+	1.Monday - Sunday Compute total Commission
+	2.Manual Input Total Deduction
+	3.Compute Overall
+	4.Archived
+
+
+		
+account settings (ADMIN) (EMPLOYEE)
+	1.Change Email
+	2.Change Password
+
+
+notification (ADMIN)
+	1. received booking details
+	2. view booking details
+	(pwedeng tumawag si admin sa number ni 	customer dun nila paguusapan labas sa system)
+
+
+
+BOOKING SYSTEM
+	1.registration
+	2.login
+	3.list of items
+		-show availability
+	4.book and repair
+		-select service 
+		-select employee
+		-personal info
+		-appointment date
+		-emergency repair
+		-pending pages for approval
+		
+	5.booking summary
+		-list of appointment
+
+
