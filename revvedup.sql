@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 26, 2025 at 12:09 PM
+-- Generation Time: Sep 26, 2025 at 05:27 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -77,9 +77,9 @@ CREATE TABLE `product` (
 --
 
 INSERT INTO `product` (`prod_id`, `prod_name`, `prod_price`, `prod_qty`, `prod_img`, `prod_status`) VALUES
-(3, 'product 2', 11.00, 222, 'item_68d60b3664f741.76866050.png', 1),
+(3, 'product 2', 11.00, 212, 'item_68d60b3664f741.76866050.png', 1),
 (4, 'product 1', 150.00, 100, 'item_68d6430495df58.36133211.jpg', 1),
-(5, 'product 3', 300.00, 5, 'item_68d643420bba08.70461903.jpg', 1),
+(5, 'product 3', 300.00, 79, 'item_68d643420bba08.70461903.jpg', 1),
 (6, 'product 6', 55.00, 66, 'item_68d665eca329d5.22334298.jpg', 1);
 
 -- --------------------------------------------------------
@@ -96,13 +96,37 @@ CREATE TABLE `service_cart` (
   `service_employee_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+-- --------------------------------------------------------
+
 --
--- Dumping data for table `service_cart`
+-- Table structure for table `transaction`
 --
 
-INSERT INTO `service_cart` (`service_id`, `service_user_id`, `service_name`, `service_price`, `service_employee_id`) VALUES
-(6, 1, 'chang all', 100.00, 1),
-(8, 1, 'car wash', 60.00, 1);
+CREATE TABLE `transaction` (
+  `transaction_id` int(11) NOT NULL,
+  `transaction_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `transaction_service` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL CHECK (json_valid(`transaction_service`)),
+  `transaction_item` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL CHECK (json_valid(`transaction_item`)),
+  `transaction_discount` decimal(10,2) NOT NULL,
+  `transaction_vat` decimal(5,2) NOT NULL,
+  `transaction_total` decimal(10,2) NOT NULL,
+  `transaction_payment` decimal(10,2) NOT NULL,
+  `transaction_change` decimal(10,2) NOT NULL,
+  `transaction_status` int(11) NOT NULL COMMENT '0=archived,1=active'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `transaction`
+--
+
+INSERT INTO `transaction` (`transaction_id`, `transaction_date`, `transaction_service`, `transaction_item`, `transaction_discount`, `transaction_vat`, `transaction_total`, `transaction_payment`, `transaction_change`, `transaction_status`) VALUES
+(19, '2025-09-26 15:14:56', '[{\"name\":\"car wash\",\"price\":\"50\",\"emp_id\":\"3\"},{\"name\":\"change oil\",\"price\":\"100\",\"emp_id\":\"3\"},{\"name\":\"change all\",\"price\":\"100\",\"emp_id\":\"4\"}]', '[{\"name\":\"product 2\",\"qty\":\"1\",\"subtotal\":\"11\",\"prod_id\":\"3\"},{\"name\":\"product 3\",\"qty\":\"3\",\"subtotal\":\"900\",\"prod_id\":\"5\"}]', 0.00, 109.32, 1270.32, 10000.00, 8729.68, 1),
+(20, '2025-09-26 15:16:50', '[{\"name\":\"car wash\",\"price\":\"50\",\"emp_id\":\"3\"},{\"name\":\"change oil\",\"price\":\"100\",\"emp_id\":\"3\"},{\"name\":\"change all\",\"price\":\"100\",\"emp_id\":\"4\"}]', '[{\"name\":\"product 2\",\"qty\":\"1\",\"subtotal\":\"11\",\"prod_id\":\"3\"},{\"name\":\"product 3\",\"qty\":\"3\",\"subtotal\":\"900\",\"prod_id\":\"5\"}]', 0.00, 109.32, 1270.32, 10000.00, 8729.68, 1),
+(21, '2025-09-26 15:18:55', '[{\"name\":\"car wash\",\"price\":\"50\",\"emp_id\":\"3\"},{\"name\":\"change oil\",\"price\":\"100\",\"emp_id\":\"3\"},{\"name\":\"change all\",\"price\":\"100\",\"emp_id\":\"4\"}]', '[{\"name\":\"product 2\",\"qty\":\"1\",\"subtotal\":\"11\",\"prod_id\":\"3\"},{\"name\":\"product 3\",\"qty\":\"3\",\"subtotal\":\"900\",\"prod_id\":\"5\"}]', 100.00, 97.32, 1158.32, 10000.00, 8841.68, 1),
+(22, '2025-09-26 15:20:16', '[{\"name\":\"car wash\",\"price\":\"50\",\"emp_id\":\"3\"},{\"name\":\"change oil\",\"price\":\"100\",\"emp_id\":\"3\"},{\"name\":\"change all\",\"price\":\"100\",\"emp_id\":\"4\"}]', '[{\"prod_id\":\"3\",\"name\":\"product 2\",\"qty\":\"1\",\"subtotal\":\"11\"},{\"prod_id\":\"5\",\"name\":\"product 3\",\"qty\":\"3\",\"subtotal\":\"900\"}]', 0.00, 109.32, 1270.32, 10000.00, 8729.68, 1),
+(23, '2025-09-26 15:20:25', '[{\"name\":\"car wash\",\"price\":\"50\",\"emp_id\":\"3\"},{\"name\":\"change oil\",\"price\":\"100\",\"emp_id\":\"3\"},{\"name\":\"change all\",\"price\":\"100\",\"emp_id\":\"4\"}]', '[{\"prod_id\":\"3\",\"name\":\"product 2\",\"qty\":\"1\",\"subtotal\":\"11\"},{\"prod_id\":\"5\",\"name\":\"product 3\",\"qty\":\"3\",\"subtotal\":\"900\"}]', 0.00, 109.32, 1270.32, 0.00, 0.00, 1),
+(24, '2025-09-26 15:20:58', '[{\"name\":\"car wash\",\"price\":\"50\",\"emp_id\":\"3\"},{\"name\":\"change oil\",\"price\":\"100\",\"emp_id\":\"3\"},{\"name\":\"change all\",\"price\":\"100\",\"emp_id\":\"4\"}]', '[{\"prod_id\":\"3\",\"name\":\"product 2\",\"qty\":\"1\",\"subtotal\":\"11\"},{\"prod_id\":\"5\",\"name\":\"product 3\",\"qty\":\"3\",\"subtotal\":\"900\"}]', 0.00, 109.32, 1270.32, 10000.00, 8729.68, 1),
+(25, '2025-09-26 15:24:01', '[{\"service_id\":\"12\",\"name\":\"car wash\",\"price\":\"50\",\"emp_id\":\"3\"},{\"service_id\":\"11\",\"name\":\"change oil\",\"price\":\"100\",\"emp_id\":\"3\"},{\"service_id\":\"10\",\"name\":\"change all\",\"price\":\"100\",\"emp_id\":\"4\"}]', '[{\"item_id\":\"13\",\"prod_id\":\"3\",\"name\":\"product 2\",\"qty\":\"1\",\"subtotal\":\"11\"},{\"item_id\":\"12\",\"prod_id\":\"5\",\"name\":\"product 3\",\"qty\":\"3\",\"subtotal\":\"900\"}]', 0.00, 109.32, 1270.32, 10000.00, 8729.68, 1);
 
 -- --------------------------------------------------------
 
@@ -160,6 +184,12 @@ ALTER TABLE `service_cart`
   ADD KEY `service_user_id` (`service_user_id`);
 
 --
+-- Indexes for table `transaction`
+--
+ALTER TABLE `transaction`
+  ADD PRIMARY KEY (`transaction_id`);
+
+--
 -- Indexes for table `user`
 --
 ALTER TABLE `user`
@@ -179,7 +209,7 @@ ALTER TABLE `employee`
 -- AUTO_INCREMENT for table `item_cart`
 --
 ALTER TABLE `item_cart`
-  MODIFY `item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT for table `product`
@@ -191,7 +221,13 @@ ALTER TABLE `product`
 -- AUTO_INCREMENT for table `service_cart`
 --
 ALTER TABLE `service_cart`
-  MODIFY `service_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `service_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+
+--
+-- AUTO_INCREMENT for table `transaction`
+--
+ALTER TABLE `transaction`
+  MODIFY `transaction_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
 
 --
 -- AUTO_INCREMENT for table `user`
