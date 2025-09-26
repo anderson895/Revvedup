@@ -8,7 +8,7 @@ include "src/components/header.php";
 <!-- Navbar -->
 <div class="absolute top-4 right-6 flex items-center gap-4">
     <a href="#" class="text-gray-300 hover:text-white text-sm">Log In as</a>
-    <a href="admin_login" class="text-white font-semibold border-b-2 border-white text-sm">Admin</a>
+    <a href="admin_login" class="text-gray-300 hover:text-white text-sm">Admin</a>
     <a href="employee_login" class="text-gray-300 hover:text-white text-sm">Employee</a>
 </div>
 
