@@ -1,35 +1,26 @@
-
-
-
 $(".proceedToPayBtn").click(function (e) { 
     e.preventDefault();
-    
     openTransactionModal();
 });
 
 // Close button
 $("#closeTransactionModal").click(function (e) { 
     e.preventDefault();
-    $("#transactionModal").fadeOut();
+    closeTransactionSidebar();
 });
 
-// Close kapag click outside modal-content
+// Close kapag click outside sidebar content
 $(document).on("click", function (e) {
     if ($(e.target).is("#transactionModal")) {
-        $("#transactionModal").fadeOut();
+        closeTransactionSidebar();
     }
 });
-
-
-
-
-
 
 // --- GLOBALS for computation ---
 let g_totalService = 0;
 let g_totalItem = 0;
 
-// --- AJAX + render modal ---
+// --- AJAX + render sidebar ---
 function openTransactionModal() {
     const modal = $("#transactionModal");
     modal.find(".service-details, .item-details").remove();
@@ -102,7 +93,11 @@ function openTransactionModal() {
                 // Initial computation
                 updateComputation();
 
-                modal.fadeIn();
+                // --- SHOW SIDEBAR WITH SLIDE ---
+                modal.css("display", "flex"); 
+                setTimeout(() => {
+                    $("#transactionSidebar").removeClass("translate-x-full");
+                }, 10);
             }
         },
         error: function(err) {
@@ -111,33 +106,30 @@ function openTransactionModal() {
     });
 }
 
-// --- Auto Update Function ---
+// --- Function to close sidebar ---
+function closeTransactionSidebar() {
+    $("#transactionSidebar").addClass("translate-x-full");
+    setTimeout(() => {
+        $("#transactionModal").css("display", "none");
+    }, 300); // match transition duration
+}
+
+// --- Auto Update Function (unchanged) ---
 function updateComputation() {
     let discount = parseFloat($("input[name=InputedDiscount]").val()) || 0;
     let payment = parseFloat($("#paymentInput").val()) || 0;
 
-    // Prevent discount > totalItem
     if (discount > g_totalItem) {
         discount = g_totalItem;
         $("input[name=InputedDiscount]").val(discount.toFixed(2));
     }
 
-    // Apply discount to items
     let discountedItems = g_totalItem - discount;
-
-    // VAT only on discounted items
     let vat = discountedItems * 0.12;
-
-    // Subtotal = services + discounted items
     let subtotal = g_totalService + discountedItems;
-
-    // Grand Total
     let grandTotal = subtotal + vat;
-
-    // Change
     let change = payment - grandTotal;
 
-    // Update UI
     $("#totalServices").text(`${g_totalService > 0 ? '-' : '0'} | ₱${g_totalService.toFixed(2)}`);
     $("#totalItems").text(`${g_totalItem > 0 ? '-' : '0'} | ₱${g_totalItem.toFixed(2)}`);
     $("#subtotal").text(`₱${subtotal.toFixed(2)}`);
@@ -145,12 +137,10 @@ function updateComputation() {
     $("#grandTotal").text(`₱${grandTotal.toFixed(2)}`);
     $("#change").text(`₱${(change > 0 ? change : 0).toFixed(2)}`);
 
-    // Also update bottom total if exists
     $(".mt-4.border-t.pt-3.flex.justify-between.items-center.text-2xl.font-bold.text-gray-900 span:last-child")
         .text(`₱${grandTotal.toFixed(2)}`);
 }
 
-// --- Event Listeners ---
 $(document).on("input", "input[name=InputedDiscount], #paymentInput", function() {
     updateComputation();
 });

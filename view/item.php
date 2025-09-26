@@ -148,17 +148,16 @@ include "../src/components/view/header.php";
 
 
 
-
-
-<!-- Transaction Modal -->
-<div id="transactionModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm" style="display:none;">
-  <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg p-6 relative">
+<!-- Transaction Sidebar -->
+<div id="transactionModal" class="fixed inset-0 z-50 flex justify-end bg-black/30 backdrop-blur-sm" style="display:none;">
+  <div id="transactionSidebar" 
+       class="bg-white h-full w-full max-w-md shadow-2xl p-6 relative transform translate-x-full transition-transform duration-300 ease-in-out">
 
     <!-- Close Button -->
     <button id="closeTransactionModal" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-2xl font-bold">&times;</button>
 
     <!-- Item Details (Dynamic) -->
-    <div class="mb-4">
+    <div class="mb-4 mt-10">
       <div class="item-details space-y-1 text-gray-700">
         <!-- Items will be appended here via jQuery -->
       </div>
@@ -176,7 +175,8 @@ include "../src/components/view/header.php";
       </div>
       <div class="flex justify-between items-center text-red-500">
         <span>Item Discount</span>
-        <input type="text" placeholder="Enter discount" name="InputedDiscount" class="ml-2 border border-gray-300 rounded px-2 py-1 text-sm w-28 focus:outline-none focus:ring-1 focus:ring-red-500">
+        <input type="text" placeholder="Enter discount" name="InputedDiscount" 
+               class="ml-2 border border-gray-300 rounded px-2 py-1 text-sm w-28 focus:outline-none focus:ring-1 focus:ring-red-500">
       </div>
       <div class="flex justify-between font-semibold text-gray-800">
         <span>Subtotal</span>
@@ -198,7 +198,8 @@ include "../src/components/view/header.php";
     <div class="mt-4 border-t pt-3 space-y-2 text-gray-700 text-sm payment-section">
       <div class="flex justify-between items-center">
         <span>Payment</span>
-        <input type="number" min="0" step="0.01" id="paymentInput" placeholder="₱0.00" class="ml-2 border border-gray-300 rounded px-2 py-1 text-sm w-32 focus:outline-none focus:ring-1 focus:ring-green-500">
+        <input type="number" min="0" step="0.01" id="paymentInput" placeholder="₱0.00" 
+               class="ml-2 border border-gray-300 rounded px-2 py-1 text-sm w-32 focus:outline-none focus:ring-1 focus:ring-green-500">
       </div>
       <div class="flex justify-between items-center font-semibold text-gray-800">
         <span>Change</span>
@@ -208,8 +209,14 @@ include "../src/components/view/header.php";
 
     <!-- Action Buttons -->
     <div class="mt-5 flex gap-3">
-      <button type="button" id="BtnSubmit" class="flex-1 bg-red-900 text-white py-2 rounded-xl hover:bg-red-700 transition">Complete Transaction</button>
-      <button type="button" class="flex-1 bg-gray-200 text-gray-700 py-2 rounded-xl hover:bg-gray-300 transition">Void Transaction</button>
+      <button type="button" id="BtnSubmit" 
+              class="flex-1 bg-red-900 text-white py-2 rounded-xl hover:bg-red-700 transition">
+        Complete Transaction
+      </button>
+      <button type="button" 
+              class="flex-1 bg-gray-200 text-gray-700 py-2 rounded-xl hover:bg-gray-300 transition">
+        Void Transaction
+      </button>
     </div>
 
   </div>
