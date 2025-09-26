@@ -133,3 +133,6 @@ include "../src/components/view/header.php";
 <?php 
 include "../src/components/view/footer.php";
 ?>
+
+
+<script src="../static/js/view/inventory.js"></script>
