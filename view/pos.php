@@ -12,21 +12,23 @@ include "../src/components/view/header.php";
 
     <!-- Buttons with Material Icons -->
     <a href="refund_exchange" <?=$authorize?> 
-       class="flex items-center gap-2 bg-red-600 hover:bg-red-700 transition text-white px-4 py-2 rounded text-sm whitespace-nowrap inline-block text-center shadow">
-      <span class="material-icons text-base">currency_exchange</span>
+       class="font-bold flex items-center gap-2 bg-red-800 hover:bg-red-700 transition text-white px-4 py-2 rounded text-sm whitespace-nowrap inline-block text-center shadow">
+     
       REFUND | EXCHANGE
     </a>
 
     <a href="service" 
-       class="flex items-center gap-2 bg-red-600 hover:bg-red-700 transition text-white px-4 py-2 rounded text-sm whitespace-nowrap inline-block text-center shadow">
+       class="font-bold flex items-center gap-2 bg-red-800 hover:bg-red-700 transition text-white px-4 py-2 rounded text-sm whitespace-nowrap inline-block text-center shadow">
       SERVICE
     </a>
 
-    <a href="item" 
-       class="flex items-center gap-2 bg-red-600 hover:bg-red-700 transition text-white px-4 py-2 rounded text-sm whitespace-nowrap inline-block text-center shadow">
-      ITEM
+   <a href="item" 
+    class="font-bold flex items-center gap-2 bg-red-800 hover:bg-red-700 transition text-white px-4 py-2 rounded text-sm whitespace-nowrap inline-block text-center shadow">
+    ITEM
     </a>
+
   </header>
+
 
   <!-- Table / Cart -->
   <section class="flex-1 flex flex-col">

@@ -13,7 +13,6 @@ include "../src/components/view/header.php";
     <!-- Buttons with Material Icons -->
     <a href="refund_exchange" <?=$authorize?> 
        class="font-bold flex items-center gap-2 bg-red-800 hover:bg-red-700 transition text-white px-4 py-2 rounded text-sm whitespace-nowrap inline-block text-center shadow">
-      <span class="material-icons text-base">currency_exchange</span>
       REFUND | EXCHANGE
     </a>
 
