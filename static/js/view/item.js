@@ -199,7 +199,10 @@ $('#frmAddToItem').submit(function(e){
                 $('#itemTableBody').html(`
                     <tr>
                         <td colspan="7" class="p-4 text-center text-gray-400 italic">
-                            No record found
+                            <span class="material-icons" style="font-size: 48px; display: block; margin-bottom: 8px;">
+                                shopping_cart
+                            </span>
+                            No item found
                         </td>
                     </tr>
                 `);

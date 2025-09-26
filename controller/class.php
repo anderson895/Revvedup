@@ -199,29 +199,6 @@ public function AddToItem($selectedProductId,$modalProdQty,$user_id){
 
 
 
-public function AddProduct($itemName, $price, $stockQty, $itemImageFileName) {
-    $query = "INSERT INTO `product` 
-              (`prod_name`, `prod_price`, `prod_qty`, `prod_img`) 
-              VALUES (?, ?, ?, ?)";
-
-    $stmt = $this->conn->prepare($query);
-
-    $stmt->bind_param("sdis", $itemName, $price, $stockQty, $itemImageFileName);
-
-    $result = $stmt->execute();
-
-    if (!$result) {
-        $stmt->close();
-        return false;
-    }
-
-    $inserted_id = $this->conn->insert_id;
-    $stmt->close();
-
-    return $inserted_id;
-}
-
-
 
 
 
@@ -484,6 +461,29 @@ public function removeProduct($prod_id) {
 
 
 
+    public function AddProduct($itemName, $price, $stockQty, $itemImageFileName) {
+        $query = "INSERT INTO `product` 
+                (`prod_name`, `prod_price`, `prod_qty`, `prod_img`) 
+                VALUES (?, ?, ?, ?)";
+
+        $stmt = $this->conn->prepare($query);
+
+        $stmt->bind_param("sdis", $itemName, $price, $stockQty, $itemImageFileName);
+
+        $result = $stmt->execute();
+
+        if (!$result) {
+            $stmt->close();
+            return false;
+        }
+
+        $inserted_id = $this->conn->insert_id;
+        $stmt->close();
+
+        return $inserted_id;
+    }
+
+
 
     public function getServiceById($service_id)
     {
@@ -531,6 +531,100 @@ public function removeProduct($prod_id) {
 
         return null; // not found
     }
+
+
+
+public function CheckOutOrder($services, $items, $discount, $vat, $grandTotal, $payment, $change, &$errorMsg = null) {
+    $services_json = json_encode($services);
+    $items_json = json_encode($items);
+
+    $this->conn->begin_transaction();
+
+    try {
+        // 1️⃣ Insert transaction
+        $sql = "INSERT INTO `transaction` 
+                (transaction_service, transaction_item, transaction_discount, transaction_vat, transaction_total, transaction_payment, transaction_change, transaction_status) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, 1)";
+        $stmt = $this->conn->prepare($sql);
+        if (!$stmt) throw new Exception("Prepare failed: " . $this->conn->error);
+
+        $stmt->bind_param("ssddddd", $services_json, $items_json, $discount, $vat, $grandTotal, $payment, $change);
+        if (!$stmt->execute()) throw new Exception("Execute failed: " . $stmt->error);
+        $stmt->close();
+
+        // 2️⃣ Deduct stock
+        foreach ($items as $item) {
+            if (!isset($item['prod_id'], $item['qty'])) continue;
+
+            $prod_id = (int)$item['prod_id'];
+            $qty = (int)$item['qty'];
+
+            // Check stock
+            $check = $this->conn->prepare("SELECT prod_qty FROM product WHERE prod_id = ? FOR UPDATE");
+            $check->bind_param("i", $prod_id);
+            $check->execute();
+            $check->bind_result($current_qty);
+            if (!$check->fetch()) {
+                $check->close();
+                throw new Exception("Product ID {$prod_id} not found");
+            }
+            $check->close();
+
+            if ($current_qty < $qty) {
+                throw new Exception("Insufficient stock for product ID {$prod_id}");
+            }
+
+            // Update stock
+            $update = $this->conn->prepare("UPDATE product SET prod_qty = prod_qty - ? WHERE prod_id = ?");
+            $update->bind_param("ii", $qty, $prod_id);
+            if (!$update->execute()) {
+                $update->close();
+                throw new Exception("Failed to update stock for product ID {$prod_id}");
+            }
+            $update->close();
+        }
+
+        // 3️⃣ Delete from service_cart
+        foreach ($services as $s) {
+            if (isset($s['service_id'])) {
+                $del = $this->conn->prepare("DELETE FROM service_cart WHERE service_id = ?");
+                $del->bind_param("i", $s['service_id']);
+                if (!$del->execute()) {
+                    $del->close();
+                    throw new Exception("Failed to delete service_cart item ID {$s['service_id']}");
+                }
+                $del->close();
+            }
+        }
+
+        // 4️⃣ Delete from item_cart
+        foreach ($items as $i) {
+            if (isset($i['item_id'])) {
+                $del = $this->conn->prepare("DELETE FROM item_cart WHERE item_id = ?");
+                $del->bind_param("i", $i['item_id']);
+                if (!$del->execute()) {
+                    $del->close();
+                    throw new Exception("Failed to delete item_cart item ID {$i['item_id']}");
+                }
+                $del->close();
+            }
+        }
+
+        // 5️⃣ Commit transaction
+        $this->conn->commit();
+        return true;
+
+    } catch (Exception $e) {
+        $this->conn->rollback();
+        $errorMsg = $e->getMessage();
+        return false;
+    }
+}
+
+
+
+
+
 
 
 

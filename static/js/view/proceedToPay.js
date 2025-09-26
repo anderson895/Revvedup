@@ -16,6 +16,8 @@ $(document).on("click", function (e) {
     }
 });
 
+
+
 // --- GLOBALS for computation ---
 let g_totalService = 0;
 let g_totalItem = 0;
@@ -53,13 +55,15 @@ function openTransactionModal() {
                 const serviceContainer = $('<div class="service-details mb-4"><h3 class="font-semibold text-gray-700 mb-2">Service Details</h3></div>');
                 for (const empId in groupedServices) {
                     const emp = groupedServices[empId];
-                    const empDiv = $('<div class="mb-2"></div>');
+                    const empDiv = $(`<div class="mb-2" data-emp-id="${empId}"></div>`); 
                     empDiv.append(`<p class="font-medium text-gray-600 capitalize">${emp.employee_name}</p>`);
 
                     const serviceList = $('<div class="ml-4 space-y-1"></div>');
+                    // Service Details
                     emp.services.forEach(s => {
                         serviceList.append(`
-                            <div class="flex justify-between text-gray-700">
+                            <div class="flex justify-between text-gray-700" 
+                                data-service-id="${s.service_id}">
                                 <span>${s.service_name}</span>
                                 <span>₱${parseFloat(s.service_price).toFixed(2)}</span>
                             </div>
@@ -75,11 +79,12 @@ function openTransactionModal() {
                 const itemContainer = $('<div class="item-details mb-4"><h3 class="font-semibold text-gray-700 mb-2">Item Details</h3></div>');
                 const itemList = $('<div class="space-y-1 text-gray-700"></div>');
                 items.forEach(i => {
-                    const subtotal = parseFloat(i.prod_price) * parseInt(i.item_qty);
                     itemList.append(`
-                        <div class="flex justify-between">
+                        <div class="flex justify-between" 
+                            data-item-id="${i.item_id}" 
+                            data-prod-id="${i.prod_id}">
                             <span>${i.prod_name} x ${i.item_qty}</span>
-                            <span>₱${subtotal.toFixed(2)}</span>
+                            <span>₱${(parseFloat(i.prod_price)*i.item_qty).toFixed(2)}</span>
                         </div>
                     `);
                 });
@@ -106,32 +111,35 @@ function openTransactionModal() {
     });
 }
 
-// --- Function to close sidebar ---
+// --- Close sidebar ---
 function closeTransactionSidebar() {
     $("#transactionSidebar").addClass("translate-x-full");
     setTimeout(() => {
         $("#transactionModal").css("display", "none");
-    }, 300); // match transition duration
+    }, 300);
 }
 
-// --- Auto Update Function (unchanged) ---
+// --- Update computation ---
 function updateComputation() {
-    let discount = parseFloat($("input[name=InputedDiscount]").val()) || 0;
-    let payment = parseFloat($("#paymentInput").val()) || 0;
+    const discountInput = $("input[name=InputedDiscount]");
+    let discount = parseFloat(discountInput.val()) || 0;
+    const payment = parseFloat($("#paymentInput").val()) || 0;
 
+    // Prevent discount from exceeding total items
     if (discount > g_totalItem) {
         discount = g_totalItem;
-        $("input[name=InputedDiscount]").val(discount.toFixed(2));
+        discountInput.val(discount.toFixed(2));
     }
 
-    let discountedItems = g_totalItem - discount;
-    let vat = discountedItems * 0.12;
-    let subtotal = g_totalService + discountedItems;
-    let grandTotal = subtotal + vat;
-    let change = payment - grandTotal;
+    const discountedItems = g_totalItem - discount;
+    const vat = discountedItems * 0.12;
+    const subtotal = g_totalService + discountedItems;
+    const grandTotal = subtotal + vat;
+    const change = payment - grandTotal;
 
-    $("#totalServices").text(`${g_totalService > 0 ? '-' : '0'} | ₱${g_totalService.toFixed(2)}`);
-    $("#totalItems").text(`${g_totalItem > 0 ? '-' : '0'} | ₱${g_totalItem.toFixed(2)}`);
+    // Display totals properly
+    $("#totalServices").text(`₱${g_totalService > 0 ? g_totalService.toFixed(2) : '0.00'}`);
+    $("#totalItems").text(`₱${g_totalItem > 0 ? g_totalItem.toFixed(2) : '0.00'}`);
     $("#subtotal").text(`₱${subtotal.toFixed(2)}`);
     $("#vatAmount").text(`₱${vat.toFixed(2)}`);
     $("#grandTotal").text(`₱${grandTotal.toFixed(2)}`);
@@ -141,6 +149,86 @@ function updateComputation() {
         .text(`₱${grandTotal.toFixed(2)}`);
 }
 
+// --- Input listeners ---
 $(document).on("input", "input[name=InputedDiscount], #paymentInput", function() {
     updateComputation();
+});
+
+// --- SUBMIT TRANSACTION ---
+$('#BtnSubmit').click(function (e) { 
+    e.preventDefault();
+
+    // Collect services with emp_id
+    let servicesArray = [];
+    $(".service-details > div").each(function() {
+        let empId = $(this).data("emp-id");
+        $(this).find(".flex.justify-between").each(function() {
+            let serviceName = $(this).find("span:first").text();
+            let servicePrice = parseFloat($(this).find("span:last").text().replace('₱',''));
+            servicesArray.push({ 
+                service_id: $(this).data("service-id"), 
+                name: serviceName, 
+                price: servicePrice, 
+                emp_id: empId 
+            });
+
+        });
+    });
+
+    // Collect items with prod_id
+    let itemsArray = [];
+    $(".item-details .flex.justify-between").each(function() {
+        let itemText = $(this).find("span:first").text();
+        let [name, qty] = itemText.split(' x ');
+        let subtotal = parseFloat($(this).find("span:last").text().replace('₱',''));
+        let prodId = $(this).data("prod-id"); // <-- include prod_id
+
+        itemsArray.push({ 
+            item_id: $(this).data("item-id"),
+            prod_id: $(this).data("prod-id"), 
+            name: name.trim(), 
+            qty: parseInt(qty), 
+            subtotal: subtotal 
+        });
+    });
+
+    // Collect other info
+    let discount = parseFloat($("input[name=InputedDiscount]").val()) || 0;
+    let payment = parseFloat($("#paymentInput").val()) || 0;
+    let vat = parseFloat($("#vatAmount").text().replace('₱','')) || 0;
+    let grandTotal = parseFloat($("#grandTotal").text().replace('₱','')) || 0;
+    let change = parseFloat($("#change").text().replace('₱','')) || 0;
+
+    // Build POST data
+    let postData = {
+        requestType: 'CheckOutOrder',
+        services: servicesArray,
+        items: itemsArray,
+        discount: discount,
+        vat: vat,
+        grandTotal: grandTotal,
+        payment: payment,
+        change: change
+    };
+
+   $.ajax({
+        url: "../controller/end-points/controller.php",
+        method: "POST",
+        data: postData,
+        dataType: "json",
+        success: function (response) {
+            if(response.status === 200){
+                alertify.success("Transaction submitted successfully!");
+                closeTransactionSidebar();
+                location.reload
+            } else {
+                alertify.error(response.message || "Failed to submit transaction.");
+            }
+        },
+        error: function (xhr, status, error) {
+            console.error("Update error:", error);
+            alertify.error("Failed to update. Please try again.");
+        }
+    });
+
 });

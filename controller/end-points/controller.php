@@ -43,6 +43,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 ]);
             }
     
+        }else if ($_POST['requestType'] == 'CheckOutOrder') {
+
+                // echo "<pre>";
+                // print_r($_POST);
+                // echo "</pre>";
+
+                $services = $_POST['services'] ?? [];
+                $items = $_POST['items'] ?? [];
+                $discount = $_POST['discount'] ?? 0;
+                $vat = $_POST['vat'] ?? 0;
+                $grandTotal = $_POST['grandTotal'] ?? 0;
+                $payment = $_POST['payment'] ?? 0;
+                $change = $_POST['change'] ?? 0;
+
+                $errorMsg = null;
+                $result = $db->CheckOutOrder($services, $items, $discount, $vat, $grandTotal, $payment, $change, $errorMsg);
+
+                if($result){
+                    echo json_encode(['status'=>200,'message'=>'Success']);
+                } else {
+                    echo json_encode(['status'=>500,'message'=>$errorMsg]); // ✅ now shows actual error
+                }
+
+    
         }else if($_POST['requestType'] === 'updateItemCart'){
             $item_id = intval($_POST['item_id']);
             $prod_id = intval($_POST['selectedProductId']);
