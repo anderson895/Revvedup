@@ -42,6 +42,44 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 ]);
             }
     
+        }else if ($_POST['requestType'] == 'UpdateProduct') {
+           $productId = $_POST['productId'];
+            $itemName = $_POST['itemName'];
+            $price = $_POST['price'];
+            $stockQty = $_POST['stockQty'];
+
+            // Handle Banner Image Upload
+            $uniqueBannerFileName = null;
+            if (isset($_FILES['itemImage']) && $_FILES['itemImage']['error'] === UPLOAD_ERR_OK) {
+                $uploadDir = '../../static/upload/';
+                $fileExtension = pathinfo($_FILES['itemImage']['name'], PATHINFO_EXTENSION);
+                $uniqueBannerFileName = uniqid('item_', true) . '.' . $fileExtension;
+
+                move_uploaded_file($_FILES['itemImage']['tmp_name'], $uploadDir . $uniqueBannerFileName);
+            }
+
+            // Update
+            $result = $db->UpdateProduct(
+                $productId,
+                $itemName,
+                $price,
+                $stockQty,
+                $uniqueBannerFileName 
+            );
+
+            if ($result['status']) {
+                echo json_encode([
+                    'status' => 200,
+                    'message' => $result['message']
+                ]);
+            } else {
+                echo json_encode([
+                    'status' => 500,
+                    'message' => $result['message']
+                ]);
+            }
+
+    
         }else if ($_POST['requestType'] == 'AddProduct') {
 
                 $itemName  = $_POST['itemName'];

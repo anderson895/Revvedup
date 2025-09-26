@@ -164,7 +164,12 @@ $("#frmAddProduct").submit(function (e) {
                                 </span>
                             </td>
                             <td class="px-4 py-2 flex justify-center space-x-2">
-                                <button class="text-gray-700 hover:text-blue-600">
+                                <button class="updateBtn text-gray-700 hover:text-blue-600"
+                                data-prod_id ='${data.prod_id}'
+                                data-prod_name='${data.prod_name}'
+                                data-prod_price='${data.prod_price}'
+                                data-prod_qty='${data.prod_qty}'
+                                >
                                     <span class="material-icons text-sm">edit</span>
                                 </button>
                                 <button class="text-gray-700 hover:text-red-600">
@@ -198,3 +203,91 @@ $("#frmAddProduct").submit(function (e) {
       $(this).toggle($(this).text().toLowerCase().includes(term));
     });
   });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+$(document).on("click", ".updateBtn", function () {
+
+  const prod_id = $(this).data("prod_id");
+  const prod_name = $(this).data("prod_name");
+  const prod_price = $(this).data("prod_price");
+  const prod_qty = $(this).data("prod_qty");
+
+
+  $("#productId").val(prod_id);
+  $("#itemNameUpdate").val(prod_name);
+  $("#priceUpdate").val(prod_price);
+  $("#stockQtyUpdate").val(prod_qty);
+
+
+ $('#updateProductModal').fadeIn();
+
+});
+
+// Close modal
+$(document).on("click", "#closeUpdateProductModal", function () {
+  $('#updateProductModal').fadeOut();
+});
+
+
+// Close kapag click outside modal-content
+$(document).on("click", function (e) {
+    if ($(e.target).is("#updateProductModal")) {
+        $("#updateProductModal").fadeOut();
+    }
+});
+
+
+
+
+
+
+
+
+
+
+$(document).on("submit", "#frmUpdateProduct", function (e) {
+  e.preventDefault();
+
+  const formData = new FormData(this);
+  formData.append("requestType", "UpdateProduct");
+
+  $.ajax({
+    url: "../controller/end-points/controller.php",
+    method: "POST",
+    data: formData,
+    processData: false,
+    contentType: false,
+    dataType: "json",
+    success: function (response) {
+      if (response.status === 200) {
+        Swal.fire('Success!', response.message || 'Event info updated.', 'success').then(() => {
+            location.reload();
+        });
+      } else {
+        alertify.error(response.message || "Error updating.");
+      }
+    },
+    error: function (xhr, status, error) {
+      console.error("Update error:", error);
+      alertify.error("Failed to update. Please try again.");
+    }
+  });
+});

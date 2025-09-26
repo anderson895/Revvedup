@@ -169,4 +169,77 @@ public function fetch_all_product() {
 
 
 
+
+
+
+
+
+
+public function UpdateProduct(
+    $productId,
+    $itemName,
+    $price,
+    $stockQty,
+    $uniqueBannerFileName = null
+){
+    // Delete old image if new one is provided
+    if (!empty($uniqueBannerFileName)) {
+        $stmt = $this->conn->prepare("SELECT prod_img FROM product WHERE prod_id = ?");
+        $stmt->bind_param("s", $productId);
+        $stmt->execute();
+        $stmt->bind_result($oldImg);
+        $stmt->fetch();
+        $stmt->close();
+
+        if (!empty($oldImg)) {
+            $oldPath = "../../static/upload/" . $oldImg;
+            if (file_exists($oldPath)) {
+                unlink($oldPath);
+            }
+        }
+    }
+
+    // Build query
+    $query = "UPDATE product SET prod_name = ?, prod_price = ?, prod_qty = ?";
+    $types = "sdi"; // s = string, d = double, i = integer
+    $params = [$itemName, $price, $stockQty];
+
+    if (!empty($uniqueBannerFileName)) {
+        $query .= ", prod_img = ?";
+        $types .= "s";
+        $params[] = $uniqueBannerFileName;
+    }
+
+    $query .= " WHERE prod_id = ?";
+    $types .= "s";
+    $params[] = $productId;
+
+    // Prepare and execute
+    $stmt = $this->conn->prepare($query);
+    if (!$stmt) {
+        return ['status' => false, 'message' => 'Prepare failed: ' . $this->conn->error];
+    }
+
+    $stmt->bind_param($types, ...$params);
+
+    if (!$stmt->execute()) {
+        $stmt->close();
+        return ['status' => false, 'message' => 'Execution failed: ' . $stmt->error];
+    }
+
+    $stmt->close();
+
+    return ['status' => true, 'message' => 'Product updated successfully.'];
+}
+
+
+
+
+
+
+
+
+
+
+
 }

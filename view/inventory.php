@@ -196,6 +196,95 @@ include "../src/components/view/header.php";
 
 
 
+
+
+
+
+
+
+
+
+<!-- Modal Background -->
+<div id="updateProductModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm" style="display:none;">
+  <!-- Modal Content -->
+  <div class="bg-white rounded-md shadow-lg w-full max-w-xl p-8 relative">
+    
+    <!-- Title -->
+    <h2 class="text-2xl italic text-center mb-8">Update Product</h2>
+
+    <!-- Form -->
+    <form id="frmUpdateProduct" class="grid grid-cols-3 gap-4 items-center" enctype="multipart/form-data">
+      
+      <!-- Hidden Product ID -->
+      <input type="hidden" id="productId" name="productId">
+
+      <!-- Item Name -->
+      <input 
+        type="text" 
+        placeholder="Item name" 
+        id="itemNameUpdate"
+        name="itemName"
+        class="border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-900 col-span-1"
+      >
+
+      <!-- Price -->
+      <div class="flex items-center border rounded px-3 py-2 col-span-1">
+        <span class="text-gray-500 mr-2">₱</span>
+        <input 
+          type="number" 
+          placeholder="00.00" 
+          id="priceUpdate"
+          name="price"
+          class="w-full outline-none"
+          step="0.01"
+        >
+      </div>
+
+      <!-- Stocks -->
+      <input 
+        type="number" 
+        placeholder="Stocks" 
+        id="stockQtyUpdate"
+        name="stockQty"
+        class="border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-900 col-span-1"
+      >
+
+      <!-- File Upload -->
+      <div class="col-span-3">
+        <label class="block mb-2 text-sm font-medium text-gray-700">Upload Image</label>
+        <input 
+          type="file" 
+          id="itemImageUpdate"
+          name="itemImage"
+          accept="image/*"
+          class="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-900"
+        >
+      </div>
+
+      <!-- Action Buttons (inside form) -->
+      <div class="flex justify-end mt-6 space-x-3 col-span-3">
+        <button 
+          id="closeUpdateProductModal"
+          type="button"
+          class="bg-gray-300 text-gray-700 px-6 py-2 rounded shadow hover:bg-gray-400"
+        >
+          Cancel
+        </button>
+        <button 
+          type="submit" 
+          class="bg-red-900 text-white px-6 py-2 rounded shadow hover:bg-red-700"
+        >
+          Update
+        </button>
+      </div>
+
+    </form>
+  </div>
+</div>
+
+
+
+
 <?php 
 include "../src/components/view/footer.php";
 ?>
