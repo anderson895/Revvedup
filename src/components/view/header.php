@@ -63,7 +63,7 @@ $authorize = (strtolower($On_Session['position']) !== "admin") ? "hidden" : "";
     <!-- Logo Top -->
     <div class="bg-black flex justify-center items-center py-4">
       <a href="dashboard" class="flex justify-center">
-        <img src="../static/images/login_logo.png" alt="Logo" class="h-12 w-auto object-contain">
+        <img src="../static/images/login_logo.png" alt="Logo" class="h-11 w-auto object-contain">
       </a>
     </div>
 

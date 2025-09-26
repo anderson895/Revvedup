@@ -6,10 +6,10 @@ include "../src/components/view/header.php";
 <main class="flex-1 flex flex-col bg-gray-100 min-h-screen">
 
   <!-- Topbar -->
-  <header class="bg-red-900 text-white px-6 py-4 flex items-center space-x-3">
-    <span class="material-icons cursor-pointer">arrow_back</span>
-    <h1 class="text-lg font-semibold">Product Inventory</h1>
+  <header class="bg-red-900 text-white flex items-center space-x-3 px-6 py-6">
+    <h1 class="text-lg font-semibold">PRODUCT INVENTORY</h1>
   </header>
+
 
 
   <!-- Search Bar -->

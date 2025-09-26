@@ -5,6 +5,11 @@ include "../src/components/view/header.php";
 <!-- Main Content -->
 <main class="flex-1 flex flex-col">
 
+  <header class="bg-red-900 text-white flex items-center space-x-3 px-6 py-6">
+    <h1 class="text-lg font-semibold">SERVICE</h1>
+  </header>
+
+
  <header class="px-4 py-3 border-b bg-white flex flex-col gap-2">
   <!-- Top Row -->
   <div class="flex items-center space-x-2 text-sm text-gray-600">

@@ -4,7 +4,13 @@ include "../src/components/view/header.php";
   
 <!-- Main Content -->
 <main class="flex-1 flex flex-col">
+ <!-- Topbar -->
+  <header class="bg-red-900 text-white px-6 py-6 flex items-center space-x-3">
+    <!-- <span class="material-icons cursor-pointer">arrow_back</span> -->
+    <h1 class="text-lg font-semibold">TRANSACTION LIST</h1>
+  </header>
 
+  
   <!-- Top Bar -->
   <header class="flex flex-wrap gap-2 px-4 py-3 border-b bg-white">
     <input type="text" placeholder="Enter Transaction Code"

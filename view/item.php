@@ -5,6 +5,9 @@ include "../src/components/view/header.php";
 <!-- Main Content -->
 <main class="flex-1 flex flex-col">
 
+  <header class="bg-red-900 text-white flex items-center space-x-3 px-6 py-6">
+    <h1 class="text-lg font-semibold">ITEM</h1>
+  </header>
   <!-- Top Bar -->
   <header class="px-4 py-3 border-b bg-white flex flex-col gap-2">
   <!-- Top Row -->
@@ -50,7 +53,7 @@ include "../src/components/view/header.php";
     <!-- Add to Cart Form -->
     <form id="frmAddToItem" class="space-y-4">
       <!-- Hidden Product ID -->
-      <input type="text" id="selectedProductId" name="selectedProductId">
+      <input type="hidden" id="selectedProductId" name="selectedProductId">
 
       <!-- Quantity -->
       <div>
