@@ -1,5 +1,9 @@
+
+
+
 $(".proceedToPayBtn").click(function (e) { 
     e.preventDefault();
+    
     openTransactionModal();
 });
 
@@ -16,39 +20,16 @@ $(document).on("click", function (e) {
     }
 });
 
-// Global state for summary calculations
-let baseSubtotal = 0;
-let currentDiscount = 0;
-let currentTotalWithVAT = 0;
 
-// Helper: update summary values
-function updateSummary(modal) {
-    // Clamp discount
-    let discount = currentDiscount > baseSubtotal ? baseSubtotal : currentDiscount;
 
-    let newSubtotal = baseSubtotal - discount;
-    let vat = newSubtotal * 0.12;
-    let newTotal = newSubtotal + vat;
 
-    // Update displayed values
-    modal.find("span:contains('Subtotal')").next().text(`₱${newSubtotal.toFixed(2)}`);
-    modal.find("span:contains('VAT (12%)')").next().text(`₱${vat.toFixed(2)}`);
-    modal.find(".mt-4.border-t.pt-3.flex.justify-between.items-center.text-2xl.font-bold.text-gray-900 span:last-child")
-        .text(`₱${newTotal.toFixed(2)}`);
-    modal.find("div.flex.font-bold.text-gray-900.text-xl span:last-child")
-        .text(`₱${newTotal.toFixed(2)}`);
 
-    // Save latest total for payment calculations
-    currentTotalWithVAT = newTotal;
 
-    // Update payment/change if user already typed something
-    let payment = parseFloat(modal.find("#paymentInput").val()) || 0;
-    let change = payment - currentTotalWithVAT;
-    if (change < 0) change = 0;
-    modal.find("#change").text(`₱${change.toFixed(2)}`);
-}
+// --- GLOBALS for computation ---
+let g_totalService = 0;
+let g_totalItem = 0;
 
-// AJAX + render modal
+// --- AJAX + render modal ---
 function openTransactionModal() {
     const modal = $("#transactionModal");
     modal.find(".service-details, .item-details").remove();
@@ -114,59 +95,12 @@ function openTransactionModal() {
                 itemContainer.append(itemList);
                 serviceContainer.after(itemContainer);
 
-                // Summary calculations
-                const totalService = services.reduce((sum,s)=>sum+parseFloat(s.service_price),0);
-                const totalItem = items.reduce((sum,i)=>sum+parseFloat(i.prod_price)*parseInt(i.item_qty),0);
-                baseSubtotal = totalService + totalItem;
-                currentDiscount = 0; // reset discount
-                const vat = baseSubtotal * 0.12;
-                currentTotalWithVAT = baseSubtotal + vat;
+                // Save totals globally
+                g_totalService = services.reduce((sum,s)=>sum+parseFloat(s.service_price),0);
+                g_totalItem = items.reduce((sum,i)=>sum+parseFloat(i.prod_price)*parseInt(i.item_qty),0);
 
-                // Render summary
-                modal.find(".border-t.pt-3.mt-3.space-y-2").html(`
-                    <div class="flex justify-between">
-                        <span>Total Services</span>
-                        <span>${services.length} | ₱${totalService.toFixed(2)}</span>
-                    </div>
-                    <div class="flex justify-between">
-                        <span>Total Items</span>
-                        <span>${items.length} | ₱${totalItem.toFixed(2)}</span>
-                    </div>
-                    <div class="flex justify-between items-center text-red-500">
-                        <span>Item Discount</span>
-                        <input type="number" min="0" placeholder="Enter discount" name="InputedDiscount" 
-                               class="ml-2 border border-gray-300 rounded px-2 py-1 text-sm w-28 focus:outline-none focus:ring-1 focus:ring-red-500">
-                    </div>
-                    <div class="flex justify-between font-semibold text-gray-800">
-                        <span>Subtotal</span>
-                        <span>₱${baseSubtotal.toFixed(2)}</span>
-                    </div>
-                    <div class="flex justify-between font-semibold text-gray-800">
-                        <span>VAT (12%)</span>
-                        <span>₱${vat.toFixed(2)}</span>
-                    </div>
-                    <div class="flex justify-between font-bold text-gray-900 text-xl">
-                        <span>Total</span>
-                        <span>₱${currentTotalWithVAT.toFixed(2)}</span>
-                    </div>
-                `);
-
-                // Update total at the bottom
-                modal.find(".mt-4.border-t.pt-3.flex.justify-between.items-center.text-2xl.font-bold.text-gray-900 span:last-child")
-                    .text(`₱${currentTotalWithVAT.toFixed(2)}`);
-
-                // Attach listeners
-                modal.find('input[name="InputedDiscount"]').on("input", function () {
-                    currentDiscount = parseFloat($(this).val()) || 0;
-                    updateSummary(modal);
-                });
-
-                modal.find("#paymentInput").on("input", function () {
-                    let payment = parseFloat($(this).val()) || 0;
-                    let change = payment - currentTotalWithVAT;
-                    if (change < 0) change = 0;
-                    modal.find("#change").text(`₱${change.toFixed(2)}`);
-                });
+                // Initial computation
+                updateComputation();
 
                 modal.fadeIn();
             }
@@ -176,3 +110,47 @@ function openTransactionModal() {
         }
     });
 }
+
+// --- Auto Update Function ---
+function updateComputation() {
+    let discount = parseFloat($("input[name=InputedDiscount]").val()) || 0;
+    let payment = parseFloat($("#paymentInput").val()) || 0;
+
+    // Prevent discount > totalItem
+    if (discount > g_totalItem) {
+        discount = g_totalItem;
+        $("input[name=InputedDiscount]").val(discount.toFixed(2));
+    }
+
+    // Apply discount to items
+    let discountedItems = g_totalItem - discount;
+
+    // VAT only on discounted items
+    let vat = discountedItems * 0.12;
+
+    // Subtotal = services + discounted items
+    let subtotal = g_totalService + discountedItems;
+
+    // Grand Total
+    let grandTotal = subtotal + vat;
+
+    // Change
+    let change = payment - grandTotal;
+
+    // Update UI
+    $("#totalServices").text(`${g_totalService > 0 ? '-' : '0'} | ₱${g_totalService.toFixed(2)}`);
+    $("#totalItems").text(`${g_totalItem > 0 ? '-' : '0'} | ₱${g_totalItem.toFixed(2)}`);
+    $("#subtotal").text(`₱${subtotal.toFixed(2)}`);
+    $("#vatAmount").text(`₱${vat.toFixed(2)}`);
+    $("#grandTotal").text(`₱${grandTotal.toFixed(2)}`);
+    $("#change").text(`₱${(change > 0 ? change : 0).toFixed(2)}`);
+
+    // Also update bottom total if exists
+    $(".mt-4.border-t.pt-3.flex.justify-between.items-center.text-2xl.font-bold.text-gray-900 span:last-child")
+        .text(`₱${grandTotal.toFixed(2)}`);
+}
+
+// --- Event Listeners ---
+$(document).on("input", "input[name=InputedDiscount], #paymentInput", function() {
+    updateComputation();
+});
