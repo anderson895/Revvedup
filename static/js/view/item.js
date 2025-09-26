@@ -89,7 +89,7 @@ $(document).ready(function() {
         const prodId = hiddenInput.val();
         const qty = $("#modalProdQty").val();
 
-        console.log("Add to cart:", prodId, "Quantity:", qty);
+        // console.log("Add to cart:", prodId, "Quantity:", qty);
 
         // Here you can do AJAX to add the product to cart
 
@@ -111,65 +111,42 @@ $(document).ready(function() {
 
 
 
-
-
-
-
-
-
-$("#frmAddToItem").submit(function (e) { 
+$('#frmAddToItem').submit(function(e){
     e.preventDefault();
 
-    var selectedProductId = $('#selectedProductId').val().trim();
-    var modalProdQty = $('#modalProdQty').val().trim();
+    const item_id = $(this).data('editing-id'); // undefined if adding
+    const prodId = $('#selectedProductId').val();
+    const qty = parseInt($('#modalProdQty').val(), 10);
 
-    // Validate Service Name
-    if (!selectedProductId) {
-        alertify.error("Select Product First.");
+    console.log(prodId); // debug
+
+    if(!prodId || isNaN(qty) || qty <= 0){
+        alertify.error("Please select a product and enter a valid quantity.");
         return;
     }
 
-    // Validate Price
-    if (!modalProdQty) {
-        alertify.error("Please enter a Qty.");
-        return;
-    }
-    if (isNaN(modalProdQty)) {
-        alertify.error("Price must be a valid number.");
-        return;
-    }
-    
-    // Show spinner and disable button
-    $('.spinner').show();
-    $('#frmAddToItem button[type="submit"]').prop('disabled', true);
-
-    var formData = new FormData(this);
-    formData.append('requestType', 'AddToItem');
+    let formData = new FormData(this);
+    formData.append('requestType', item_id ? 'updateItemCart' : 'AddToItem');
+    if(item_id) formData.append('item_id', item_id);
 
     $.ajax({
-        type: "POST",
+        type: 'POST',
         url: "../controller/end-points/controller.php",
         data: formData,
         contentType: false,
         processData: false,
-        dataType: "json",
-        success: function(response) {
-            $('.spinner').hide();
-            $('#frmAddToItem button[type="submit"]').prop('disabled', false);
-
-            if (response.status === 200) {
-                Swal.fire('Success!', response.message, 'success').then(() => {
+        dataType: 'json',
+        success: function(res){
+            if(res.status === 200){
+                Swal.fire('Success!', res.message, 'success').then(()=>{
                     window.location.href = 'item';
                 });
             } else {
-                Swal.fire('Error', response.message || 'Something went wrong.', 'error');
+                Swal.fire('Error', res.message || 'Something went wrong', 'error');
             }
         }
     });
-
 });
-
-
 
 
 
@@ -198,17 +175,19 @@ $("#frmAddToItem").submit(function (e) {
                     totalPrice += parseFloat(data.service_price);
 
                     html += `
-                        <tr class="hover:bg-[#2B2B2B] transition-colors">
+                        <tr class="hover:bg-gray-200 transition-colors">
                             <td class="p-3 text-center font-mono">${data.prod_id}</td>
                             <td class="p-3 text-center font-semibold">${data.prod_name}</td>
                             <td class="p-3 text-center font-semibold">${data.item_qty}</td>
                             <td class="p-3 text-center font-semibold">${data.prod_price}</td>
                             <td class="p-3 text-center font-semibold">${data.prod_price * data.item_qty}</td>
                             <td class="p-3 text-center">
-                                <button class="viewDetailsBtn bg-yellow-400 hover:bg-yellow-500 text-black px-3 py-1 rounded text-xs font-semibold transition"
-                                data-item_id ='${data.item_id}'>Update</button>
+                                <button class="EditBtn bg-yellow-400 hover:bg-yellow-500 text-black px-3 py-1 rounded text-xs font-semibold transition"
+                                data-item_id ='${data.item_id}'>Edit</button>
                                 <button class="removeBtn bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-xs font-semibold transition"
-                                data-item_id ='${data.item_id}'>Remove</button>
+                                data-item_id ='${data.item_id}'
+                                data-prod_name ='${data.prod_name}'
+                                >Remove</button>
                             </td>
                         </tr>
                     `;
@@ -227,4 +206,117 @@ $("#frmAddToItem").submit(function (e) {
             }
         }
     }
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+$(document).on('click', '.removeBtn', function(e) {
+        e.preventDefault();
+        const id = $(this).data("item_id");
+        const prod_name = $(this).data("prod_name");
+        
+        Swal.fire({
+            title: `Remove <span style="color:red;">${prod_name}</span> from cart?`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, remove it!',
+            cancelButtonText: 'No, cancel!',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: "../controller/end-points/controller.php",
+                    type: 'POST',
+                    data: { id: id, requestType: 'deleteCart',table:'item_cart',collumn:'item_id' },
+                    dataType: 'json', 
+                    success: function(response) {
+                      console.log(response);
+                        if (response.status === 200) {
+                            Swal.fire(
+                                'Removed!',
+                                response.message, 
+                                'success'
+                            ).then(() => {
+                                location.reload(); 
+                            });
+                        } else {
+                            Swal.fire(
+                                'Error!',
+                                response.message, 
+                                'error'
+                            );
+                        }
+                    },
+                    error: function() {
+                        Swal.fire(
+                            'Error!',
+                            'There was a problem with the request.',
+                            'error'
+                        );
+                    }
+                });
+            }
+        });
+    });
+
+
+
+
+
+
+
+
+
+
+
+
+
+    $(document).on('click', '.EditBtn', function(e) {
+    e.preventDefault();
+
+    const item_id = $(this).data('item_id');
+
+    // Fetch item data by ID
+    $.ajax({
+        url: "../controller/end-points/controller.php",
+        method: "GET",
+        data: { requestType: "getItemById", item_id: item_id },
+        dataType: "json",
+        success: function(res) {
+            if(res.status === 200){
+                const data = res.data;
+
+                // Populate modal fields
+                $('#selectedProductId').val(data.prod_id);
+                $('#searchInput').val(data.prod_name);
+                $('#modalProdQty').val(data.item_qty);
+                $('#modalProdPrice').text(`₱${data.prod_price}`);
+                $('#modalProdName').text(data.prod_name);
+                $('#modalProdImg').attr('src', `../static/upload/${data.prod_img}`);
+
+                // Show modal
+                $('#productModal').removeClass('hidden');
+
+                // Store item_id for update
+                $('#frmAddToItem').data('editing-id', item_id);
+
+                // Change submit button text
+                $('#frmAddToItem button[type="submit"]').text('Update Item');
+            } else {
+                Swal.fire('Error', res.message || 'Item not found', 'error');
+            }
+        }
+    });
 });

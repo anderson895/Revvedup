@@ -43,6 +43,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 ]);
             }
     
+        }else if($_POST['requestType'] === 'updateItemCart'){
+            $item_id = intval($_POST['item_id']);
+            $prod_id = intval($_POST['selectedProductId']);
+            $qty = intval($_POST['modalProdQty']);
+            $user_id = $_SESSION['user_id'];
+
+            $updated = $db->updateItemCart($prod_id, $qty, $user_id, $item_id); // create this function
+            if($updated){
+                echo json_encode(['status'=>200,'message'=>'Item updated successfully']);
+            } else {
+                echo json_encode(['status'=>500,'message'=>'Failed to update item']);
+            }
+            exit;
         }else if ($_POST['requestType'] == 'removeProduct') {
 
             $prod_id=$_POST['prod_id'];
@@ -58,6 +71,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         'message' => 'No changes made or error updating data.'
                     ]);
             }
+        }else if ($_POST['requestType'] == 'deleteCart') {
+
+            $id=$_POST['id'];
+            $table=$_POST['table'];
+            $collumn=$_POST['collumn'];
+            $result = $db->deleteCart($id,$table,$collumn);
+            if ($result) {
+                    echo json_encode([
+                        'status' => 200,
+                        'message' => 'Remove successfully.'
+                    ]);
+            } else {
+                    echo json_encode([
+                        'status' => 500,
+                        'message' => 'No changes made or error updating data.'
+                    ]);
+            }
+
+
         }else if ($_POST['requestType'] == 'UpdateProduct') {
            $productId = $_POST['productId'];
             $itemName = $_POST['itemName'];
@@ -181,6 +213,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                
 
+        }else if ($_POST['requestType'] == 'updateServiceCart') {
+
+                $user_id=$_SESSION['user_id'];
+                $service_id=$_POST['service_id'];
+                $serviceName  = $_POST['serviceName'];
+                $price     = $_POST['price'];
+                $employee  = $_POST['employee'];
+
+                $result = $db->updateServiceCart(
+                    $serviceName,
+                    $price,
+                    $employee,
+                    $user_id,
+                    $service_id,
+                );
+
+                if ($result) {
+                    echo json_encode([
+                        'status' => 200,
+                        'message' => 'Updated Successfully.'
+                    ]);
+                } else {
+                    echo json_encode([
+                        'status' => 500,
+                        'message' => $result
+                    ]);
+                }
+
+               
+
         }else if ($_POST['requestType'] == 'AddToItem') {
 
                 $user_id=$_SESSION['user_id'];
@@ -248,7 +310,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'status' => 200,
                 'data' => $result
             ]);
+        }else if ($_GET['requestType'] == 'getServiceById') {
+            $service_id=$_GET['service_id'];
+            $result = $db->getServiceById($service_id);
+            echo json_encode([
+                'status' => 200,
+                'data' => $result
+            ]);
+        }else if($_GET['requestType'] === 'getItemById'){
+            $item_id = intval($_GET['item_id']);
+            $item = $db->getItemById($item_id); 
+            if($item){
+                echo json_encode(['status'=>200,'data'=>$item]);
+            } else {
+                echo json_encode(['status'=>404,'message'=>'Item not found']);
+            }
+            exit;
         }
+
 
     }else {
         echo 'No GET REQUEST';

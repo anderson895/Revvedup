@@ -139,6 +139,38 @@ public function AddServiceCart($itemName,$price,$employee,$user_id) {
 
 
 
+
+
+
+
+
+
+public function updateServiceCart($serviceName, $price, $employee, $user_id, $service_id)
+{
+    $query = "UPDATE `service_cart` 
+              SET service_name = ?, 
+                  service_price = ?, 
+                  service_employee_id = ?, 
+                  service_user_id = ?
+              WHERE service_id = ?";
+
+    $stmt = $this->conn->prepare($query);
+
+    if (!$stmt) {
+        return false; // prepare failed
+    }
+
+    $stmt->bind_param("sdiii", $serviceName, $price, $employee, $user_id, $service_id);
+
+    $result = $stmt->execute();
+    $stmt->close();
+
+    return $result; // true if updated, false if failed
+}
+
+
+
+
 public function AddToItem($selectedProductId,$modalProdQty,$user_id){
     $query = "INSERT INTO `item_cart` (`item_prod_id`, `item_qty`,`item_user_id`) 
               VALUES (?, ?, ?)";
@@ -311,6 +343,25 @@ public function removeProduct($prod_id) {
 
 
 
+    public function deleteCart($id,$table,$collumn) {
+       
+        $deleteQuery = "DELETE FROM `$table` WHERE $collumn  = ?";
+        $stmt = $this->conn->prepare($deleteQuery);
+        if (!$stmt) {
+            return 'Prepare failed (update): ' . $this->conn->error;
+        }
+
+        $stmt->bind_param("i", $id);
+        $result = $stmt->execute();
+        $stmt->close();
+
+        return $result ? 'success' : 'Error updating menu';
+    }
+
+
+
+
+
     
     public function fetch_all_employee() {
         $query = $this->conn->prepare("SELECT * FROM employee
@@ -413,6 +464,75 @@ public function removeProduct($prod_id) {
 
         return $total;
     }
+
+
+
+
+    public function getServiceById($service_id)
+    {
+            $query = $this->conn->prepare("
+                SELECT sc.*, e.emp_fname, e.emp_lname 
+                FROM service_cart sc
+                LEFT JOIN employee e ON e.emp_id = sc.service_employee_id
+                WHERE sc.service_id = ?
+                LIMIT 1
+            ");
+
+            $query->bind_param("i", $service_id);
+
+            if ($query->execute()) {
+                $result = $query->get_result();
+                if ($row = $result->fetch_assoc()) {
+                    return $row; 
+                }
+            }
+
+            return null; 
+    }
+
+
+
+
+    public function getItemById($item_id)
+    {
+        $query = $this->conn->prepare("
+            SELECT ic.*, p.prod_name, p.prod_price, p.prod_img,p.prod_id  
+            FROM item_cart ic
+            LEFT JOIN product p ON p.prod_id = ic.item_prod_id
+            WHERE ic.item_id = ?
+            LIMIT 1
+        ");
+
+        $query->bind_param("i", $item_id);
+
+        if ($query->execute()) {
+            $result = $query->get_result();
+            if ($row = $result->fetch_assoc()) {
+                return $row; // return single item
+            }
+        }
+
+        return null; // not found
+    }
+
+
+
+
+
+
+    public function updateItemCart($prod_id, $qty, $user_id, $item_id){
+        $query = "UPDATE item_cart 
+                SET item_prod_id = ?, item_qty = ?, item_user_id = ? 
+                WHERE item_id = ?";
+        $stmt = $this->conn->prepare($query);
+        if(!$stmt) return false;
+        $stmt->bind_param("iiii", $prod_id, $qty, $user_id, $item_id);
+        $result = $stmt->execute();
+        $stmt->close();
+        return $result;
+    }
+
+
 
 
 

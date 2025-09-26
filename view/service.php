@@ -100,11 +100,11 @@ include "../src/components/view/header.php";
   <div class="bg-white rounded-xl shadow-lg w-full max-w-xl p-8 relative">
     
     <!-- Title -->
-    <h2 class="text-2xl italic font-semibold text-center mb-8 text-gray-800">Add Service</h2>
+    <h2 class="titleAction text-2xl italic font-semibold text-center mb-8 text-gray-800">Add Service</h2>
 
     <!-- Form -->
     <form id="frmAddService" class="grid grid-cols-1 sm:grid-cols-3 gap-4" enctype="multipart/form-data">
-      
+      <input type="text">
       <!-- Service Name -->
       <div class="col-span-1 sm:col-span-3">
         <label for="serviceName" class="block text-sm font-medium text-gray-700 mb-1">Service Name</label>

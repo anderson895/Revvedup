@@ -50,7 +50,7 @@ include "../src/components/view/header.php";
     <!-- Add to Cart Form -->
     <form id="frmAddToItem" class="space-y-4">
       <!-- Hidden Product ID -->
-      <input type="hidden" id="selectedProductId" name="selectedProductId">
+      <input type="text" id="selectedProductId" name="selectedProductId">
 
       <!-- Quantity -->
       <div>
