@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 25, 2025 at 06:06 PM
+-- Generation Time: Sep 26, 2025 at 05:41 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -20,6 +20,28 @@ SET time_zone = "+00:00";
 --
 -- Database: `revvedup`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `product`
+--
+
+CREATE TABLE `product` (
+  `prod_id` int(11) NOT NULL,
+  `prod_name` varchar(60) NOT NULL,
+  `prod_price` decimal(10,2) NOT NULL,
+  `prod_qty` int(11) NOT NULL,
+  `prod_img` varchar(255) NOT NULL,
+  `prod_status` int(11) NOT NULL DEFAULT 1 COMMENT '0=deleted,1=archived'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `product`
+--
+
+INSERT INTO `product` (`prod_id`, `prod_name`, `prod_price`, `prod_qty`, `prod_img`, `prod_status`) VALUES
+(3, 'nested', 11.00, 222, 'item_68d60b3664f741.76866050.png', 1);
 
 -- --------------------------------------------------------
 
@@ -51,6 +73,12 @@ INSERT INTO `user` (`user_id`, `firstname`, `lastname`, `username`, `password`, 
 --
 
 --
+-- Indexes for table `product`
+--
+ALTER TABLE `product`
+  ADD PRIMARY KEY (`prod_id`);
+
+--
 -- Indexes for table `user`
 --
 ALTER TABLE `user`
@@ -59,6 +87,12 @@ ALTER TABLE `user`
 --
 -- AUTO_INCREMENT for dumped tables
 --
+
+--
+-- AUTO_INCREMENT for table `product`
+--
+ALTER TABLE `product`
+  MODIFY `prod_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `user`
