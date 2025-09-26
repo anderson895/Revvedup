@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 26, 2025 at 11:51 AM
+-- Generation Time: Sep 26, 2025 at 12:09 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -57,15 +57,6 @@ CREATE TABLE `item_cart` (
   `item_qty` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Dumping data for table `item_cart`
---
-
-INSERT INTO `item_cart` (`item_id`, `item_user_id`, `item_prod_id`, `item_qty`) VALUES
-(6, 1, 4, 7),
-(8, 1, 3, 1),
-(9, 1, 4, 5);
-
 -- --------------------------------------------------------
 
 --
@@ -88,7 +79,8 @@ CREATE TABLE `product` (
 INSERT INTO `product` (`prod_id`, `prod_name`, `prod_price`, `prod_qty`, `prod_img`, `prod_status`) VALUES
 (3, 'product 2', 11.00, 222, 'item_68d60b3664f741.76866050.png', 1),
 (4, 'product 1', 150.00, 100, 'item_68d6430495df58.36133211.jpg', 1),
-(5, 'product 3', 300.00, 5, 'item_68d643420bba08.70461903.jpg', 1);
+(5, 'product 3', 300.00, 5, 'item_68d643420bba08.70461903.jpg', 1),
+(6, 'product 6', 55.00, 66, 'item_68d665eca329d5.22334298.jpg', 1);
 
 -- --------------------------------------------------------
 
@@ -110,7 +102,7 @@ CREATE TABLE `service_cart` (
 
 INSERT INTO `service_cart` (`service_id`, `service_user_id`, `service_name`, `service_price`, `service_employee_id`) VALUES
 (6, 1, 'chang all', 100.00, 1),
-(7, 1, 'maintenane', 100.00, 3);
+(8, 1, 'car wash', 60.00, 1);
 
 -- --------------------------------------------------------
 
@@ -187,19 +179,19 @@ ALTER TABLE `employee`
 -- AUTO_INCREMENT for table `item_cart`
 --
 ALTER TABLE `item_cart`
-  MODIFY `item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `product`
 --
 ALTER TABLE `product`
-  MODIFY `prod_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `prod_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `service_cart`
 --
 ALTER TABLE `service_cart`
-  MODIFY `service_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `service_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `user`
