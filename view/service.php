@@ -29,25 +29,46 @@ include "../src/components/view/header.php";
   </header>
 
   <!-- Table / Cart -->
-  <section class="flex-1 flex flex-col">
-    
-    <!-- Desktop Table Header -->
-    <div class="hidden sm:grid grid-cols-5 gap-2 text-sm font-semibold border-b bg-gray-50 px-4 py-2">
-      <span>Item ID</span>
-      <span>Item Name</span>
-      <span>Quantity</span>
-      <span>Unit Price</span>
-      <span>Total</span>
-    </div>
+<section class="flex-1 flex flex-col px-4 py-3">
+  <div class="overflow-x-auto rounded-lg shadow">
+    <table class="min-w-full border border-gray-200 text-sm">
+      <!-- Table Header -->
+      <thead class="bg-gray-100 text-gray-700">
+        <tr>
+          <th class="px-4 py-2 text-left font-semibold border-b">Service Name</th>
+          <th class="px-4 py-2 text-left font-semibold border-b">Price</th>
+          <th class="px-4 py-2 text-left font-semibold border-b">Employee</th>
+          <th class="px-4 py-2 text-left font-semibold border-b">Action</th>
+        </tr>
+      </thead>
 
-    <!-- Empty Cart -->
-    <div class="flex-1 flex items-center justify-center px-4">
-      <div class="text-center text-gray-400">
-        <span class="material-icons mx-auto text-7xl">shopping_cart</span>
-        <p>No items in cart</p>
-      </div>
-    </div>
-  </section>
+      <!-- Table Body -->
+      <tbody>
+        <!-- Empty State (kung walang laman ang cart) -->
+        <!-- <tr>
+          <td colspan="3" class="px-4 py-6 text-center text-gray-400">
+            <span class="material-icons text-6xl block mx-auto mb-2">shopping_cart</span>
+            <p>No items in cart</p>
+          </td>
+        </tr> -->
+
+        
+        <tr class="hover:bg-gray-50 transition">
+          <td class="px-4 py-2 border-b">Haircut</td>
+          <td class="px-4 py-2 border-b">₱150</td>
+          <td class="px-4 py-2 border-b">John Doe</td>
+          <td class="px-4 py-2 border-b">
+             <button class="text-red-600 hover:text-red-800 transition">
+                <span class="material-icons">delete</span>
+            </button>
+          </td>
+        </tr>
+       
+      </tbody>
+    </table>
+  </div>
+</section>
+
 
   <!-- Footer -->
   <footer class="flex flex-col sm:flex-row gap-3 justify-between items-stretch sm:items-center bg-white border-t px-4 py-3">
