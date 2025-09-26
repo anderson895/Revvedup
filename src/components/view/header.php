@@ -72,7 +72,7 @@ $authorize = (strtolower($On_Session['position']) !== "admin") ? "hidden" : "";
       <a href="sales" class="flex justify-center w-full p-2 rounded-lg hover:bg-gray-200 hover:scale-105 transition duration-200">
         <img src="../static/images/menus.png" alt="Sales">
       </a>
-      <a href="pos" class="flex justify-center w-full p-2 rounded-lg hover:bg-gray-200 hover:scale-105 transition duration-200">
+      <a href="transaction" class="flex justify-center w-full p-2 rounded-lg hover:bg-gray-200 hover:scale-105 transition duration-200">
         <img src="../static/images/transaction.png" alt="Transaction">
       </a>
       <a href="inventory" class="flex justify-center w-full p-2 rounded-lg hover:bg-gray-200 hover:scale-105 transition duration-200">
@@ -104,7 +104,7 @@ $authorize = (strtolower($On_Session['position']) !== "admin") ? "hidden" : "";
     <a href="sales" class="p-2 rounded-lg hover:bg-gray-200 hover:scale-110 transition duration-200">
       <img src="../static/images/menus.png" alt="Sales" class="h-6">
     </a>
-    <a href="pos" class="p-2 rounded-lg hover:bg-gray-200 hover:scale-110 transition duration-200">
+    <a href="transaction" class="p-2 rounded-lg hover:bg-gray-200 hover:scale-110 transition duration-200">
       <img src="../static/images/transaction.png" alt="Transaction" class="h-6">
     </a>
     <a href="inventory" class="p-2 rounded-lg hover:bg-gray-200 hover:scale-110 transition duration-200">

@@ -223,6 +223,56 @@ public function fetch_all_product() {
 
 
 
+public function fetch_all_transaction() {
+    $query = $this->conn->prepare("
+        SELECT *
+        FROM `transaction`
+        WHERE transaction_status='1'
+        ORDER BY transaction_id DESC
+    ");
+
+    if ($query->execute()) {
+        $result = $query->get_result();
+        $data = [];
+        $empIds = [];
+
+        // 1. Collect transactions + emp_ids from JSON
+        while ($row = $result->fetch_assoc()) {
+            $services = json_decode($row['transaction_service'], true) ?? [];
+            foreach ($services as $s) {
+                if (!empty($s['emp_id'])) {
+                    $empIds[] = (int)$s['emp_id'];
+                }
+            }
+            $data[] = $row;
+        }
+
+        // 2. Fetch employees
+        $employees = [];
+        if (!empty($empIds)) {
+            $ids = implode(',', array_unique($empIds));
+            $empQuery = $this->conn->prepare("SELECT emp_id, emp_fname, emp_lname FROM employee WHERE emp_id IN ($ids)");
+            $empQuery->execute();
+            $empRes = $empQuery->get_result();
+            while ($emp = $empRes->fetch_assoc()) {
+                $employees[$emp['emp_id']] = $emp['emp_fname'].' '.$emp['emp_lname'];
+            }
+        }
+
+        // 3. Merge employee names into transaction_service
+        foreach ($data as &$row) {
+            $services = json_decode($row['transaction_service'], true) ?? [];
+            foreach ($services as &$s) {
+                $id = (int)$s['emp_id'];
+                $s['employee_name'] = $employees[$id] ?? "Unknown Employee #$id";
+            }
+            $row['transaction_service'] = json_encode($services); // keep as JSON
+        }
+
+        return $data;
+    }
+    return [];
+}
 
 
 

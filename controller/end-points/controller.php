@@ -307,6 +307,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'status' => 200,
                 'data' => $result
             ]);
+        }else if ($_GET['requestType'] == 'fetch_all_transaction') {
+            $result = $db->fetch_all_transaction();
+            echo json_encode([
+                'status' => 200,
+                'data' => $result
+            ]);
         }else if ($_GET['requestType'] == 'fetch_all_employee') {
             $result = $db->fetch_all_employee();
             echo json_encode([
