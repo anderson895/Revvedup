@@ -103,3 +103,98 @@ $("#frmAddProduct").submit(function (e) {
     });
 
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+
+   $.ajax({
+    url: "../controller/end-points/controller.php",
+    method: "GET",
+    data: { requestType: "fetch_all_product" },
+    dataType: "json",
+    success: function (res) {
+        if (res.status === 200) {
+            let count = 1;
+
+            // Clear previous content (optional)
+            $('#productTableBody').empty();
+
+            // Check if there is data
+            if (res.data.length > 0) {
+                res.data.forEach(data => {
+
+
+                    $('#productTableBody').append(`
+                        <tr>
+                            <td class="px-4 py-2">${data.prod_id}</td>
+                            <td class="px-4 py-2 flex items-center space-x-2">
+                                <img src="../static/upload/${data.prod_img || '../static/images/default.png'}" 
+                                    alt="${data.prod_img}" 
+                                    class="w-8 h-8 object-cover rounded" />
+                                <span>${data.prod_name}</span>
+                            </td>
+                            <td class="px-4 py-2">₱ ${data.prod_price}</td>
+                            <td class="px-4 py-2">${data.prod_qty}</td>
+                            <td class="px-4 py-2">Fast Moving <br>(Pending functionalities)</td>
+                            <td class="px-4 py-2">
+                                <span class="inline-block w-3 h-3 rounded-full
+                                    ${data.prod_qty > 10 
+                                        ? 'bg-green-600' 
+                                        : (data.prod_qty > 0 
+                                            ? 'bg-yellow-500' 
+                                            : 'bg-red-600')
+                                    }">
+                                </span>
+                            </td>
+                            <td class="px-4 py-2 flex justify-center space-x-2">
+                                <button class="text-gray-700 hover:text-blue-600">
+                                    <span class="material-icons text-sm">edit</span>
+                                </button>
+                                <button class="text-gray-700 hover:text-red-600">
+                                    <span class="material-icons text-sm">delete</span>
+                                </button>
+                            </td>
+                        </tr>
+                    `);
+
+
+                });
+            } else {
+                $('#productTableBody').append(`
+                    <tr>
+                        <td colspan="7" class="p-4 text-center text-gray-400 italic">
+                            No record found
+                        </td>
+                    </tr>
+                `);
+            }
+        }
+    }
+});
+
+
+
+  // Search filter
+  $('#searchInput').on('input', function () {
+    const term = $(this).val().toLowerCase();
+    $('#productTableBody tr').each(function () {
+      $(this).toggle($(this).text().toLowerCase().includes(term));
+    });
+  });

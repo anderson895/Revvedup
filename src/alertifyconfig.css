@@ -1,0 +1,28 @@
+
+.alertify-notifier .ajs-message.ajs-success {
+  background-color: #16a34a !important; /* Tailwind green-600 */
+  color: #fff !important;
+  font-weight: 700 !important;
+  z-index: 99999 !important;
+}
+
+.alertify-notifier .ajs-message.ajs-error {
+  background-color: #dc2626 !important; /* Tailwind red-600 */
+  color: #fff !important;
+  font-weight: 700 !important;
+  z-index: 99999 !important;
+}
+
+.alertify-notifier .ajs-message.ajs-warning {
+  background-color: #ca8a04 !important; /* Tailwind yellow-600 */
+  color: #fff !important;
+  font-weight: 700 !important;
+  z-index: 99999 !important;
+}
+
+.alertify-notifier .ajs-message.ajs-info {
+  background-color: #2563eb !important; /* Tailwind blue-600 */
+  color: #fff !important;
+  font-weight: 700 !important;
+  z-index: 99999 !important;
+}

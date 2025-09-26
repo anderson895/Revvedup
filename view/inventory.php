@@ -11,6 +11,23 @@ include "../src/components/view/header.php";
     <h1 class="text-lg font-semibold">Product Inventory</h1>
   </header>
 
+
+  <!-- Search Bar -->
+<div class="px-6 py-4  flex justify-center sm:justify-start">
+  <div class="relative w-full sm:max-w-xs">
+    <span class="material-icons absolute left-3 top-1/2 -translate-y-1/2">
+      search
+    </span>
+    <input
+      type="text"
+      id="searchInput"
+      class="w-full pl-10 pr-4 py-2 rounded-md  border border-gray-700 
+              placeholder-gray-500 focus:outline-none "
+      placeholder="Search inventory..."
+    />
+  </div>
+</div>
+
   <!-- Content -->
   <section class="p-6 flex-1">
     <div class="bg-white rounded-xl shadow overflow-hidden">
@@ -38,8 +55,9 @@ include "../src/components/view/header.php";
               <th class="px-4 py-2 text-center text-sm font-medium text-gray-600">Actions</th>
             </tr>
           </thead>
-          <tbody class="divide-y">
+          <tbody id="productTableBody" class="divide-y">
             <!-- Sample Row 1 -->
+            <!-- 
             <tr>
               <td class="px-4 py-2">ID001</td>
               <td class="px-4 py-2">ItemName_1</td>
@@ -57,47 +75,8 @@ include "../src/components/view/header.php";
                   <span class="material-icons text-sm">delete</span>
                 </button>
               </td>
-            </tr>
+            </tr> -->
 
-            <!-- Sample Row 2 -->
-            <tr>
-              <td class="px-4 py-2">ID002</td>
-              <td class="px-4 py-2">ItemName_2</td>
-              <td class="px-4 py-2">₱ 0.00</td>
-              <td class="px-4 py-2">30</td>
-              <td class="px-4 py-2">Slow Moving</td>
-              <td class="px-4 py-2">
-                <span class="inline-block w-3 h-3 rounded-full bg-yellow-500"></span>
-              </td>
-              <td class="px-4 py-2 flex justify-center space-x-2">
-                <button class="text-gray-700 hover:text-blue-600">
-                  <span class="material-icons text-sm">edit</span>
-                </button>
-                <button class="text-gray-700 hover:text-red-600">
-                  <span class="material-icons text-sm">delete</span>
-                </button>
-              </td>
-            </tr>
-
-            <!-- Sample Row 3 -->
-            <tr>
-              <td class="px-4 py-2">ID003</td>
-              <td class="px-4 py-2">ItemName_3</td>
-              <td class="px-4 py-2">₱ 0.00</td>
-              <td class="px-4 py-2">0</td>
-              <td class="px-4 py-2">Fast Moving</td>
-              <td class="px-4 py-2">
-                <span class="inline-block w-3 h-3 rounded-full bg-red-600"></span>
-              </td>
-              <td class="px-4 py-2 flex justify-center space-x-2">
-                <button class="text-gray-700 hover:text-blue-600">
-                  <span class="material-icons text-sm">edit</span>
-                </button>
-                <button class="text-gray-700 hover:text-red-600">
-                  <span class="material-icons text-sm">delete</span>
-                </button>
-              </td>
-            </tr>
           </tbody>
         </table>
       </div>

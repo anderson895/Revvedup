@@ -113,4 +113,60 @@ public function Login_employee($pin)
 
 
 
+
+
+
+
+
+
+
+public function AddProduct($itemName, $price, $stockQty, $itemImageFileName) {
+    $query = "INSERT INTO `product` 
+              (`prod_name`, `prod_price`, `prod_qty`, `prod_img`) 
+              VALUES (?, ?, ?, ?)";
+
+    $stmt = $this->conn->prepare($query);
+
+    $stmt->bind_param("sdis", $itemName, $price, $stockQty, $itemImageFileName);
+
+    $result = $stmt->execute();
+
+    if (!$result) {
+        $stmt->close();
+        return false;
+    }
+
+    $inserted_id = $this->conn->insert_id;
+    $stmt->close();
+
+    return $inserted_id;
+}
+
+
+
+
+
+
+public function fetch_all_product() {
+     $query = $this->conn->prepare("SELECT * FROM product
+        where prod_status='1'
+        ORDER BY prod_id DESC");
+
+        if ($query->execute()) {
+            $result = $query->get_result();
+            $data = [];
+
+            while ($row = $result->fetch_assoc()) {
+                $data[] = $row;
+            }
+
+            return $data;
+        }
+        return []; 
+}
+
+
+
+
+
 }
