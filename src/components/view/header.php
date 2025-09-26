@@ -36,33 +36,32 @@ $authorize = (strtolower($On_Session['position']) !== "admin") ? "hidden" : "";
 <body class="bg-gray-50 min-h-screen flex">
 
   <!-- Sidebar (hidden on small screens, visible on md+) -->
-  <!-- Sidebar (hidden on small screens, visible on md+) -->
 <aside class="hidden md:flex w-20 bg-gray-100 border-r flex-col justify-between">
 
   <!-- Top Section (Logo + Menu) -->
   <div>
     <!-- Logo Top -->
     <div class="bg-black flex justify-center items-center py-4">
-      <a href="dashboard.php" class="flex justify-center">
+      <a href="dashboard" class="flex justify-center">
         <img src="../static/images/login_logo.png" alt="Logo" class="h-12 w-auto object-contain">
       </a>
     </div>
 
     <!-- Menu Items (ilagay agad sa ilalim ng logo) -->
     <div class="flex flex-col space-y-2">
-      <a href="sales.php" class="flex justify-center w-full p-2 rounded-lg hover:bg-gray-200 hover:scale-105 transition duration-200">
+      <a href="sales" class="flex justify-center w-full p-2 rounded-lg hover:bg-gray-200 hover:scale-105 transition duration-200">
         <img src="../static/images/menus.png" alt="Sales">
       </a>
-      <a href="pos.php" class="flex justify-center w-full p-2 rounded-lg hover:bg-gray-200 hover:scale-105 transition duration-200">
+      <a href="pos" class="flex justify-center w-full p-2 rounded-lg hover:bg-gray-200 hover:scale-105 transition duration-200">
         <img src="../static/images/transaction.png" alt="Transaction">
       </a>
-      <a href="inventory.php" class="flex justify-center w-full p-2 rounded-lg hover:bg-gray-200 hover:scale-105 transition duration-200">
+      <a href="inventory" class="flex justify-center w-full p-2 rounded-lg hover:bg-gray-200 hover:scale-105 transition duration-200">
         <img src="../static/images/inventory.png" alt="Inventory">
       </a>
-      <a href="analytics.php" class="flex justify-center w-full p-2 rounded-lg hover:bg-gray-200 hover:scale-105 transition duration-200">
+      <a href="analytics" class="flex justify-center w-full p-2 rounded-lg hover:bg-gray-200 hover:scale-105 transition duration-200">
         <img src="../static/images/analytics.png" alt="Analytics">
       </a>
-      <a href="team.php" class="flex justify-center w-full p-2 rounded-lg hover:bg-gray-200 hover:scale-105 transition duration-200 <?= $authorize ?>">
+      <a href="team" class="flex justify-center w-full p-2 rounded-lg hover:bg-gray-200 hover:scale-105 transition duration-200 <?= $authorize ?>">
         <img src="../static/images/team_management.png" alt="Team">
       </a>
     </div>
@@ -73,7 +72,7 @@ $authorize = (strtolower($On_Session['position']) !== "admin") ? "hidden" : "";
     <a href="logout.php" class="flex justify-center w-full p-2 rounded-lg hover:bg-gray-100 hover:scale-105 transition duration-200">
       <img src="../static/images/logout.png" alt="Logout">
     </a>
-    <a href="settings.php" class="flex justify-center w-full p-2 rounded-lg hover:bg-gray-200 hover:scale-105 transition duration-200 <?= $authorize ?>">
+    <a href="settings" class="flex justify-center w-full p-2 rounded-lg hover:bg-gray-200 hover:scale-105 transition duration-200 <?= $authorize ?>">
       <img src="../static/images/settings.png" alt="Settings">
     </a>
   </div>
@@ -82,19 +81,19 @@ $authorize = (strtolower($On_Session['position']) !== "admin") ? "hidden" : "";
 
   <!-- Bottom Navigation (mobile only) -->
   <nav class="fixed bottom-0 left-0 right-0 bg-gray-100 border-t flex justify-around py-2 md:hidden">
-    <a href="sales.php" class="p-2 rounded-lg hover:bg-gray-200 hover:scale-110 transition duration-200">
+    <a href="sales" class="p-2 rounded-lg hover:bg-gray-200 hover:scale-110 transition duration-200">
       <img src="../static/images/menus.png" alt="Sales" class="h-6">
     </a>
-    <a href="pos.php" class="p-2 rounded-lg hover:bg-gray-200 hover:scale-110 transition duration-200">
+    <a href="pos" class="p-2 rounded-lg hover:bg-gray-200 hover:scale-110 transition duration-200">
       <img src="../static/images/transaction.png" alt="Transaction" class="h-6">
     </a>
-    <a href="inventory.php" class="p-2 rounded-lg hover:bg-gray-200 hover:scale-110 transition duration-200">
+    <a href="inventory" class="p-2 rounded-lg hover:bg-gray-200 hover:scale-110 transition duration-200">
       <img src="../static/images/inventory.png" alt="Inventory" class="h-6">
     </a>
-    <a href="analytics.php" class="p-2 rounded-lg hover:bg-gray-200 hover:scale-110 transition duration-200">
+    <a href="analytics" class="p-2 rounded-lg hover:bg-gray-200 hover:scale-110 transition duration-200">
       <img src="../static/images/analytics.png" alt="Analytics" class="h-6">
     </a>
-    <a href="team.php" class="p-2 rounded-lg hover:bg-gray-200 hover:scale-110 transition duration-200 <?= $authorize ?>">
+    <a href="team" class="p-2 rounded-lg hover:bg-gray-200 hover:scale-110 transition duration-200 <?= $authorize ?>">
       <img src="../static/images/team_management.png" alt="Team" class="h-6">
     </a>
   </nav>
