@@ -1,3 +1,24 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 $('.serviceNameInput').on('keypress', function(e) {
     if (e.which === 13) { // 13 is the Enter key
         e.preventDefault(); 
@@ -282,3 +303,9 @@ $(document).on('click', '.removeBtn', function(e) {
         }
     });
 });
+
+
+
+
+
+

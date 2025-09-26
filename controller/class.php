@@ -466,6 +466,23 @@ public function removeProduct($prod_id) {
     }
 
 
+    public function fetch_all_cart($user_id)
+    {
+        // Fetch services
+        $services = $this->fetch_all_service_cart($user_id);
+
+        // Fetch items
+        $items = $this->fetch_all_item_cart($user_id);
+
+        return [
+            'services' => $services,
+            'items' => $items
+        ];
+    }
+
+
+
+
 
 
     public function getServiceById($service_id)

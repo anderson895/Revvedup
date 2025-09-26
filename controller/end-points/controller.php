@@ -303,6 +303,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'status' => 200,
                 'data' => $result
             ]);
+        }else if ($_GET['requestType'] == 'fetch_all_cart') {
+            $user_id=$_SESSION['user_id'];
+            $result = $db->fetch_all_cart($user_id);
+            echo json_encode([
+                'status' => 200,
+                'data' => $result
+            ]);
         }else if ($_GET['requestType'] == 'fetch_total_cart') {
             $user_id=$_SESSION['user_id'];
             $result = $db->fetch_total_cart($user_id);

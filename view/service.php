@@ -72,7 +72,7 @@ include "../src/components/view/header.php";
   <!-- Footer -->
   <footer class="flex flex-col sm:flex-row gap-3 justify-between items-stretch sm:items-center bg-white border-t px-4 py-3">
     <!-- Proceed Button -->
-    <button class="flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 text-white px-5 py-2.5 rounded-lg shadow-md font-medium transition duration-200 ease-in-out w-full sm:w-auto">
+    <button class="proceedToPayBtn flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 text-white px-5 py-2.5 rounded-lg shadow-md font-medium transition duration-200 ease-in-out w-full sm:w-auto">
       <span class="material-icons text-base">payment</span>
       Proceed to Payment
     </button>
@@ -99,7 +99,7 @@ include "../src/components/view/header.php";
 
 
 
-<!-- Modal Background -->
+<!-- Modal For Add/Update Service -->
 <div id="addServiceModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm" style="display:none;">
   <!-- Modal Content -->
   <div class="bg-white rounded-xl shadow-lg w-full max-w-xl p-8 relative">
@@ -175,9 +175,91 @@ include "../src/components/view/header.php";
 
 
 
+
+
+
+
+
+
+
+
+
+<!-- Transaction Modal -->
+<div id="transactionModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm" style="display:none;">
+  <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg p-6 relative">
+
+    <!-- Close Button -->
+    <button id="closeTransactionModal" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-2xl font-bold">&times;</button>
+
+    <!-- Modal Header -->
+    <div class="mb-4 border-b pb-2">
+      <p class="text-sm text-gray-500" id="transactionDate">5 / 26 / 2025</p>
+      <h2 class="text-lg font-semibold text-gray-800 mt-1">Transaction Details</h2>
+    </div>
+
+    <!-- Service Details (Dynamic) -->
+    <div class="mb-4">
+      <h3 class="font-semibold text-gray-700 mb-2">Service Details</h3>
+      <div class="service-details space-y-3">
+        <!-- Services by employee will be appended here via jQuery -->
+      </div>
+    </div>
+
+    <!-- Item Details (Dynamic) -->
+    <div class="mb-4">
+      <h3 class="font-semibold text-gray-700 mb-2">Item Details</h3>
+      <div class="item-details space-y-1 text-gray-700">
+        <!-- Items will be appended here via jQuery -->
+      </div>
+    </div>
+
+    <!-- Summary -->
+    <div class="border-t pt-3 mt-3 space-y-2 text-gray-700 text-sm summary-details">
+      <div class="flex justify-between">
+        <span>Total Services</span>
+        <span id="totalServices">0 | ₱0.00</span>
+      </div>
+      <div class="flex justify-between">
+        <span>Total Items</span>
+        <span id="totalItems">0 | ₱0.00</span>
+      </div>
+      <div class="flex justify-between items-center text-red-500">
+        <span>Item Discount</span>
+        <input type="text" placeholder="Enter discount" name="InputedDiscount" class="ml-2 border border-gray-300 rounded px-2 py-1 text-sm w-28 focus:outline-none focus:ring-1 focus:ring-red-500">
+      </div>
+      <div class="flex justify-between font-semibold text-gray-800">
+        <span>Subtotal</span>
+        <span id="subtotal">₱0.00</span>
+      </div>
+    </div>
+
+    <!-- Total -->
+    <div class="mt-4 border-t pt-3 flex justify-between items-center text-2xl font-bold text-gray-900">
+      <span>Total</span>
+      <span id="grandTotal">₱0.00</span>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="mt-5 flex gap-3">
+      <button class="flex-1 bg-red-900 text-white py-2 rounded-xl hover:bg-red-700 transition">Complete Transaction</button>
+      <button class="flex-1 bg-gray-200 text-gray-700 py-2 rounded-xl hover:bg-gray-300 transition">Void Transaction</button>
+    </div>
+
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
 <?php 
 include "../src/components/view/footer.php";
 ?>
 
 <script src="../static/js/view/service.js"></script>
 <script src="../static/js/view/fetchGrandTotal.js"></script>
+<script src="../static/js/view/proceedToPay.js"></script>
