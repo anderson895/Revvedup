@@ -5,28 +5,41 @@ include "../src/components/view/header.php";
 <!-- Main Content -->
 <main class="flex-1 flex flex-col">
 
-  <!-- Top Bar -->
-  <header class="flex flex-wrap gap-2 px-4 py-3 border-b bg-white">
-    <input type="text" placeholder="Enter Item Code"
-      class="flex-1 min-w-[150px] border rounded px-3 py-2 text-sm focus:outline-none focus:ring focus:border-red-400">
+ <header class="px-4 py-3 border-b bg-white flex flex-col gap-2">
+  <!-- Top Row -->
+  <div class="flex items-center space-x-2 text-sm text-gray-600">
+  <input 
+    type="text" 
+    placeholder="Add Service"
+    class="flex-1 min-w-[150px] border rounded px-3 py-2 text-sm focus:outline-none focus:ring focus:border-red-400"
+  >
+    <button 
+      class="bg-red-800 text-white px-3 py-2 rounded hover:bg-red-900 transition flex items-center justify-center"
+    >
+      <span class="material-icons text-white text-base">add</span>
+    </button>
+  </div>
 
-    <!-- Buttons with Material Icons -->
+
+
+  <!-- Bottom Row (Buttons) -->
+  <div class="flex flex-wrap gap-2 justify-end">
     <a href="refund_exchange" <?=$authorize?> 
        class="font-bold flex items-center gap-2 bg-red-800 hover:bg-red-700 transition text-white px-4 py-2 rounded text-sm whitespace-nowrap inline-block text-center shadow">
       REFUND | EXCHANGE
     </a>
 
     <a href="service" 
-       class="flex items-center gap-2 bg-pink-200 text-red-800 px-4 py-2 rounded border border-black-300 text-sm font-bold shadow-sm ">
+       class="flex items-center gap-2 bg-pink-200 text-red-800 px-4 py-2 rounded border border-black-300 text-sm font-bold shadow-sm">
       SERVICE
     </a>
 
-   <a href="item" 
-    class="font-bold flex items-center gap-2 bg-red-800 hover:bg-red-700 transition text-white px-4 py-2 rounded text-sm whitespace-nowrap inline-block text-center shadow">
-    ITEM
+    <a href="item" 
+       class="font-bold flex items-center gap-2 bg-red-800 hover:bg-red-700 transition text-white px-4 py-2 rounded text-sm whitespace-nowrap inline-block text-center shadow">
+      ITEM
     </a>
-
-  </header>
+  </div>
+</header>
 
   <!-- Table / Cart -->
 <section class="flex-1 flex flex-col px-4 py-3">
@@ -53,7 +66,7 @@ include "../src/components/view/header.php";
         </tr> -->
 
         
-        <tr class="hover:bg-gray-50 transition">
+        <!-- <tr class="hover:bg-gray-50 transition">
           <td class="px-4 py-2 border-b">Haircut</td>
           <td class="px-4 py-2 border-b">₱150</td>
           <td class="px-4 py-2 border-b">John Doe</td>
@@ -62,7 +75,7 @@ include "../src/components/view/header.php";
                 <span class="material-icons">delete</span>
             </button>
           </td>
-        </tr>
+        </tr> -->
        
       </tbody>
     </table>

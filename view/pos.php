@@ -62,16 +62,7 @@ include "../src/components/view/header.php";
 
   <!-- Footer -->
   <footer class="flex flex-col sm:flex-row gap-3 justify-between items-stretch sm:items-center bg-white border-t px-4 py-3">
-    <!-- Proceed Button -->
-    <button class="flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 text-white px-5 py-2.5 rounded-lg shadow-md font-medium transition duration-200 ease-in-out w-full sm:w-auto">
-      <span class="material-icons text-base">payment</span>
-      Proceed to Payment
-    </button>
-
-    <!-- Total Box -->
-    <div class="flex items-center gap-2 bg-red-800 text-white px-6 py-2 rounded-lg font-semibold shadow text-center w-full sm:w-auto">
-      <span class="text-xl">₱</span> TOTAL
-    </div>
+   
   </footer>
 
   <br class="block sm:hidden">

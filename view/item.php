@@ -6,11 +6,26 @@ include "../src/components/view/header.php";
 <main class="flex-1 flex flex-col">
 
   <!-- Top Bar -->
-  <header class="flex flex-wrap gap-2 px-4 py-3 border-b bg-white">
-    <input type="text" placeholder="Enter Item Code"
-      class="flex-1 min-w-[150px] border rounded px-3 py-2 text-sm focus:outline-none focus:ring focus:border-red-400">
+  <header class="px-4 py-3 border-b bg-white flex flex-col gap-2">
+  <!-- Top Row -->
+   <div class="flex items-center space-x-2 text-sm text-gray-600">
+      <!-- Input with search icon -->
+      <div class="relative flex-1 min-w-[150px]">
+        <span class="material-icons absolute left-2 top-1/2 -translate-y-1/2 text-gray-400 text-base">
+          search
+        </span>
+        <input 
+          type="text" 
+          placeholder="Add Service"
+          class="w-full border rounded pl-8 pr-3 py-2 text-sm focus:outline-none focus:ring focus:border-red-400"
+        >
+      </div>
 
-    <!-- Buttons with Material Icons -->
+    </div>
+
+
+  <!-- Bottom Row (Buttons) -->
+  <div class="flex flex-wrap gap-2 justify-end">
     <a href="refund_exchange" <?=$authorize?> 
        class="font-bold flex items-center gap-2 bg-red-800 hover:bg-red-700 transition text-white px-4 py-2 rounded text-sm whitespace-nowrap inline-block text-center shadow">
       REFUND | EXCHANGE
@@ -21,12 +36,12 @@ include "../src/components/view/header.php";
       SERVICE
     </a>
 
-   <a href="item" 
-    class="flex items-center gap-2 bg-pink-200 text-red-800 px-4 py-2 rounded border border-black-300 text-sm font-bold shadow-sm">
-    ITEM
+    <a href="item" 
+       class="flex items-center gap-2 bg-pink-200 text-red-800 px-4 py-2 rounded border border-black-300 text-sm font-bold shadow-sm">
+      ITEM
     </a>
-
-  </header>
+  </div>
+</header>
 
  <!-- Table / Cart -->
 <section class="flex-1 flex flex-col px-4 py-3">
