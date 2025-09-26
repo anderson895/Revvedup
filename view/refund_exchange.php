@@ -5,12 +5,15 @@ include "../src/components/view/header.php";
 <!-- Main Content -->
 <main class="flex-1 flex flex-col">
 
-  <!-- Top Bar -->
-  <header class="flex flex-wrap gap-2 px-4 py-3 border-b bg-white">
-    <input type="text" placeholder="Enter Item Code"
-      class="flex-1 min-w-[150px] border rounded px-3 py-2 text-sm focus:outline-none focus:ring focus:border-red-400">
+<header class="px-4 py-3 border-b bg-white flex flex-col gap-2">
+  <!-- Top Row -->
+  <div class="flex justify-between text-sm text-gray-600">
+    <span>Transaction No. <strong>123456</strong></span>
+    <span>Date: <strong><?= date("Y/m/d") ?></strong></span>
+  </div>
 
-    <!-- Buttons with Material Icons -->
+  <!-- Bottom Row (Buttons) -->
+  <div class="flex flex-wrap gap-2 justify-end">
     <a href="refund_exchange" <?=$authorize?> 
        class="flex items-center gap-2 bg-pink-200 text-red-800 px-4 py-2 rounded border border-black-300 text-sm font-bold shadow-sm">
       REFUND | EXCHANGE
@@ -21,12 +24,13 @@ include "../src/components/view/header.php";
       SERVICE
     </a>
 
-   <a href="item" 
-    class="font-bold flex items-center gap-2 bg-red-800 hover:bg-red-700 transition text-white px-4 py-2 rounded text-sm whitespace-nowrap inline-block text-center shadow">
-    ITEM
+    <a href="item" 
+       class="font-bold flex items-center gap-2 bg-red-800 hover:bg-red-700 transition text-white px-4 py-2 rounded text-sm whitespace-nowrap inline-block text-center shadow">
+      ITEM
     </a>
+  </div>
+</header>
 
-  </header>
 
   <!-- Table / Cart -->
   <section class="flex-1 flex flex-col px-4 py-3">
@@ -76,19 +80,35 @@ include "../src/components/view/header.php";
   </div>
 </section>
 
-  <!-- Footer -->
-  <footer class="flex flex-col sm:flex-row gap-3 justify-between items-stretch sm:items-center bg-white border-t px-4 py-3">
-    <!-- Proceed Button -->
-    <button class="flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 text-white px-5 py-2.5 rounded-lg shadow-md font-medium transition duration-200 ease-in-out w-full sm:w-auto">
-      <span class="material-icons text-base">payment</span>
-      Proceed to Payment
+<!-- Footer -->
+<footer class="flex flex-col sm:flex-row gap-3 justify-between items-center bg-white border-t px-4 py-4">
+  <!-- Left: Total Refund -->
+  <div class="flex-1">
+    <div class="flex justify-between items-center bg-gray-50 border px-4 py-2 rounded shadow-sm w-full sm:w-80">
+      <span class="font-medium text-gray-700">Total Refund</span>
+      <span class="font-bold text-lg text-gray-900">1,896.00</span>
+    </div>
+  </div>
+
+  <!-- Right: Action Buttons -->
+  <div class="flex flex-col sm:flex-row gap-3 items-center">
+    <!-- Complete Transaction -->
+    <button class="bg-red-800 hover:bg-red-700 text-white px-6 py-2 rounded shadow font-medium w-full sm:w-auto">
+      Complete Transaction
     </button>
 
-    <!-- Total Box -->
-    <div class="flex items-center gap-2 bg-red-800 text-white px-6 py-2 rounded-lg font-semibold shadow text-center w-full sm:w-auto">
-      <span class="text-xl">₱</span> TOTAL
-    </div>
-  </footer>
+    <!-- Refund All -->
+    <button class="bg-red-800 hover:bg-red-700 text-white px-4 py-2 rounded shadow font-medium">
+      Refund All
+    </button>
+
+    <!-- Exchange All -->
+    <button class="bg-red-800 hover:bg-red-700 text-white px-4 py-2 rounded shadow font-medium">
+      Exchange All
+    </button>
+  </div>
+</footer>
+
 
   <br class="block sm:hidden">
   <br class="block sm:hidden">
