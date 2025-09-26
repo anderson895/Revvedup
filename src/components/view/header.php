@@ -51,13 +51,13 @@ if (strtolower($On_Session['position']) !== "admin") {
   <!-- Sidebar (hidden on small screens, visible on md+) -->
 <aside class="hidden md:flex w-16 bg-gray-100 border-r flex-col justify-between py-6">
   <div class="space-y-6">
-    <a href="sales.php" class="flex justify-center w-full p-2 rounded-lg hover:bg-gray-200 hover:scale-105 transition transform duration-200">
+    <a href="sales" class="flex justify-center w-full p-2 rounded-lg hover:bg-gray-200 hover:scale-105 transition transform duration-200">
       <img src="../static/images/menus.png" alt="Sales">
     </a>
     <a href="pos" class="flex justify-center w-full p-2 rounded-lg hover:bg-gray-200 hover:scale-105 transition transform duration-200">
       <img src="../static/images/transaction.png" alt="Transaction">
     </a>
-    <a href="inventory.php" class="flex justify-center w-full p-2 rounded-lg hover:bg-gray-200 hover:scale-105 transition transform duration-200">
+    <a href="inventory" class="flex justify-center w-full p-2 rounded-lg hover:bg-gray-200 hover:scale-105 transition transform duration-200">
       <img src="../static/images/inventory.png" alt="Inventory">
     </a>
     <a href="analytics.php" class="flex justify-center w-full p-2 rounded-lg hover:bg-gray-200 hover:scale-105 transition transform duration-200">
@@ -79,13 +79,13 @@ if (strtolower($On_Session['position']) !== "admin") {
 
 <!-- Bottom Navigation (mobile only) -->
 <nav class="fixed bottom-0 left-0 right-0 bg-gray-100 border-t flex justify-around py-2 md:hidden">
-  <a href="sales.php" class="p-2 rounded-lg hover:bg-gray-200 hover:scale-110 transition transform duration-200">
+  <a href="sales" class="p-2 rounded-lg hover:bg-gray-200 hover:scale-110 transition transform duration-200">
     <img src="../static/images/menus.png" alt="Sales" class="h-6">
   </a>
   <a href="transaction.php" class="p-2 rounded-lg hover:bg-gray-200 hover:scale-110 transition transform duration-200">
     <img src="../static/images/transaction.png" alt="Transaction" class="h-6">
   </a>
-  <a href="inventory.php" class="p-2 rounded-lg hover:bg-gray-200 hover:scale-110 transition transform duration-200">
+  <a href="inventory" class="p-2 rounded-lg hover:bg-gray-200 hover:scale-110 transition transform duration-200">
     <img src="../static/images/inventory.png" alt="Inventory" class="h-6">
   </a>
   <a href="analytics.php" class="p-2 rounded-lg hover:bg-gray-200 hover:scale-110 transition transform duration-200">
