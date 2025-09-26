@@ -7,13 +7,12 @@ include "../src/components/view/header.php";
 
   <!-- Top Bar -->
   <header class="flex flex-wrap gap-2 px-4 py-3 border-b bg-white">
-    <input type="text" placeholder="Enter Item Code"
+    <input type="text" placeholder="Enter Transaction Code"
       class="flex-1 min-w-[150px] border rounded px-3 py-2 text-sm focus:outline-none focus:ring focus:border-red-400">
 
     <!-- Buttons with Material Icons -->
     <a href="refund_exchange" <?=$authorize?> 
        class="font-bold flex items-center gap-2 bg-red-800 hover:bg-red-700 transition text-white px-4 py-2 rounded text-sm whitespace-nowrap inline-block text-center shadow">
-     
       REFUND | EXCHANGE
     </a>
 
@@ -29,27 +28,37 @@ include "../src/components/view/header.php";
 
   </header>
 
+ <!-- Table / Cart -->
+<section class="flex-1 flex flex-col px-4 py-3">
+  <div class="overflow-x-auto rounded-lg shadow">
+    <table class="min-w-full border border-gray-200 text-sm">
+      <!-- Table Header -->
+      <thead class="bg-gray-100 text-gray-700">
+        <tr>
+          <th class="px-4 py-2 text-left font-semibold border-b">Date</th>
+          <th class="px-4 py-2 text-left font-semibold border-b">Transaction ID</th>
+          <th class="px-4 py-2 text-left font-semibold border-b">Amount</th>
+          <th class="px-4 py-2 text-left font-semibold border-b">Action</th>
+        </tr>
+      </thead>
 
-  <!-- Table / Cart -->
-  <section class="flex-1 flex flex-col">
-    
-    <!-- Desktop Table Header -->
-    <div class="hidden sm:grid grid-cols-5 gap-2 text-sm font-semibold border-b bg-gray-50 px-4 py-2">
-      <span>Item ID</span>
-      <span>Item Name</span>
-      <span>Quantity</span>
-      <span>Unit Price</span>
-      <span>Total</span>
-    </div>
+      <!-- Table Body -->
+      <tbody>
+        <!-- Empty State (kung walang laman ang cart) -->
+        <!-- <tr>
+          <td colspan="3" class="px-4 py-6 text-center text-gray-400">
+            <span class="material-icons text-6xl block mx-auto mb-2">shopping_cart</span>
+            <p>No items in cart</p>
+          </td>
+        </tr> -->
 
-    <!-- Empty Cart -->
-    <div class="flex-1 flex items-center justify-center px-4">
-      <div class="text-center text-gray-400">
-        <span class="material-icons mx-auto text-7xl">shopping_cart</span>
-        <p>No items in cart</p>
-      </div>
-    </div>
-  </section>
+        
+        
+       
+      </tbody>
+    </table>
+  </div>
+</section>
 
   <!-- Footer -->
   <footer class="flex flex-col sm:flex-row gap-3 justify-between items-stretch sm:items-center bg-white border-t px-4 py-3">

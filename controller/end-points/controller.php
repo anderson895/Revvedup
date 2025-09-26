@@ -42,6 +42,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 ]);
             }
     
+        }else if ($_POST['requestType'] == 'removeProduct') {
+
+            $prod_id=$_POST['prod_id'];
+            $result = $db->removeProduct($prod_id);
+            if ($result) {
+                    echo json_encode([
+                        'status' => 200,
+                        'message' => 'Remove successfully.'
+                    ]);
+            } else {
+                    echo json_encode([
+                        'status' => 500,
+                        'message' => 'No changes made or error updating data.'
+                    ]);
+            }
         }else if ($_POST['requestType'] == 'UpdateProduct') {
            $productId = $_POST['productId'];
             $itemName = $_POST['itemName'];
@@ -99,7 +114,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $bannerUploaded = move_uploaded_file($itemImage['tmp_name'], $bannerPath);
 
                     if ($bannerUploaded) {
-                        // ✅ Set correct file name for saving to DB
                         $itemImageFileName = $menuImageFileName;
                     } else {
                         echo json_encode([

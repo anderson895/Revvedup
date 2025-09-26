@@ -172,7 +172,10 @@ $("#frmAddProduct").submit(function (e) {
                                 >
                                     <span class="material-icons text-sm">edit</span>
                                 </button>
-                                <button class="text-gray-700 hover:text-red-600">
+                                <button class="removeBtn text-gray-700 hover:text-red-600"
+                                data-prod_id='${data.prod_id}'
+                                data-prod_name='${data.prod_name}'
+                                >
                                     <span class="material-icons text-sm">delete</span>
                                 </button>
                             </td>
@@ -291,3 +294,67 @@ $(document).on("submit", "#frmUpdateProduct", function (e) {
     }
   });
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+$(document).on('click', '.removeBtn', function(e) {
+        e.preventDefault();
+        const prod_id = $(this).data("prod_id");
+        const prod_name = $(this).data("prod_name");
+        
+        console.log(prod_id);
+    
+        Swal.fire({
+            title: `Are you sure to Remove <span style="color:red;">${prod_name}</span> ?`,
+            text: 'You won\'t be able to revert this!',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, remove it!',
+            cancelButtonText: 'No, cancel!',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: "../controller/end-points/controller.php",
+                    type: 'POST',
+                    data: { prod_id: prod_id, requestType: 'removeProduct' },
+                    dataType: 'json', 
+                    success: function(response) {
+                      console.log(response);
+                        if (response.status === 200) {
+                            Swal.fire(
+                                'Removed!',
+                                response.message, 
+                                'success'
+                            ).then(() => {
+                                location.reload(); 
+                            });
+                        } else {
+                            Swal.fire(
+                                'Error!',
+                                response.message, 
+                                'error'
+                            );
+                        }
+                    },
+                    error: function() {
+                        Swal.fire(
+                            'Error!',
+                            'There was a problem with the request.',
+                            'error'
+                        );
+                    }
+                });
+            }
+        });
+    });

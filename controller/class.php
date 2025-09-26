@@ -238,6 +238,21 @@ public function UpdateProduct(
 
 
 
+public function removeProduct($prod_id) {
+       
+        $deleteQuery = "UPDATE product SET prod_status = 0 WHERE prod_id  = ?";
+        $stmt = $this->conn->prepare($deleteQuery);
+        if (!$stmt) {
+            return 'Prepare failed (update): ' . $this->conn->error;
+        }
+
+        $stmt->bind_param("i", $prod_id);
+        $result = $stmt->execute();
+        $stmt->close();
+
+        return $result ? 'success' : 'Error updating menu';
+    }
+
 
 
 
