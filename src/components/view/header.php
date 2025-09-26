@@ -20,6 +20,12 @@ if (isset($_SESSION['user_id'])) {
 
 // Authorization
 $authorize = (strtolower($On_Session['position']) !== "admin") ? "hidden" : "";
+
+
+
+            
+
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -33,6 +39,19 @@ $authorize = (strtolower($On_Session['position']) !== "admin") ? "hidden" : "";
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/AlertifyJS/1.13.1/alertify.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+
+
+   <!-- Select2 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+  <!-- jQuery (Required by Select2) -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+  <!-- Select2 JS -->
+  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+
 </head>
 <body class="bg-gray-50 min-h-screen flex">
 

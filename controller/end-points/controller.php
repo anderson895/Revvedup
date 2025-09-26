@@ -3,6 +3,7 @@ include('../class.php');
 
 $db = new global_class();
 
+session_start();
 
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -151,6 +152,58 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                
 
+        }else if ($_POST['requestType'] == 'AddServiceCart') {
+
+                $user_id=$_SESSION['user_id'];
+                $serviceName  = $_POST['serviceName'];
+                $price     = $_POST['price'];
+                $employee  = $_POST['employee'];
+
+              
+                $result = $db->AddServiceCart(
+                    $serviceName,
+                    $price,
+                    $employee,
+                    $user_id
+                );
+
+                if ($result) {
+                    echo json_encode([
+                        'status' => 200,
+                        'message' => 'Added Successfully.'
+                    ]);
+                } else {
+                    echo json_encode([
+                        'status' => 500,
+                        'message' => $result
+                    ]);
+                }
+
+               
+
+        }else if ($_POST['requestType'] == 'AddToItem') {
+
+                $user_id=$_SESSION['user_id'];
+                $selectedProductId  = $_POST['selectedProductId'];
+                $modalProdQty     = $_POST['modalProdQty'];
+
+              
+                $result = $db->AddToItem($selectedProductId,$modalProdQty,$user_id);
+
+                if ($result) {
+                    echo json_encode([
+                        'status' => 200,
+                        'message' => 'Added Successfully.'
+                    ]);
+                } else {
+                    echo json_encode([
+                        'status' => 500,
+                        'message' => $result
+                    ]);
+                }
+
+               
+
         }else{
             echo "404";
         }
@@ -164,6 +217,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     {
         if ($_GET['requestType'] == 'fetch_all_product') {
             $result = $db->fetch_all_product();
+            echo json_encode([
+                'status' => 200,
+                'data' => $result
+            ]);
+        }else if ($_GET['requestType'] == 'fetch_all_employee') {
+            $result = $db->fetch_all_employee();
+            echo json_encode([
+                'status' => 200,
+                'data' => $result
+            ]);
+        }else if ($_GET['requestType'] == 'fetch_all_service_cart') {
+            $user_id=$_SESSION['user_id'];
+            $result = $db->fetch_all_service_cart($user_id);
+            echo json_encode([
+                'status' => 200,
+                'data' => $result
+            ]);
+        }else if ($_GET['requestType'] == 'fetch_all_item_cart') {
+            $user_id=$_SESSION['user_id'];
+            $result = $db->fetch_all_item_cart($user_id);
+            echo json_encode([
+                'status' => 200,
+                'data' => $result
+            ]);
+        }else if ($_GET['requestType'] == 'fetch_total_cart') {
+            $user_id=$_SESSION['user_id'];
+            $result = $db->fetch_total_cart($user_id);
             echo json_encode([
                 'status' => 200,
                 'data' => $result

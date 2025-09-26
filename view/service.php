@@ -11,10 +11,9 @@ include "../src/components/view/header.php";
   <input 
     type="text" 
     placeholder="Add Service"
-    class="flex-1 min-w-[150px] border rounded px-3 py-2 text-sm focus:outline-none focus:ring focus:border-red-400"
+    class="serviceNameInput flex-1 min-w-[150px] border rounded px-3 py-2 text-sm focus:outline-none focus:ring focus:border-red-400"
   >
-    <button 
-      class="bg-red-800 text-white px-3 py-2 rounded hover:bg-red-900 transition flex items-center justify-center"
+    <button id="addServiceBtn" class="bg-red-800 text-white px-3 py-2 rounded hover:bg-red-900 transition flex items-center justify-center"
     >
       <span class="material-icons text-white text-base">add</span>
     </button>
@@ -48,34 +47,16 @@ include "../src/components/view/header.php";
       <!-- Table Header -->
       <thead class="bg-gray-100 text-gray-700">
         <tr>
-          <th class="px-4 py-2 text-left font-semibold border-b">Service Name</th>
-          <th class="px-4 py-2 text-left font-semibold border-b">Price</th>
-          <th class="px-4 py-2 text-left font-semibold border-b">Employee</th>
-          <th class="px-4 py-2 text-left font-semibold border-b">Action</th>
+          <th class="px-4 py-2 text-center font-semibold border-b">Service Name</th>
+          <th class="px-4 py-2 text-center font-semibold border-b">Price</th>
+          <th class="px-4 py-2 text-center font-semibold border-b">Employee</th>
+          <th class="px-4 py-2 text-center font-semibold border-b">Action</th>
         </tr>
       </thead>
 
       <!-- Table Body -->
-      <tbody>
-        <!-- Empty State (kung walang laman ang cart) -->
-        <!-- <tr>
-          <td colspan="3" class="px-4 py-6 text-center text-gray-400">
-            <span class="material-icons text-6xl block mx-auto mb-2">shopping_cart</span>
-            <p>No items in cart</p>
-          </td>
-        </tr> -->
-
+      <tbody id="serviceTableBody">
         
-        <!-- <tr class="hover:bg-gray-50 transition">
-          <td class="px-4 py-2 border-b">Haircut</td>
-          <td class="px-4 py-2 border-b">₱150</td>
-          <td class="px-4 py-2 border-b">John Doe</td>
-          <td class="px-4 py-2 border-b">
-             <button class="text-red-600 hover:text-red-800 transition">
-                <span class="material-icons">delete</span>
-            </button>
-          </td>
-        </tr> -->
        
       </tbody>
     </table>
@@ -93,7 +74,7 @@ include "../src/components/view/header.php";
 
     <!-- Total Box -->
     <div class="flex items-center gap-2 bg-red-800 text-white px-6 py-2 rounded-lg font-semibold shadow text-center w-full sm:w-auto">
-      <span class="text-xl">₱</span> TOTAL
+      <span class="text-sm">TOTAL : ₱</span><span class="totalPrice"></span>
     </div>
   </footer>
 
@@ -101,6 +82,97 @@ include "../src/components/view/header.php";
   <br class="block sm:hidden">
 </main>
 
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- Modal Background -->
+<div id="addServiceModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm" style="display:none;">
+  <!-- Modal Content -->
+  <div class="bg-white rounded-xl shadow-lg w-full max-w-xl p-8 relative">
+    
+    <!-- Title -->
+    <h2 class="text-2xl italic font-semibold text-center mb-8 text-gray-800">Add Service</h2>
+
+    <!-- Form -->
+    <form id="frmAddService" class="grid grid-cols-1 sm:grid-cols-3 gap-4" enctype="multipart/form-data">
+      
+      <!-- Service Name -->
+      <div class="col-span-1 sm:col-span-3">
+        <label for="serviceName" class="block text-sm font-medium text-gray-700 mb-1">Service Name</label>
+        <input 
+          type="text" 
+          placeholder="Enter service name" 
+          id="serviceName"
+          name="serviceName"
+          class="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-900"
+        >
+      </div>
+
+      <!-- Price -->
+      <div class="col-span-1">
+        <label for="price" class="block text-sm font-medium text-gray-700 mb-1">Price</label>
+        <div class="flex items-center border rounded-lg px-3 py-2">
+          <span class="text-gray-500 mr-2">₱</span>
+          <input 
+            type="number" 
+            placeholder="00.00" 
+            id="price"
+            name="price"
+            class="w-full outline-none"
+            step="0.01"
+          >
+        </div>
+      </div>
+
+      <!-- Employee -->
+      <div class="col-span-2">
+        <label for="employee" class="block text-sm font-medium text-gray-700 mb-1">Assign Employee</label>
+        <select 
+          id="employee" 
+          name="employee"
+          class="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-900"
+        >
+          <option value="" disabled selected>Select Employee</option>
+
+          
+         
+        </select>
+      </div>
+
+      <!-- Submit Button -->
+      <div class="col-span-1 sm:col-span-3 flex justify-end mt-6">
+        <button 
+          type="submit" 
+          class="bg-red-900 text-white px-6 py-2 rounded-lg shadow hover:bg-red-700 transition"
+        >
+          Add Service
+        </button>
+      </div>
+
+    </form>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
 <?php 
 include "../src/components/view/footer.php";
 ?>
+
+<script src="../static/js/view/service.js"></script>
+<script src="../static/js/view/fetchGrandTotal.js"></script>

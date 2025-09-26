@@ -16,12 +16,67 @@ include "../src/components/view/header.php";
         </span>
         <input 
           type="text" 
-          placeholder="Add Service"
+          id="searchInput"
+          placeholder="Search Item"
           class="w-full border rounded pl-8 pr-3 py-2 text-sm focus:outline-none focus:ring focus:border-red-400"
+          autocomplete="off"
+        >
+        <!-- Hidden input to store prod_id -->
+       
+        
+        <div id="autocompleteList" class="absolute z-50 w-full bg-white border rounded mt-1 max-h-48 overflow-y-auto hidden"></div>
+      </div>
+
+
+
+    </div>
+
+
+
+<!-- Product Modal -->
+<div id="productModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm hidden">
+  <div class="bg-white rounded-xl shadow-lg w-full max-w-md p-6 relative">
+    
+    <!-- Close Button -->
+    <button type="button" id="closeModal" class="absolute top-3 right-3 text-gray-400 hover:text-gray-600 text-2xl font-bold">&times;</button>
+    
+    <!-- Product Info -->
+    <div class="flex flex-col items-center mb-4 text-center">
+      <img id="modalProdImg" src="" alt="Product Image" class="w-32 h-32 object-cover rounded-lg border mb-4">
+      <h3 id="modalProdName" class="text-xl font-semibold text-gray-800 mb-1"></h3>
+      <p id="modalProdPrice" class="text-red-600 font-medium text-lg"></p>
+    </div>
+
+    <!-- Add to Cart Form -->
+    <form id="frmAddToItem" class="space-y-4">
+      <!-- Hidden Product ID -->
+      <input type="hidden" id="selectedProductId" name="selectedProductId">
+
+      <!-- Quantity -->
+      <div>
+        <label for="modalProdQty" class="block text-sm font-medium text-gray-700">Quantity</label>
+        <input 
+          type="number" 
+          id="modalProdQty" 
+          name="modalProdQty" 
+          class="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-red-400" 
+          min="1" 
+          value="1"
         >
       </div>
 
-    </div>
+      <!-- Submit Button -->
+      <div class="flex justify-center">
+        <button type="submit" id="addToCartBtn" class="bg-red-800 text-white px-6 py-2 rounded-lg hover:bg-red-900 transition">Add to Cart</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+
+
+
 
 
   <!-- Bottom Row (Buttons) -->
@@ -50,39 +105,18 @@ include "../src/components/view/header.php";
       <!-- Table Header -->
       <thead class="bg-gray-100 text-gray-700">
         <tr>
-          <th class="px-4 py-2 text-left font-semibold border-b">Item ID</th>
-          <th class="px-4 py-2 text-left font-semibold border-b">Item Name</th>
-          <th class="px-4 py-2 text-left font-semibold border-b">Quantity</th>
-          <th class="px-4 py-2 text-left font-semibold border-b">Unit Price</th>
-          <th class="px-4 py-2 text-left font-semibold border-b">Total</th>
-          <th class="px-4 py-2 text-left font-semibold border-b">Action</th>
+          <th class="px-4 py-2 text-center font-semibold border-b">Item ID</th>
+          <th class="px-4 py-2 text-center font-semibold border-b">Item Name</th>
+          <th class="px-4 py-2 text-center font-semibold border-b">Quantity</th>
+          <th class="px-4 py-2 text-center font-semibold border-b">Unit Price</th>
+          <th class="px-4 py-2 text-center font-semibold border-b">Total</th>
+          <th class="px-4 py-2 text-center font-semibold border-b">Action</th>
         </tr>
       </thead>
 
       <!-- Table Body -->
-      <tbody>
-        <!-- Empty State (kung walang laman ang cart) -->
-        <!-- <tr>
-          <td colspan="3" class="px-4 py-6 text-center text-gray-400">
-            <span class="material-icons text-6xl block mx-auto mb-2">shopping_cart</span>
-            <p>No items in cart</p>
-          </td>
-        </tr> -->
-
-        
-        <tr class="hover:bg-gray-50 transition">
-          <td class="px-4 py-2 border-b">AU43023</td>
-          <td class="px-4 py-2 border-b">Item_Name1</td>
-          <td class="px-4 py-2 border-b">1</td>
-          <td class="px-4 py-2 border-b">1,896.00</td>
-          <td class="px-4 py-2 border-b">1,896.00</td>
-          <td class="px-4 py-2 border-b">
-             <button class="text-red-600 hover:text-red-800 transition">
-                <span class="material-icons">delete</span>
-            </button>
-          </td>
-        </tr>
-       
+      <tbody id="itemTableBody">
+        <!-- DYNAMIC PART -->
       </tbody>
     </table>
   </div>
@@ -98,7 +132,7 @@ include "../src/components/view/header.php";
 
     <!-- Total Box -->
     <div class="flex items-center gap-2 bg-red-800 text-white px-6 py-2 rounded-lg font-semibold shadow text-center w-full sm:w-auto">
-      <span class="text-xl">₱</span> TOTAL
+      <span class="text-sm">TOTAL : ₱</span><span class="totalPrice"></span>
     </div>
   </footer>
 
@@ -109,3 +143,7 @@ include "../src/components/view/header.php";
 <?php 
 include "../src/components/view/footer.php";
 ?>
+
+
+<script src="../static/js/view/item.js"></script>
+<script src="../static/js/view/fetchGrandTotal.js"></script>

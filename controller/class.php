@@ -113,8 +113,55 @@ public function Login_employee($pin)
 
 
 
+public function AddServiceCart($itemName,$price,$employee,$user_id) {
+    $query = "INSERT INTO `service_cart` (`service_name`, `service_price`, `service_employee_id`,`service_user_id`) 
+              VALUES (?, ?, ?,?)";
+
+    $stmt = $this->conn->prepare($query);
+
+    if (!$stmt) {
+        return false; 
+    }
+    $stmt->bind_param("sdii", $itemName, $price, $employee,$user_id);
+
+    $result = $stmt->execute();
+
+    if (!$result) {
+        $stmt->close();
+        return false;
+    }
+
+    $inserted_id = $this->conn->insert_id;
+    $stmt->close();
+
+    return $inserted_id;
+}
 
 
+
+public function AddToItem($selectedProductId,$modalProdQty,$user_id){
+    $query = "INSERT INTO `item_cart` (`item_prod_id`, `item_qty`,`item_user_id`) 
+              VALUES (?, ?, ?)";
+
+    $stmt = $this->conn->prepare($query);
+
+    if (!$stmt) {
+        return false; 
+    }
+    $stmt->bind_param("iii", $selectedProductId, $modalProdQty,$user_id);
+
+    $result = $stmt->execute();
+
+    if (!$result) {
+        $stmt->close();
+        return false;
+    }
+
+    $inserted_id = $this->conn->insert_id;
+    $stmt->close();
+
+    return $inserted_id;
+}
 
 
 
@@ -164,6 +211,13 @@ public function fetch_all_product() {
         }
         return []; 
 }
+
+
+
+
+
+
+
 
 
 
@@ -253,6 +307,112 @@ public function removeProduct($prod_id) {
         return $result ? 'success' : 'Error updating menu';
     }
 
+
+
+
+
+    
+    public function fetch_all_employee() {
+        $query = $this->conn->prepare("SELECT * FROM employee
+            where emp_status='1'
+            ORDER BY emp_id DESC");
+
+            if ($query->execute()) {
+                $result = $query->get_result();
+                $data = [];
+
+                while ($row = $result->fetch_assoc()) {
+                    $data[] = $row;
+                }
+
+                return $data;
+            }
+            return []; 
+    }
+
+
+
+
+    public function fetch_all_service_cart($user_id)
+    {   
+            $query = $this->conn->prepare("
+                SELECT * FROM service_cart
+                LEFT JOIN employee
+                ON employee.emp_id  = service_cart.service_employee_id 
+                WHERE service_user_id = ?
+                ORDER BY service_id DESC
+            ");
+
+            $query->bind_param("i", $user_id);
+
+            if ($query->execute()) {
+                $result = $query->get_result();
+                $data = [];
+
+                while ($row = $result->fetch_assoc()) {
+                    $data[] = $row;
+                }
+
+                return $data;
+            }
+
+            return [];
+    }
+
+
+
+
+
+
+
+
+    public function fetch_all_item_cart($user_id)
+    {   
+            $query = $this->conn->prepare("
+                SELECT * FROM item_cart
+                LEFT JOIN product
+                ON product.prod_id = item_cart.item_prod_id 
+                WHERE item_user_id = ?
+                ORDER BY item_id DESC
+            ");
+
+            $query->bind_param("i", $user_id);
+
+            if ($query->execute()) {
+                $result = $query->get_result();
+                $data = [];
+
+                while ($row = $result->fetch_assoc()) {
+                    $data[] = $row;
+                }
+
+                return $data;
+            }
+
+            return [];
+    }
+
+
+
+
+    public function fetch_total_cart($user_id)
+    {
+        $total = 0;
+
+        // Fetch service cart
+        $services = $this->fetch_all_service_cart($user_id);
+        foreach ($services as $service) {
+            $total += floatval($service['service_price']);
+        }
+
+        // Fetch item cart
+        $items = $this->fetch_all_item_cart($user_id);
+        foreach ($items as $item) {
+            $total += floatval($item['prod_price']) * intval($item['item_qty']); 
+        }
+
+        return $total;
+    }
 
 
 
