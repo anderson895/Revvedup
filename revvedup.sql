@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 26, 2025 at 06:34 PM
+-- Generation Time: Sep 27, 2025 at 07:37 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -66,6 +66,7 @@ CREATE TABLE `item_cart` (
 CREATE TABLE `product` (
   `prod_id` int(11) NOT NULL,
   `prod_name` varchar(60) NOT NULL,
+  `prod_capital` decimal(10,2) NOT NULL,
   `prod_price` decimal(10,2) NOT NULL,
   `prod_qty` int(11) NOT NULL,
   `prod_img` varchar(255) NOT NULL,
@@ -76,11 +77,12 @@ CREATE TABLE `product` (
 -- Dumping data for table `product`
 --
 
-INSERT INTO `product` (`prod_id`, `prod_name`, `prod_price`, `prod_qty`, `prod_img`, `prod_status`) VALUES
-(3, 'product 2', 11.00, 211, 'item_68d60b3664f741.76866050.png', 1),
-(4, 'product 1', 150.00, 100, 'item_68d6430495df58.36133211.jpg', 1),
-(5, 'product 3', 300.00, 78, 'item_68d643420bba08.70461903.jpg', 1),
-(6, 'product 6', 55.00, 66, 'item_68d665eca329d5.22334298.jpg', 1);
+INSERT INTO `product` (`prod_id`, `prod_name`, `prod_capital`, `prod_price`, `prod_qty`, `prod_img`, `prod_status`) VALUES
+(3, 'product 2', 5.00, 11.00, 210, 'item_68d60b3664f741.76866050.png', 1),
+(4, 'product 1', 130.00, 150.00, 95, 'item_68d6430495df58.36133211.jpg', 1),
+(5, 'product 3', 280.00, 300.00, 70, 'item_68d643420bba08.70461903.jpg', 1),
+(6, 'product 6', 50.00, 55.00, 60, 'item_68d665eca329d5.22334298.jpg', 1),
+(7, 'test', 500.00, 600.00, 100, 'item_68d776d7db06b6.21276657.jpg', 1);
 
 -- --------------------------------------------------------
 
@@ -127,7 +129,15 @@ INSERT INTO `transaction` (`transaction_id`, `transaction_date`, `transaction_se
 (23, '2025-09-26 15:20:25', '[{\"name\":\"car wash\",\"price\":\"50\",\"emp_id\":\"3\"},{\"name\":\"change oil\",\"price\":\"100\",\"emp_id\":\"3\"},{\"name\":\"change all\",\"price\":\"100\",\"emp_id\":\"4\"}]', '[{\"prod_id\":\"3\",\"name\":\"product 2\",\"qty\":\"1\",\"subtotal\":\"11\"},{\"prod_id\":\"5\",\"name\":\"product 3\",\"qty\":\"3\",\"subtotal\":\"900\"}]', 0.00, 109.32, 1270.32, 0.00, 0.00, 1),
 (24, '2025-09-26 15:20:58', '[{\"name\":\"car wash\",\"price\":\"50\",\"emp_id\":\"3\"},{\"name\":\"change oil\",\"price\":\"100\",\"emp_id\":\"3\"},{\"name\":\"change all\",\"price\":\"100\",\"emp_id\":\"4\"}]', '[{\"prod_id\":\"3\",\"name\":\"product 2\",\"qty\":\"1\",\"subtotal\":\"11\"},{\"prod_id\":\"5\",\"name\":\"product 3\",\"qty\":\"3\",\"subtotal\":\"900\"}]', 0.00, 109.32, 1270.32, 10000.00, 8729.68, 1),
 (25, '2025-09-26 15:24:01', '[{\"service_id\":\"12\",\"name\":\"car wash\",\"price\":\"50\",\"emp_id\":\"3\"},{\"service_id\":\"11\",\"name\":\"change oil\",\"price\":\"100\",\"emp_id\":\"3\"},{\"service_id\":\"10\",\"name\":\"change all\",\"price\":\"100\",\"emp_id\":\"4\"}]', '[{\"item_id\":\"13\",\"prod_id\":\"3\",\"name\":\"product 2\",\"qty\":\"1\",\"subtotal\":\"11\"},{\"item_id\":\"12\",\"prod_id\":\"5\",\"name\":\"product 3\",\"qty\":\"3\",\"subtotal\":\"900\"}]', 0.00, 109.32, 1270.32, 10000.00, 8729.68, 1),
-(26, '2025-09-26 16:07:42', '[{\"service_id\":\"17\",\"name\":\"parking\",\"price\":\"50\",\"emp_id\":\"1\"},{\"service_id\":\"16\",\"name\":\"painting\",\"price\":\"100\",\"emp_id\":\"1\"},{\"service_id\":\"18\",\"name\":\"washing\",\"price\":\"50\",\"emp_id\":\"3\"}]', '[{\"item_id\":\"15\",\"prod_id\":\"3\",\"name\":\"product 2\",\"qty\":\"1\",\"subtotal\":\"11\"},{\"item_id\":\"14\",\"prod_id\":\"5\",\"name\":\"product 3\",\"qty\":\"1\",\"subtotal\":\"300\"}]', 0.00, 37.32, 548.32, 800.00, 251.68, 1);
+(26, '2025-09-26 16:07:42', '[{\"service_id\":\"17\",\"name\":\"parking\",\"price\":\"50\",\"emp_id\":\"1\"},{\"service_id\":\"16\",\"name\":\"painting\",\"price\":\"100\",\"emp_id\":\"1\"},{\"service_id\":\"18\",\"name\":\"washing\",\"price\":\"50\",\"emp_id\":\"3\"}]', '[{\"item_id\":\"15\",\"prod_id\":\"3\",\"name\":\"product 2\",\"qty\":\"1\",\"subtotal\":\"11\"},{\"item_id\":\"14\",\"prod_id\":\"5\",\"name\":\"product 3\",\"qty\":\"1\",\"subtotal\":\"300\"}]', 0.00, 37.32, 548.32, 800.00, 251.68, 1),
+(27, '2025-09-27 00:09:35', '[{\"service_id\":\"21\",\"name\":\"gear oil\",\"price\":\"99\",\"emp_id\":\"1\"},{\"service_id\":\"20\",\"name\":\"car wash\",\"price\":\"50\",\"emp_id\":\"2\"},{\"service_id\":\"19\",\"name\":\"change oil\",\"price\":\"100\",\"emp_id\":\"2\"}]', '[{\"item_id\":\"17\",\"prod_id\":\"5\",\"name\":\"product 3\",\"qty\":\"8\",\"subtotal\":\"2400\"},{\"item_id\":\"16\",\"prod_id\":\"4\",\"name\":\"product 1\",\"qty\":\"1\",\"subtotal\":\"150\"}]', 0.00, 306.00, 3105.00, 10000.00, 6895.00, 1),
+(28, '2025-09-27 00:12:12', '[{\"service_id\":\"22\",\"name\":\"service 1\",\"price\":\"999\",\"emp_id\":\"2\"}]', '[{\"item_id\":\"21\",\"prod_id\":\"3\",\"name\":\"product 2\",\"qty\":\"1\",\"subtotal\":\"11\"},{\"item_id\":\"19\",\"prod_id\":\"4\",\"name\":\"product 1\",\"qty\":\"1\",\"subtotal\":\"150\"}]', 0.00, 19.32, 1179.32, 1200.00, 20.68, 1),
+(29, '2025-09-27 00:15:18', '[]', '[{\"item_id\":\"22\",\"prod_id\":\"4\",\"name\":\"product 1\",\"qty\":\"1\",\"subtotal\":\"150\"}]', 0.00, 18.00, 168.00, 1000.00, 832.00, 1),
+(30, '2025-09-27 00:16:35', '[]', '[{\"item_id\":\"23\",\"prod_id\":\"4\",\"name\":\"product 1\",\"qty\":\"1\",\"subtotal\":\"150\"}]', 0.00, 18.00, 168.00, 200.00, 32.00, 1),
+(31, '2025-09-27 00:16:54', '[]', '[{\"item_id\":\"24\",\"prod_id\":\"4\",\"name\":\"product 1\",\"qty\":\"1\",\"subtotal\":\"150\"}]', 0.00, 18.00, 168.00, 200.00, 32.00, 1),
+(32, '2025-09-27 00:17:43', '[]', '[{\"item_id\":\"25\",\"prod_id\":\"6\",\"name\":\"product 6\",\"qty\":\"66\",\"subtotal\":\"3630\"}]', 0.00, 435.60, 4065.60, 5000.00, 934.40, 1),
+(33, '2025-09-27 00:18:50', '[]', '[{\"item_id\":\"26\",\"prod_id\":\"6\",\"name\":\"product 6\",\"qty\":\"6\",\"subtotal\":\"330\"}]', 0.00, 39.60, 369.60, 400.00, 30.40, 1),
+(34, '2025-09-27 00:25:19', '[{\"service_id\":\"23\",\"name\":\"change oil\",\"price\":\"50\",\"emp_id\":\"4\"}]', '[]', 0.00, 0.00, 50.00, 100.00, 50.00, 1);
 
 -- --------------------------------------------------------
 
@@ -210,25 +220,25 @@ ALTER TABLE `employee`
 -- AUTO_INCREMENT for table `item_cart`
 --
 ALTER TABLE `item_cart`
-  MODIFY `item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
 
 --
 -- AUTO_INCREMENT for table `product`
 --
 ALTER TABLE `product`
-  MODIFY `prod_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `prod_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `service_cart`
 --
 ALTER TABLE `service_cart`
-  MODIFY `service_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+  MODIFY `service_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
 
 --
 -- AUTO_INCREMENT for table `transaction`
 --
 ALTER TABLE `transaction`
-  MODIFY `transaction_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
+  MODIFY `transaction_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
 
 --
 -- AUTO_INCREMENT for table `user`

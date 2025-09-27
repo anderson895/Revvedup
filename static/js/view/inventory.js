@@ -150,6 +150,7 @@ $("#frmAddProduct").submit(function (e) {
                                     class="w-8 h-8 object-cover rounded" />
                                 <span>${data.prod_name}</span>
                             </td>
+                            <td class="px-4 py-2">₱ ${data.prod_capital}</td>
                             <td class="px-4 py-2">₱ ${data.prod_price}</td>
                             <td class="px-4 py-2">${data.prod_qty}</td>
                             <td class="px-4 py-2">Fast Moving <br>(Pending functionalities)</td>
@@ -167,6 +168,7 @@ $("#frmAddProduct").submit(function (e) {
                                 <button class="updateBtn text-gray-700 hover:text-blue-600"
                                 data-prod_id ='${data.prod_id}'
                                 data-prod_name='${data.prod_name}'
+                                data-prod_capital='${data.prod_capital}'
                                 data-prod_price='${data.prod_price}'
                                 data-prod_qty='${data.prod_qty}'
                                 >
@@ -230,12 +232,14 @@ $(document).on("click", ".updateBtn", function () {
 
   const prod_id = $(this).data("prod_id");
   const prod_name = $(this).data("prod_name");
+  const prod_capital = $(this).data("prod_capital");
   const prod_price = $(this).data("prod_price");
   const prod_qty = $(this).data("prod_qty");
 
 
   $("#productId").val(prod_id);
   $("#itemNameUpdate").val(prod_name);
+  $("#capitalUpdate").val(prod_capital);
   $("#priceUpdate").val(prod_price);
   $("#stockQtyUpdate").val(prod_qty);
 

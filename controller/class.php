@@ -392,6 +392,7 @@ public function count_transactions($filter = "") {
 public function UpdateProduct(
     $productId,
     $itemName,
+    $capital,
     $price,
     $stockQty,
     $uniqueBannerFileName = null
@@ -414,9 +415,9 @@ public function UpdateProduct(
     }
 
     // Build query
-    $query = "UPDATE product SET prod_name = ?, prod_price = ?, prod_qty = ?";
-    $types = "sdi"; // s = string, d = double, i = integer
-    $params = [$itemName, $price, $stockQty];
+    $query = "UPDATE product SET prod_name = ?,prod_capital=?, prod_price = ?, prod_qty = ?";
+    $types = "sddi"; // s = string, d = double, i = integer
+    $params = [$itemName,$capital, $price, $stockQty];
 
     if (!empty($uniqueBannerFileName)) {
         $query .= ", prod_img = ?";
@@ -612,14 +613,14 @@ public function removeProduct($prod_id) {
 
 
 
-    public function AddProduct($itemName, $price, $stockQty, $itemImageFileName) {
+    public function AddProduct($itemName, $capital,$price, $stockQty, $itemImageFileName) {
         $query = "INSERT INTO `product` 
-                (`prod_name`, `prod_price`, `prod_qty`, `prod_img`) 
-                VALUES (?, ?, ?, ?)";
+                (`prod_name`,`prod_capital`, `prod_price`, `prod_qty`, `prod_img`) 
+                VALUES (?,?,?,?,?)";
 
         $stmt = $this->conn->prepare($query);
 
-        $stmt->bind_param("sdis", $itemName, $price, $stockQty, $itemImageFileName);
+        $stmt->bind_param("sddis", $itemName,$capital,$price, $stockQty, $itemImageFileName);
 
         $result = $stmt->execute();
 

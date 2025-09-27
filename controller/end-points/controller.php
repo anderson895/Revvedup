@@ -124,6 +124,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }else if ($_POST['requestType'] == 'UpdateProduct') {
            $productId = $_POST['productId'];
             $itemName = $_POST['itemName'];
+            $capital = $_POST['capital'];
             $price = $_POST['price'];
             $stockQty = $_POST['stockQty'];
 
@@ -141,6 +142,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $result = $db->UpdateProduct(
                 $productId,
                 $itemName,
+                $capital,
                 $price,
                 $stockQty,
                 $uniqueBannerFileName 
@@ -162,6 +164,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }else if ($_POST['requestType'] == 'AddProduct') {
 
                 $itemName  = $_POST['itemName'];
+                $capital  = $_POST['capital'];
                 $price     = $_POST['price'];
                 $stockQty  = $_POST['stockQty'];
 
@@ -196,6 +199,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 $result = $db->AddProduct(
                     $itemName,
+                    $capital,
                     $price,
                     $stockQty,
                     $itemImageFileName 

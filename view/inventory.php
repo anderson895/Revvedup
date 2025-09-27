@@ -48,6 +48,7 @@ include "../src/components/view/header.php";
             <tr>
               <th class="px-4 py-2 text-left text-sm font-medium text-gray-600">Item ID</th>
               <th class="px-4 py-2 text-left text-sm font-medium text-gray-600">Item Name</th>
+              <th class="px-4 py-2 text-left text-sm font-medium text-gray-600">Capital</th>
               <th class="px-4 py-2 text-left text-sm font-medium text-gray-600">Unit Price</th>
               <th class="px-4 py-2 text-left text-sm font-medium text-gray-600">Qty.</th>
               <th class="px-4 py-2 text-left text-sm font-medium text-gray-600">Sales Speed</th>
@@ -56,27 +57,7 @@ include "../src/components/view/header.php";
             </tr>
           </thead>
           <tbody id="productTableBody" class="divide-y">
-            <!-- Sample Row 1 -->
-            <!-- 
-            <tr>
-              <td class="px-4 py-2">ID001</td>
-              <td class="px-4 py-2">ItemName_1</td>
-              <td class="px-4 py-2">₱ 0.00</td>
-              <td class="px-4 py-2">50</td>
-              <td class="px-4 py-2">Fast Moving</td>
-              <td class="px-4 py-2">
-                <span class="inline-block w-3 h-3 rounded-full bg-green-600"></span>
-              </td>
-              <td class="px-4 py-2 flex justify-center space-x-2">
-                <button class="text-gray-700 hover:text-blue-600">
-                  <span class="material-icons text-sm">edit</span>
-                </button>
-                <button class="text-gray-700 hover:text-red-600">
-                  <span class="material-icons text-sm">delete</span>
-                </button>
-              </td>
-            </tr> -->
-
+            <!-- DYNAMIC PART -->
           </tbody>
         </table>
       </div>
@@ -123,8 +104,6 @@ include "../src/components/view/header.php";
 
 
 
-
-
 <!-- Modal Background -->
 <div id="addProductModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm" style="display:none;">
   <!-- Modal Content -->
@@ -134,47 +113,94 @@ include "../src/components/view/header.php";
     <h2 class="text-2xl italic text-center mb-8">Add New Item</h2>
 
     <!-- Form -->
-    <form id="frmAddProduct" class="grid grid-cols-3 gap-4 items-center" enctype="multipart/form-data">
-      <!-- Item Name -->
-      <input 
-        type="text" 
-        placeholder="Item name" 
-        id="itemName"
-        name="itemName"
-        class="border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-900 col-span-1"
-      >
+    <form id="frmAddProduct" class="space-y-4" enctype="multipart/form-data">
+      
+      <!-- One Row Inputs -->
+      <div class="grid grid-cols-4 gap-4">
 
-      <!-- Price -->
-      <div class="flex items-center border rounded px-3 py-2 col-span-1">
-        <span class="text-gray-500 mr-2">₱</span>
-        <input 
-          type="number" 
-          placeholder="00.00" 
-          id="price"
-          name="price"
-          class="w-full outline-none"
-          step="0.01"
-        >
+        <!-- Item Name -->
+        <div class="relative">
+          <input 
+            type="text" 
+            id="itemName"
+            name="itemName"
+            placeholder=" "
+            class="peer block w-full rounded-lg border border-gray-300 px-2.5 pb-2.5 pt-4 text-sm text-gray-900 bg-transparent focus:border-red-900 focus:ring-0 focus:outline-none"
+          />
+          <label for="itemName" 
+            class="absolute start-2.5 top-2 z-10 origin-[0] -translate-y-4 scale-75 transform bg-white px-1 text-sm text-gray-500 duration-300 
+            peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100
+            peer-focus:top-2 peer-focus:-translate-y-4 peer-focus:scale-75 peer-focus:text-red-900">
+            Item Name
+          </label>
+        </div>
+
+        <!-- Capital -->
+        <div class="relative">
+          <span class="absolute left-3 top-3 text-gray-500">₱</span>
+          <input 
+            type="number" 
+            id="capital"
+            name="capital"
+            step="0.01"
+            placeholder=" "
+            class="peer block w-full rounded-lg border border-gray-300 pl-7 pr-2 pb-2.5 pt-4 text-sm text-gray-900 bg-transparent focus:border-red-900 focus:ring-0 focus:outline-none"
+          />
+          <label for="capital" 
+            class="absolute left-7 top-2 z-10 origin-[0] -translate-y-4 scale-75 transform bg-white px-1 text-sm text-gray-500 duration-300 
+            peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100
+            peer-focus:top-2 peer-focus:-translate-y-4 peer-focus:scale-75 peer-focus:text-red-900">
+            Capital
+          </label>
+        </div>
+
+        <!-- Price -->
+        <div class="relative">
+          <span class="absolute left-3 top-3 text-gray-500">₱</span>
+          <input 
+            type="number" 
+            id="price"
+            name="price"
+            step="0.01"
+            placeholder=" "
+            class="peer block w-full rounded-lg border border-gray-300 pl-7 pr-2 pb-2.5 pt-4 text-sm text-gray-900 bg-transparent focus:border-red-900 focus:ring-0 focus:outline-none"
+          />
+          <label for="price" 
+            class="absolute left-7 top-2 z-10 origin-[0] -translate-y-4 scale-75 transform bg-white px-1 text-sm text-gray-500 duration-300 
+            peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100
+            peer-focus:top-2 peer-focus:-translate-y-4 peer-focus:scale-75 peer-focus:text-red-900">
+            Price
+          </label>
+        </div>
+
+        <!-- Stocks -->
+        <div class="relative">
+          <input 
+            type="number" 
+            id="stockQty"
+            name="stockQty"
+            placeholder=" "
+            class="peer block w-full rounded-lg border border-gray-300 px-2.5 pb-2.5 pt-4 text-sm text-gray-900 bg-transparent focus:border-red-900 focus:ring-0 focus:outline-none"
+          />
+          <label for="stockQty" 
+            class="absolute start-2.5 top-2 z-10 origin-[0] -translate-y-4 scale-75 transform bg-white px-1 text-sm text-gray-500 duration-300 
+            peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100
+            peer-focus:top-2 peer-focus:-translate-y-4 peer-focus:scale-75 peer-focus:text-red-900">
+            Stocks
+          </label>
+        </div>
+
       </div>
 
-      <!-- Stocks -->
-      <input 
-        type="number" 
-        placeholder="Stocks" 
-        id="stockQty"
-        name="stockQty"
-        class="border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-900 col-span-1"
-      >
-
       <!-- File Upload -->
-      <div class="col-span-3">
-        <label class="block mb-2 text-sm font-medium text-gray-700">Upload Image</label>
+      <div>
+        <label for="itemImage" class="block mb-2 text-sm font-medium text-gray-700">Upload Image</label>
         <input 
           type="file" 
           id="itemImage"
           name="itemImage"
           accept="image/*"
-          class="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-900"
+          class="block w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-0 focus:border-red-900"
         >
         <!-- Preview -->
         <img id="previewImage" class="mt-3 max-h-40 rounded shadow hidden" />
@@ -203,7 +229,6 @@ include "../src/components/view/header.php";
 
 
 
-
 <!-- Modal Background -->
 <div id="updateProductModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm" style="display:none;">
   <!-- Modal Content -->
@@ -213,56 +238,116 @@ include "../src/components/view/header.php";
     <h2 class="text-2xl italic text-center mb-8">Update Product</h2>
 
     <!-- Form -->
-    <form id="frmUpdateProduct" class="grid grid-cols-3 gap-4 items-center" enctype="multipart/form-data">
+    <form id="frmUpdateProduct" class="grid grid-cols-4 gap-4 items-center" enctype="multipart/form-data">
       
       <!-- Hidden Product ID -->
       <input type="hidden" id="productId" name="productId">
 
       <!-- Item Name -->
-      <input 
-        type="text" 
-        placeholder="Item name" 
-        id="itemNameUpdate"
-        name="itemName"
-        class="border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-900 col-span-1"
-      >
+      <div class="relative col-span-1">
+        <input 
+          type="text" 
+          id="itemNameUpdate"
+          name="itemName"
+          placeholder=" "
+          class="peer block w-full rounded-lg border border-gray-300 px-2.5 pb-2.5 pt-4 
+                 text-sm text-gray-900 bg-transparent focus:border-red-900 focus:ring-0 focus:outline-none"
+        />
+        <label for="itemNameUpdate" 
+          class="absolute start-2.5 top-2 z-10 origin-[0] -translate-y-4 scale-75 transform 
+                 bg-white px-1 text-sm text-gray-500 duration-300 
+                 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 
+                 peer-placeholder-shown:scale-100
+                 peer-focus:top-2 peer-focus:-translate-y-4 peer-focus:scale-75 
+                 peer-focus:text-red-900">
+          Item Name
+        </label>
+      </div>
 
-      <!-- Price -->
-      <div class="flex items-center border rounded px-3 py-2 col-span-1">
-        <span class="text-gray-500 mr-2">₱</span>
+      <!-- Capital -->
+      <div class="relative col-span-1">
+        <span class="absolute left-3 top-3 text-gray-500">₱</span>
         <input 
           type="number" 
-          placeholder="00.00" 
+          id="capitalUpdate"
+          name="capital"
+          step="0.01"
+          placeholder=" "
+          class="peer block w-full rounded-lg border border-gray-300 pl-7 pr-2 pb-2.5 pt-4 
+                 text-sm text-gray-900 bg-transparent focus:border-red-900 focus:ring-0 focus:outline-none"
+        />
+        <label for="capitalUpdate" 
+          class="absolute left-7 top-2 z-10 origin-[0] -translate-y-4 scale-75 transform 
+                 bg-white px-1 text-sm text-gray-500 duration-300 
+                 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 
+                 peer-placeholder-shown:scale-100
+                 peer-focus:top-2 peer-focus:-translate-y-4 peer-focus:scale-75 
+                 peer-focus:text-red-900">
+          Capital
+        </label>
+      </div>
+
+      <!-- Price -->
+      <div class="relative col-span-1">
+        <span class="absolute left-3 top-3 text-gray-500">₱</span>
+        <input 
+          type="number" 
           id="priceUpdate"
           name="price"
-          class="w-full outline-none"
           step="0.01"
-        >
+          placeholder=" "
+          class="peer block w-full rounded-lg border border-gray-300 pl-7 pr-2 pb-2.5 pt-4 
+                 text-sm text-gray-900 bg-transparent focus:border-red-900 focus:ring-0 focus:outline-none"
+        />
+        <label for="priceUpdate" 
+          class="absolute left-7 top-2 z-10 origin-[0] -translate-y-4 scale-75 transform 
+                 bg-white px-1 text-sm text-gray-500 duration-300 
+                 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 
+                 peer-placeholder-shown:scale-100
+                 peer-focus:top-2 peer-focus:-translate-y-4 peer-focus:scale-75 
+                 peer-focus:text-red-900">
+          Price
+        </label>
       </div>
 
       <!-- Stocks -->
-      <input 
-        type="number" 
-        placeholder="Stocks" 
-        id="stockQtyUpdate"
-        name="stockQty"
-        class="border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-900 col-span-1"
-      >
+      <div class="relative col-span-1">
+        <input 
+          type="number" 
+          id="stockQtyUpdate"
+          name="stockQty"
+          placeholder=" "
+          class="peer block w-full rounded-lg border border-gray-300 px-2.5 pb-2.5 pt-4 
+                 text-sm text-gray-900 bg-transparent focus:border-red-900 focus:ring-0 focus:outline-none"
+        />
+        <label for="stockQtyUpdate" 
+          class="absolute start-2.5 top-2 z-10 origin-[0] -translate-y-4 scale-75 transform 
+                 bg-white px-1 text-sm text-gray-500 duration-300 
+                 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 
+                 peer-placeholder-shown:scale-100
+                 peer-focus:top-2 peer-focus:-translate-y-4 peer-focus:scale-75 
+                 peer-focus:text-red-900">
+          Stocks
+        </label>
+      </div>
 
       <!-- File Upload -->
-      <div class="col-span-3">
-        <label class="block mb-2 text-sm font-medium text-gray-700">Upload Image</label>
+      <div class="col-span-4">
+        <label for="itemImageUpdate" class="block mb-2 text-sm font-medium text-gray-700">Upload Image</label>
         <input 
           type="file" 
           id="itemImageUpdate"
           name="itemImage"
           accept="image/*"
-          class="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-900"
+          class="block w-full border border-gray-300 rounded-lg px-3 py-2 text-sm 
+                 focus:outline-none focus:ring-0 focus:border-red-900"
         >
+        <!-- Preview -->
+        <img id="previewImageUpdate" class="mt-3 max-h-40 rounded shadow hidden" />
       </div>
 
-      <!-- Action Buttons (inside form) -->
-      <div class="flex justify-end mt-6 space-x-3 col-span-3">
+      <!-- Action Buttons -->
+      <div class="flex justify-end mt-6 space-x-3 col-span-4">
         <button 
           id="closeUpdateProductModal"
           type="button"
@@ -281,6 +366,7 @@ include "../src/components/view/header.php";
     </form>
   </div>
 </div>
+
 
 
 
