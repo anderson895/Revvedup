@@ -212,23 +212,50 @@ $('#BtnSubmit').click(function (e) {
     };
 
    $.ajax({
-        url: "../controller/end-points/controller.php",
-        method: "POST",
-        data: postData,
-        dataType: "json",
-        success: function (response) {
-            if(response.status === 200){
-                alertify.success("Transaction submitted successfully!");
-                closeTransactionSidebar();
-                location.reload
-            } else {
-                alertify.error(response.message || "Failed to submit transaction.");
+    url: "../controller/end-points/controller.php",
+    method: "POST",
+    data: postData,
+    dataType: "json",
+    success: function (response) {
+                if (response.status === 200) {
+                    Swal.fire({
+                        icon: "success",
+                        title: "Success!",
+                        text: "Transaction submitted successfully!",
+                        confirmButtonText: "OK"
+                    }).then(() => {
+
+                     
+
+                        if (response.transaction_id) {
+                            // Open receipt in new tab
+                            window.open(
+                                "receipt.php?transaction_id=" + response.transaction_id,
+                                "_blank"
+                            );
+
+                               // Reload current page
+                            location.reload();
+                        }
+                        
+                    });
+                } else {
+                    Swal.fire({
+                        icon: "error",
+                        title: "Error",
+                        text: response.message || "Failed to submit transaction."
+                    });
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error("Update error:", error);
+                Swal.fire({
+                    icon: "error",
+                    title: "Error",
+                    text: "Failed to update. Please try again."
+                });
             }
-        },
-        error: function (xhr, status, error) {
-            console.error("Update error:", error);
-            alertify.error("Failed to update. Please try again.");
-        }
-    });
+        });
+
 
 });

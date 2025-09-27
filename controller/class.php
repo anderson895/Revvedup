@@ -14,6 +14,68 @@ class global_class extends db_connect
     }
 
 
+    
+public function fetch_transaction_by_id($transactionId) {
+    $query = $this->conn->prepare("
+        SELECT *
+        FROM `transaction`
+        WHERE transaction_id = ? AND transaction_status = '1'
+        LIMIT 1
+    ");
+    $query->bind_param("i", $transactionId);
+
+    if ($query->execute()) {
+        $result = $query->get_result();
+
+        if ($result->num_rows === 0) {
+            return null; // walang transaction
+        }
+
+        $row = $result->fetch_assoc();
+
+        // Collect emp_ids from services
+        $services = json_decode($row['transaction_service'], true) ?? [];
+        $empIds = [];
+        foreach ($services as $s) {
+            if (!empty($s['emp_id'])) {
+                $empIds[] = (int)$s['emp_id'];
+            }
+        }
+
+        // Fetch employees
+        $employees = [];
+        if (!empty($empIds)) {
+            $ids = implode(',', array_unique($empIds));
+            $empQuery = $this->conn->prepare("SELECT emp_id, emp_fname, emp_lname FROM employee WHERE emp_id IN ($ids)");
+            $empQuery->execute();
+            $empRes = $empQuery->get_result();
+            while ($emp = $empRes->fetch_assoc()) {
+                $employees[$emp['emp_id']] = $emp['emp_fname'].' '.$emp['emp_lname'];
+            }
+        }
+
+        // Merge employee names into services
+        foreach ($services as &$s) {
+            $id = (int)$s['emp_id'];
+            $s['employee_name'] = $employees[$id] ?? "Unknown Employee #$id";
+        }
+
+        // Decode items as array din
+        $items = json_decode($row['transaction_item'], true) ?? [];
+
+        // I-return as array na may ready to use services & items
+        return [
+            "transaction" => $row,
+            "services"    => $services,
+            "items"       => $items
+        ];
+    }
+
+    return null;
+}
+
+
+
 
  public function Login_admin($username, $password)
 {
@@ -223,6 +285,8 @@ public function fetch_all_product() {
 
 
 
+
+
 public function fetch_all_transaction() {
     $query = $this->conn->prepare("
         SELECT *
@@ -273,6 +337,19 @@ public function fetch_all_transaction() {
     }
     return [];
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -583,7 +660,6 @@ public function removeProduct($prod_id) {
     }
 
 
-
 public function CheckOutOrder($services, $items, $discount, $vat, $grandTotal, $payment, $change, &$errorMsg = null) {
     $services_json = json_encode($services);
     $items_json = json_encode($items);
@@ -600,6 +676,10 @@ public function CheckOutOrder($services, $items, $discount, $vat, $grandTotal, $
 
         $stmt->bind_param("ssddddd", $services_json, $items_json, $discount, $vat, $grandTotal, $payment, $change);
         if (!$stmt->execute()) throw new Exception("Execute failed: " . $stmt->error);
+
+        // ✅ Get last inserted transaction_id
+        $transactionId = $this->conn->insert_id;
+
         $stmt->close();
 
         // 2️⃣ Deduct stock
@@ -662,7 +742,7 @@ public function CheckOutOrder($services, $items, $discount, $vat, $grandTotal, $
 
         // 5️⃣ Commit transaction
         $this->conn->commit();
-        return true;
+        return $transactionId; // ✅ return new transaction_id
 
     } catch (Exception $e) {
         $this->conn->rollback();
@@ -670,6 +750,7 @@ public function CheckOutOrder($services, $items, $discount, $vat, $grandTotal, $
         return false;
     }
 }
+
 
 
 

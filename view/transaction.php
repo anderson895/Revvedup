@@ -91,7 +91,6 @@ include "../src/components/view/header.php";
       </div>
 
       <!-- Body (Receipt Area for print) -->
-      <!-- Body (Receipt Area for print) -->
 <div id="printArea" class="p-4 text-xs sm:text-sm font-mono">
   
   <!-- Store Header -->
