@@ -386,7 +386,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 echo json_encode(['status'=>404,'message'=>'Item not found']);
             }
             exit;
+            
+        }else if ($_GET['requestType'] === 'fetch_analytics') {
+              $scope = $_GET['scope'] ?? "weekly"; // default weekly
+                $result = $db->fetch_analytics($scope); 
+
+                if ($result) {
+                    echo json_encode(['status'=>200,'data'=>$result]);
+                } else {
+                    echo json_encode(['status'=>404,'message'=>'Item not found']);
+                }
         }
+
 
 
     }else {

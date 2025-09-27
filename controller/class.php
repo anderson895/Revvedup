@@ -14,6 +14,100 @@ class global_class extends db_connect
     }
 
 
+public function fetch_analytics($scope = "weekly") {
+    $conn = $this->conn;
+    $analytics = [];
+
+    if ($scope === "weekly") {
+        // Get all weeks with transactions
+        $sql = "SELECT transaction_date, transaction_item
+                FROM transaction
+                WHERE transaction_status = 1
+                ORDER BY transaction_date ASC";
+    } elseif ($scope === "monthly") {
+        // Get all months with transactions
+        $sql = "SELECT transaction_date, transaction_item
+                FROM transaction
+                WHERE transaction_status = 1
+                ORDER BY transaction_date ASC";
+    } else {
+        $sql = "SELECT transaction_date, transaction_item
+                FROM transaction
+                WHERE transaction_status = 1
+                ORDER BY transaction_date ASC";
+    }
+
+    $result = mysqli_query($conn, $sql);
+    if (!$result) return [];
+
+    while ($row = mysqli_fetch_assoc($result)) {
+        $date = strtotime($row['transaction_date']);
+
+        if ($scope === "weekly") {
+            $year = date("o", $date); // ISO-8601 year
+            $week = date("W", $date);
+            $label = "Week {$week}, {$year}";
+        } elseif ($scope === "monthly") {
+            $label = date("M Y", $date);
+        } else {
+            $label = date("Y-m-d", $date);
+        }
+
+        $items = json_decode($row['transaction_item'], true);
+        if (!is_array($items)) continue;
+
+        foreach ($items as $it) {
+            $subtotal = (float)$it['subtotal'];
+            $capital = (float)$it['capital'];
+            $qty = (int)$it['qty'];
+            $capitalTotal = $capital * $qty;
+            $revenue = $subtotal - $capitalTotal;
+
+            if (!isset($analytics[$label])) {
+                $analytics[$label] = [
+                    "label" => $label,
+                    "total_sales" => 0,
+                    "capital_total" => 0,
+                    "revenue" => 0
+                ];
+            }
+
+            $analytics[$label]['total_sales'] += $subtotal;
+            $analytics[$label]['capital_total'] += $capitalTotal;
+            $analytics[$label]['revenue'] += $revenue;
+        }
+    }
+
+    return array_values($analytics);
+}
+
+
+
+public function fetch_months_with_sales() {
+    $conn = $this->conn;
+    $sql = "SELECT DISTINCT YEAR(transaction_date) as year, MONTH(transaction_date) as month,
+                   DATE_FORMAT(transaction_date, '%M %Y') as label
+            FROM transaction
+            WHERE transaction_status = 1
+            ORDER BY transaction_date ASC";
+    $result = mysqli_query($conn, $sql);
+    $months = [];
+
+    if($result && mysqli_num_rows($result) > 0){
+        while($row = mysqli_fetch_assoc($result)){
+            $months[] = $row;
+        }
+    }
+
+    return $months;
+}
+
+
+
+
+
+
+
     
 public function fetch_transaction_by_id($transactionId) {
     $query = $this->conn->prepare("
