@@ -155,6 +155,7 @@ $(document).on("input", "input[name=InputedDiscount], #paymentInput", function()
 });
 
 // --- SUBMIT TRANSACTION ---
+// --- SUBMIT TRANSACTION ---
 $('#BtnSubmit').click(function (e) { 
     e.preventDefault();
 
@@ -171,7 +172,6 @@ $('#BtnSubmit').click(function (e) {
                 price: servicePrice, 
                 emp_id: empId 
             });
-
         });
     });
 
@@ -181,16 +181,27 @@ $('#BtnSubmit').click(function (e) {
         let itemText = $(this).find("span:first").text();
         let [name, qty] = itemText.split(' x ');
         let subtotal = parseFloat($(this).find("span:last").text().replace('₱',''));
-        let prodId = $(this).data("prod-id"); // <-- include prod_id
+        let prodId = $(this).data("prod-id"); 
 
         itemsArray.push({ 
             item_id: $(this).data("item-id"),
-            prod_id: $(this).data("prod-id"), 
+            prod_id: prodId, 
             name: name.trim(), 
             qty: parseInt(qty), 
             subtotal: subtotal 
         });
     });
+
+    // ✅ Check if cart is empty
+    if (servicesArray.length === 0 && itemsArray.length === 0) {
+        Swal.fire({
+            icon: "warning",
+            title: "Empty Cart",
+            text: "Put cart first before submitting!",
+            confirmButtonText: "OK"
+        });
+        return; // stop execution
+    }
 
     // Collect other info
     let discount = parseFloat($("input[name=InputedDiscount]").val()) || 0;
@@ -211,51 +222,41 @@ $('#BtnSubmit').click(function (e) {
         change: change
     };
 
-   $.ajax({
-    url: "../controller/end-points/controller.php",
-    method: "POST",
-    data: postData,
-    dataType: "json",
-    success: function (response) {
-                if (response.status === 200) {
-                    Swal.fire({
-                        icon: "success",
-                        title: "Success!",
-                        text: "Transaction submitted successfully!",
-                        confirmButtonText: "OK"
-                    }).then(() => {
-
-                     
-
-                        if (response.transaction_id) {
-                            // Open receipt in new tab
-                            window.open(
-                                "receipt?transaction_id=" + response.transaction_id,
-                                "_blank"
-                            );
-
-                               // Reload current page
-                            window.location.href = 'sales';
-                        }
-                        
-                    });
-                } else {
-                    Swal.fire({
-                        icon: "error",
-                        title: "Error",
-                        text: response.message || "Failed to submit transaction."
-                    });
-                }
-            },
-            error: function (xhr, status, error) {
-                console.error("Update error:", error);
+    $.ajax({
+        url: "../controller/end-points/controller.php",
+        method: "POST",
+        data: postData,
+        dataType: "json",
+        success: function (response) {
+            if (response.status === 200) {
+                Swal.fire({
+                    icon: "success",
+                    title: "Success!",
+                    text: "Transaction submitted successfully!",
+                    confirmButtonText: "OK"
+                }).then(() => {
+                    if (response.transaction_id) {
+                        // Open receipt in new tab
+                        window.open("receipt?transaction_id=" + response.transaction_id, "_blank");
+                        // Reload current page
+                        window.location.href = 'sales';
+                    }
+                });
+            } else {
                 Swal.fire({
                     icon: "error",
                     title: "Error",
-                    text: "Failed to update. Please try again."
+                    text: response.message || "Failed to submit transaction."
                 });
             }
-        });
-
-
+        },
+        error: function (xhr, status, error) {
+            console.error("Update error:", error);
+            Swal.fire({
+                icon: "error",
+                title: "Error",
+                text: "Failed to update. Please try again."
+            });
+        }
+    });
 });

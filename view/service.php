@@ -72,7 +72,7 @@ include "../src/components/view/header.php";
   <!-- Footer -->
   <footer class="flex flex-col sm:flex-row gap-3 justify-between items-stretch sm:items-center bg-white border-t px-4 py-3">
     <!-- Proceed Button -->
-    <button class="proceedToPayBtn flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 text-white px-5 py-2.5 rounded-lg shadow-md font-medium transition duration-200 ease-in-out w-full sm:w-auto">
+    <button class="proceedToPayBtn cursor-pointer flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 text-white px-5 py-2.5 rounded-lg shadow-md font-medium transition duration-200 ease-in-out w-full sm:w-auto">
       <span class="material-icons text-base">payment</span>
       Proceed to Payment
     </button>
@@ -243,7 +243,7 @@ include "../src/components/view/header.php";
     <!-- Action Buttons -->
     <div class="mt-5 flex gap-3">
       <button type="button" id="BtnSubmit" 
-              class="flex-1 bg-red-900 text-white py-2 rounded-xl hover:bg-red-700 transition">
+              class="flex-1 bg-red-900 text-white py-2 rounded-xl hover:bg-red-700 transition cursor-pointer">
         Complete Transaction
       </button>
       <button type="button" 
