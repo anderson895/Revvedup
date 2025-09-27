@@ -21,15 +21,22 @@ include "../src/components/view/header.php";
 
   <!-- Chart Card -->
   <div class="bg-white rounded-lg shadow-md p-6">
-    <div class="flex justify-between items-center mb-2">
+   <div class="flex justify-between items-center mb-2">
       <h2 id="chartTitle" class="text-center text-sm text-red-900 font-semibold w-full">
         Product Sales
       </h2>
-      <button id="revenueBtn" 
-        class="bg-gray-300 text-black font-semibold text-sm px-4 py-2 rounded min-w-[220px] whitespace-nowrap hover:bg-gray-400 transition">
-        Total Sales & Revenue
-      </button>
+      <div class="flex gap-2">
+        <button id="revenueBtn" 
+          class="bg-gray-300 text-black font-semibold text-sm px-4 py-2 rounded min-w-[220px] whitespace-nowrap hover:bg-gray-400 transition">
+          Total Sales & Revenue
+        </button>
+        <button id="printBtn" 
+          class="bg-red-900 text-white font-semibold text-sm px-4 py-2 rounded hover:bg-red-700 transition">
+          Print Report
+        </button>
+      </div>
     </div>
+
 
     <div id="salesChart"></div>
 
@@ -49,6 +56,15 @@ include "../src/components/view/header.php";
     </div>
   </div>
 </section>
+
+
+
+
+
+
+
+
+
 
 <footer class="flex flex-col sm:flex-row gap-3 justify-between items-stretch sm:items-center bg-white border-t px-4 py-3"></footer>
 <br class="block sm:hidden">
@@ -173,4 +189,71 @@ $(document).ready(()=>{
     initChart();
     loadAnalytics("weekly", "sales");
 });
+
+
+
+
+$("#printBtn").click(() => {
+    const title = document.querySelector("#chartTitle").innerText;
+
+    // Kunin ang data para sa table
+    let timeButtons = document.querySelectorAll("#timeButtons .timeBtn");
+    let info1 = document.querySelector("#infoValue1").innerText;
+    let info2Visible = !document.querySelector("#infoBox2").classList.contains("hidden");
+    let info2 = document.querySelector("#infoValue2").innerText;
+
+    // Build HTML table
+    let tableHTML = `
+        <table border="1" cellspacing="0" cellpadding="8" style="width:100%; border-collapse: collapse; text-align:center;">
+            <thead>
+                <tr style="background:#991b1b; color:white;">
+                    <th>${currentScope === 'weekly' ? 'Week' : 'Month'}</th>
+                    <th>Sales</th>
+                    ${info2Visible ? '<th>Revenue</th>' : ''}
+                </tr>
+            </thead>
+            <tbody>
+    `;
+
+    timeButtons.forEach(btn => {
+        let label = btn.dataset.label;
+        // Kunin sales value mula sa chart data (kung available)
+        let salesValue = info1; // pwede palitan kung per week/month value available
+        let revenueValue = info2Visible ? info2 : '';
+        tableHTML += `<tr>
+            <td>${label}</td>
+            <td>${salesValue}</td>
+            ${info2Visible ? `<td>${revenueValue}</td>` : ''}
+        </tr>`;
+    });
+
+    tableHTML += `</tbody></table>`;
+
+    // Print
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(`
+        <html>
+        <head>
+            <title>${title}</title>
+            <style>
+                body { font-family: Arial, sans-serif; padding: 20px; }
+                h1 { text-align: center; color: #991b1b; margin-bottom: 20px; }
+                table th, table td { padding: 10px; }
+            </style>
+        </head>
+        <body>
+            <h1>${title}</h1>
+            ${tableHTML}
+        </body>
+        </html>
+    `);
+    printWindow.document.close();
+    printWindow.focus();
+    printWindow.print();
+});
+
+
+
+
+
 </script>
