@@ -71,7 +71,7 @@ function renderTable(data) {
 
     $(".view-btn").on("click", function () {
         const transactionId = $(this).data("id");
-        window.open(`receipt.php?transaction_id=${transactionId}`, "_blank");
+        window.open(`receipt?transaction_id=${transactionId}`, "_blank");
     });
 }
 

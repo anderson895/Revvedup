@@ -230,7 +230,7 @@ $('#BtnSubmit').click(function (e) {
                         if (response.transaction_id) {
                             // Open receipt in new tab
                             window.open(
-                                "receipt.php?transaction_id=" + response.transaction_id,
+                                "receipt?transaction_id=" + response.transaction_id,
                                 "_blank"
                             );
 

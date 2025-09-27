@@ -41,7 +41,7 @@ $authorize = (strtolower($On_Session['position']) !== "admin") ? "hidden" : "";
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
 
-
+  <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
    <!-- Select2 CSS -->
   <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 
