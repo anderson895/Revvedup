@@ -82,12 +82,16 @@ function openTransactionModal() {
                     itemList.append(`
                         <div class="flex justify-between" 
                             data-item-id="${i.item_id}" 
-                            data-prod-id="${i.prod_id}">
+                            data-prod-id="${i.prod_id}"
+                            data-prod-capital="${i.prod_capital}">
                             <span>${i.prod_name} x ${i.item_qty}</span>
-                            <span>₱${(parseFloat(i.prod_price)*i.item_qty).toFixed(2)}</span>
+                            <span>₱${(parseFloat(i.prod_price) * i.item_qty).toFixed(2)}</span>
                         </div>
                     `);
                 });
+                itemContainer.append(itemList);
+                serviceContainer.after(itemContainer);
+
                 itemContainer.append(itemList);
                 serviceContainer.after(itemContainer);
 
@@ -154,7 +158,7 @@ $(document).on("input", "input[name=InputedDiscount], #paymentInput", function()
     updateComputation();
 });
 
-// --- SUBMIT TRANSACTION ---
+
 // --- SUBMIT TRANSACTION ---
 $('#BtnSubmit').click(function (e) { 
     e.preventDefault();
@@ -182,15 +186,18 @@ $('#BtnSubmit').click(function (e) {
         let [name, qty] = itemText.split(' x ');
         let subtotal = parseFloat($(this).find("span:last").text().replace('₱',''));
         let prodId = $(this).data("prod-id"); 
+        let prodCapital = parseFloat($(this).data("prod-capital"));
 
         itemsArray.push({ 
             item_id: $(this).data("item-id"),
             prod_id: prodId, 
             name: name.trim(), 
             qty: parseInt(qty), 
-            subtotal: subtotal 
+            subtotal: subtotal,
+            capital: prodCapital
         });
     });
+
 
     // ✅ Check if cart is empty
     if (servicesArray.length === 0 && itemsArray.length === 0) {
