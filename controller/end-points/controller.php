@@ -315,11 +315,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'data' => $result
             ]);
         }else if ($_GET['requestType'] == 'fetch_all_transaction') {
-            $result = $db->fetch_all_transaction();
+            $page  = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+            $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 10;
+            $filter = isset($_GET['filter']) ? $_GET['filter'] : "";
+            $offset = ($page - 1) * $limit;
+
+            $transactions = $db->fetch_all_transaction($limit, $offset, $filter);
+            $totalRows = $db->count_transactions($filter);
+
             echo json_encode([
                 'status' => 200,
-                'data' => $result
+                'data' => [
+                    'transactions' => $transactions,
+                    'totalRows' => $totalRows
+                ]
             ]);
+
+
         }else if ($_GET['requestType'] == 'fetch_all_employee') {
             $result = $db->fetch_all_employee();
             echo json_encode([

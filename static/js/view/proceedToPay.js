@@ -235,7 +235,7 @@ $('#BtnSubmit').click(function (e) {
                             );
 
                                // Reload current page
-                            location.reload();
+                            window.location.href = 'sales';
                         }
                         
                     });

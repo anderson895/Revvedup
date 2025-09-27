@@ -286,57 +286,81 @@ public function fetch_all_product() {
 
 
 
-
-public function fetch_all_transaction() {
-    $query = $this->conn->prepare("
+public function fetch_all_transaction($limit = 10, $offset = 0, $filter = "") {
+    $sql = "
         SELECT *
         FROM `transaction`
         WHERE transaction_status='1'
-        ORDER BY transaction_id DESC
-    ");
+    ";
 
-    if ($query->execute()) {
+    $params = [];
+    if(!empty($filter)) {
+        $sql .= " AND transaction_id LIKE ?";
+        $params[] = "%$filter%";
+    }
+
+    $sql .= " ORDER BY transaction_id DESC";
+    
+    $query = $this->conn->prepare($sql);
+
+    if($query->execute($params)) {
         $result = $query->get_result();
-        $data = [];
+        $allData = [];
         $empIds = [];
 
-        // 1. Collect transactions + emp_ids from JSON
-        while ($row = $result->fetch_assoc()) {
+        while($row = $result->fetch_assoc()) {
             $services = json_decode($row['transaction_service'], true) ?? [];
-            foreach ($services as $s) {
-                if (!empty($s['emp_id'])) {
-                    $empIds[] = (int)$s['emp_id'];
-                }
+            foreach($services as $s) {
+                if(!empty($s['emp_id'])) $empIds[] = (int)$s['emp_id'];
             }
-            $data[] = $row;
+            $allData[] = $row;
         }
 
-        // 2. Fetch employees
+        // Fetch employee names
         $employees = [];
-        if (!empty($empIds)) {
+        if(!empty($empIds)) {
             $ids = implode(',', array_unique($empIds));
             $empQuery = $this->conn->prepare("SELECT emp_id, emp_fname, emp_lname FROM employee WHERE emp_id IN ($ids)");
             $empQuery->execute();
             $empRes = $empQuery->get_result();
-            while ($emp = $empRes->fetch_assoc()) {
+            while($emp = $empRes->fetch_assoc()) {
                 $employees[$emp['emp_id']] = $emp['emp_fname'].' '.$emp['emp_lname'];
             }
         }
 
-        // 3. Merge employee names into transaction_service
-        foreach ($data as &$row) {
+        // Merge employee names
+        foreach($allData as &$row) {
             $services = json_decode($row['transaction_service'], true) ?? [];
-            foreach ($services as &$s) {
+            foreach($services as &$s) {
                 $id = (int)$s['emp_id'];
                 $s['employee_name'] = $employees[$id] ?? "Unknown Employee #$id";
             }
-            $row['transaction_service'] = json_encode($services); // keep as JSON
+            $row['transaction_service'] = json_encode($services);
         }
 
-        return $data;
+        // Apply pagination AFTER merging employees
+        $paginatedData = array_slice($allData, $offset, $limit);
+
+        return $paginatedData;
     }
+
     return [];
 }
+
+
+public function count_transactions($filter = "") {
+    $sql = "SELECT COUNT(*) as total FROM `transaction` WHERE transaction_status='1'";
+    $params = [];
+    if(!empty($filter)) {
+        $sql .= " AND transaction_id LIKE ?";
+        $params[] = "%$filter%";
+    }
+    $stmt = $this->conn->prepare($sql);
+    $stmt->execute($params);
+    $res = $stmt->get_result()->fetch_assoc();
+    return $res['total'] ?? 0;
+}
+
 
 
 

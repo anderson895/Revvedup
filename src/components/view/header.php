@@ -69,11 +69,11 @@ $authorize = (strtolower($On_Session['position']) !== "admin") ? "hidden" : "";
 
     <!-- Menu Items (ilagay agad sa ilalim ng logo) -->
     <div class="flex flex-col space-y-2">
-      <a href="sales" class="flex justify-center w-full p-2 rounded-lg hover:bg-gray-200 hover:scale-105 transition duration-200">
-        <img src="../static/images/menus.png" alt="Sales">
+      <a href="dashboard" class="flex justify-center w-full p-2 rounded-lg hover:bg-gray-200 hover:scale-105 transition duration-200">
+        <img src="../static/images/menus.png" alt="dashboard">
       </a>
-      <a href="transaction" class="flex justify-center w-full p-2 rounded-lg hover:bg-gray-200 hover:scale-105 transition duration-200">
-        <img src="../static/images/transaction.png" alt="Transaction">
+      <a href="sales" class="flex justify-center w-full p-2 rounded-lg hover:bg-gray-200 hover:scale-105 transition duration-200">
+        <img src="../static/images/transaction.png" alt="sales">
       </a>
       <a href="inventory" class="flex justify-center w-full p-2 rounded-lg hover:bg-gray-200 hover:scale-105 transition duration-200">
         <img src="../static/images/inventory.png" alt="Inventory">
