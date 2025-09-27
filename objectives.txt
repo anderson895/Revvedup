@@ -6,7 +6,7 @@ pos (ADMIN) (EMPLOYEE)
 		-add VAT 12%
 	✔2. generate receipt (ADMIN) (EMPLOYEE)
 	✔3. record pdf report (weekly, monthly) and generate BAR GRAPH for Product sales and Total sales Revenue  (ADMIN)
-	4. record on transaction history (ADMIN)
+	✔4. record on transaction history (ADMIN)
    	5. Refund (ADMIN)
 		-set 7 days validity
 		-complete transactions
@@ -14,16 +14,16 @@ pos (ADMIN) (EMPLOYEE)
 		-exchange all
 
 inventory (ADMIN)
-	1.Item ID start 1
+	✔1.Item ID start 1
 	2.Sales feed 
 		-Slow moving (9pcs < per week)
 		-Fast Moving (10pcs > per week)
 	3.Status 
-		-10 > In stock
-		-10 < Low stock
-		-0 == NO stock
+	✔	-10 > In stock
+	✔	-10 < Low stock
+	✔	-0 == NO stock
 	4.Stock in
-		- Updating Qty
+	✔	- Updating Qty
 
 employee management (ADMIN)
 
