@@ -803,10 +803,7 @@ public function CheckOutOrder($services, $items, $discount, $vat, $grandTotal, $
         $transactionId = $this->conn->insert_id;
         $stmt->close();
 
-        // ✅ Insert sa weeks kung may service lang
-        if (is_array($services) && count($services) > 0) {
-            $this->InsertWeekForTransaction($transactionId);
-        }
+      
 
 
         // 2️⃣ Deduct stock
@@ -880,30 +877,6 @@ public function CheckOutOrder($services, $items, $discount, $vat, $grandTotal, $
 
 
 
-
-public function InsertWeekForTransaction($transactionId) {
-    try {
-        // insert into weeks table using transaction_date
-        $sqlWeek = "INSERT INTO weeks (week_number, week_transaction_id) 
-                    SELECT WEEKOFYEAR(transaction_date), transaction_id 
-                    FROM transaction 
-                    WHERE transaction_id = ?";
-        $stmtWeek = $this->conn->prepare($sqlWeek);
-        if (!$stmtWeek) {
-            throw new Exception("Prepare failed: " . $this->conn->error);
-        }
-
-        $stmtWeek->bind_param("i", $transactionId);
-        if (!$stmtWeek->execute()) {
-            throw new Exception("Execute failed: " . $stmtWeek->error);
-        }
-        $stmtWeek->close();
-        return true;
-
-    } catch (Exception $e) {
-        throw new Exception("InsertWeekForTransaction error: " . $e->getMessage());
-    }
-}
 
 
 
