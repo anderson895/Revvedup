@@ -41,15 +41,13 @@ $authorize = (strtolower($On_Session['position']) !== "admin") ? "hidden" : "";
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
 
-  <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+  <!-- <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>   -->
+ 
    <!-- Select2 CSS -->
-  <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-
-  <!-- jQuery (Required by Select2) -->
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <!-- <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" /> -->
 
   <!-- Select2 JS -->
-  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+  <!-- <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script> -->
 
 
 </head>
@@ -81,8 +79,8 @@ $authorize = (strtolower($On_Session['position']) !== "admin") ? "hidden" : "";
       <a href="analytics" class="flex justify-center w-full p-2 rounded-lg hover:bg-gray-200 hover:scale-105 transition duration-200">
         <img src="../static/images/analytics.png" alt="Analytics">
       </a>
-      <a href="team" class="flex justify-center w-full p-2 rounded-lg hover:bg-gray-200 hover:scale-105 transition duration-200 <?= $authorize ?>">
-        <img src="../static/images/team_management.png" alt="Team">
+      <a href="employee" class="flex justify-center w-full p-2 rounded-lg hover:bg-gray-200 hover:scale-105 transition duration-200 <?= $authorize ?>">
+        <img src="../static/images/team_management.png" alt="Employee">
       </a>
     </div>
   </div>
@@ -113,8 +111,8 @@ $authorize = (strtolower($On_Session['position']) !== "admin") ? "hidden" : "";
     <a href="analytics" class="p-2 rounded-lg hover:bg-gray-200 hover:scale-110 transition duration-200">
       <img src="../static/images/analytics.png" alt="Analytics" class="h-6">
     </a>
-    <a href="team" class="p-2 rounded-lg hover:bg-gray-200 hover:scale-110 transition duration-200 <?= $authorize ?>">
-      <img src="../static/images/team_management.png" alt="Team" class="h-6">
+    <a href="employee" class="p-2 rounded-lg hover:bg-gray-200 hover:scale-110 transition duration-200 <?= $authorize ?>">
+      <img src="../static/images/team_management.png" alt="Employee" class="h-6">
     </a>
   </nav>
 

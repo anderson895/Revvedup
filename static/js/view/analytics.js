@@ -1,0 +1,186 @@
+var currentScope = "weekly";
+var currentView = "sales";
+var chart;
+
+// Initialize ApexChart
+function initChart() {
+    var options = {
+        chart: { type: 'bar', height: 350, toolbar: { show: false } },
+        series: [{ name: 'Product Sales', data: [] }],
+        xaxis: { categories: [] },
+        colors: ['#9ca3af'],
+        plotOptions: { bar: { columnWidth: '50%', borderRadius: 5 } },
+        dataLabels: { enabled: false },
+        grid: { borderColor: '#e5e7eb' }
+    };
+    chart = new ApexCharts(document.querySelector("#salesChart"), options);
+    chart.render();
+}
+
+// Render weekly/monthly buttons dynamically
+function renderTimeButtons(data){
+    let html = '';
+    data.forEach(d => {
+        html += `<button class="timeBtn px-3 py-1 border rounded hover:bg-gray-200" data-label="${d.label}">
+                    ${d.label}
+                 </button>`;
+    });
+    $("#timeButtons").html(html);
+
+    $(".timeBtn").off("click").on("click", function(){
+        let label = $(this).data("label");
+        loadAnalytics(currentScope, currentView, label);
+    });
+}
+
+// Load analytics from API
+function loadAnalytics(scope, view="sales", filterLabel=null){
+    currentScope = scope;
+    currentView = view;
+
+    // show loader
+    $("#loader").css("display", "flex");
+
+    $.ajax({
+        url: "../controller/end-points/controller.php",
+        method: "GET",
+        data: { requestType: "fetch_analytics", scope: scope },
+        dataType: "json",
+        success: function(res){
+            if(!res || res.status !== 200 || !res.data) {
+                chart.updateSeries([{ name:'Product Sales', data: [] }]);
+                chart.updateOptions({ xaxis:{ categories: [] } });
+                $("#infoValue1").text("₱ 0.00");
+                $("#infoValue2").text("₱ 0.00");
+                $("#timeButtons").html('');
+            } else {
+                let data = res.data;
+
+                if(filterLabel){
+                    data = data.filter(d => d.label === filterLabel);
+                } else {
+                    renderTimeButtons(data);
+                }
+
+                let labels = data.map(d => d.label);
+                let sales = data.map(d => d.total_sales || 0);
+                let capital = data.map(d => d.capital_total || 0);
+                let revenue = data.map(d => d.revenue || 0);
+
+                if(view === "revenue"){
+                    $("#chartTitle").text("Total Sales, Capital & Revenue");
+                    $("#btnBackToSales").removeClass("hidden");
+
+                    chart.updateSeries([
+                        { name: 'Total Sales', data: sales },
+                        { name: 'Capital', data: capital },
+                        { name: 'Revenue', data: revenue }
+                    ]);
+
+                    chart.updateOptions({ xaxis:{ categories: labels }, colors: ['#9ca3af','#991b1b','#3a3a3aff'] });
+
+                    $("#infoLabel1").text("Total Sales");
+                    $("#infoValue1").text("₱ " + sales.reduce((a,b)=>a+Number(b),0).toLocaleString());
+                    $("#infoBox2").removeClass("hidden");
+                    $("#infoLabel2").text("Revenue");
+                    $("#infoValue2").text("₱ " + revenue.reduce((a,b)=>a+Number(b),0).toLocaleString());
+
+                } else {
+                    $("#chartTitle").text("Product Sales");
+                    $("#btnBackToSales").addClass("hidden");
+
+                    chart.updateSeries([{ name:'Product Sales', data: sales }]);
+                    chart.updateOptions({ xaxis:{ categories: labels }, colors:['#9ca3af'] });
+
+                    $("#infoLabel1").text("Product Sales");
+                    $("#infoValue1").text("₱ " + sales.reduce((a,b)=>a+Number(b),0).toLocaleString());
+                    $("#infoBox2").addClass("hidden");
+                }
+            }
+        },
+        error: function(err){ 
+            console.error(err); 
+        },
+        complete: function(){
+            // hide loader kapag tapos na kahit success or error
+            $("#loader").css("display", "none");
+        }
+    });
+}
+
+
+// Button bindings
+$("#weeklyBtn").click(()=> loadAnalytics("weekly", currentView));
+$("#monthlyBtn").click(()=> loadAnalytics("monthly", currentView));
+$("#revenueBtn").click(()=> loadAnalytics(currentScope, "revenue"));
+$("#btnBackToSales").click(()=> loadAnalytics(currentScope, "sales"));
+
+// Init
+$(document).ready(()=>{
+    initChart();
+    loadAnalytics("weekly", "sales");
+});
+
+
+
+
+$("#printBtn").click(() => {
+    const title = document.querySelector("#chartTitle").innerText;
+
+    // Kunin ang data para sa table
+    let timeButtons = document.querySelectorAll("#timeButtons .timeBtn");
+    let info1 = document.querySelector("#infoValue1").innerText;
+    let info2Visible = !document.querySelector("#infoBox2").classList.contains("hidden");
+    let info2 = document.querySelector("#infoValue2").innerText;
+
+    // Build HTML table
+    let tableHTML = `
+        <table border="1" cellspacing="0" cellpadding="8" style="width:100%; border-collapse: collapse; text-align:center;">
+            <thead>
+                <tr style="background:#991b1b; color:white;">
+                    <th>${currentScope === 'weekly' ? 'Week' : 'Month'}</th>
+                    <th>Sales</th>
+                    ${info2Visible ? '<th>Revenue</th>' : ''}
+                </tr>
+            </thead>
+            <tbody>
+    `;
+
+    timeButtons.forEach(btn => {
+        let label = btn.dataset.label;
+        // Kunin sales value mula sa chart data (kung available)
+        let salesValue = info1; // pwede palitan kung per week/month value available
+        let revenueValue = info2Visible ? info2 : '';
+        tableHTML += `<tr>
+            <td>${label}</td>
+            <td>${salesValue}</td>
+            ${info2Visible ? `<td>${revenueValue}</td>` : ''}
+        </tr>`;
+    });
+
+    tableHTML += `</tbody></table>`;
+
+    // Print
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(`
+        <html>
+        <head>
+            <title>${title}</title>
+            <style>
+                body { font-family: Arial, sans-serif; padding: 20px; }
+                h1 { text-align: center; color: #991b1b; margin-bottom: 20px; }
+                table th, table td { padding: 10px; }
+            </style>
+        </head>
+        <body>
+            <h1>${title}</h1>
+            ${tableHTML}
+        </body>
+        </html>
+    `);
+    printWindow.document.close();
+    printWindow.focus();
+    printWindow.print();
+});
+
+

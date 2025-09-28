@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "@tailwindcss/cli": "^4.1.13",
+    "apexcharts": "^5.3.5",
     "tailwindcss": "^4.1.13"
   }
 }
