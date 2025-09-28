@@ -12,16 +12,18 @@ include "../src/components/view/header.php";
     <h1 class="text-lg font-semibold">Employee Management</h1>
   </header>
 
-    <!-- Month Selector -->
-  <div class="flex items-center bg-white px-4 py-2">
-    <button class="material-icons text-gray-600 hover:text-gray-800 cursor-pointer" id="prevMonth">
-        chevron_left
-    </button>
-    <span class="mx-2 font-medium text-gray-700" id="monthLabel"></span>
-    <button class="material-icons text-gray-600 hover:text-gray-800 cursor-pointer" id="nextMonth">
-        chevron_right
-    </button>
-    </div>
+<!-- Month + Week Selector -->
+<div class="flex items-center bg-white px-4 py-2">
+  <button class="material-icons text-gray-600 hover:text-gray-800 cursor-pointer" id="prevWeek">
+    chevron_left
+  </button>
+  <span class="mx-2 font-medium text-gray-700" id="monthLabel"></span>
+  <span class="ml-2 text-sm text-gray-500" id="weekLabel"></span>
+  <button class="material-icons text-gray-600 hover:text-gray-800 cursor-pointer" id="nextWeek">
+    chevron_right
+  </button>
+</div>
+
 
 
 
@@ -29,21 +31,22 @@ include "../src/components/view/header.php";
   <div class="overflow-x-auto px-4 py-4">
     <table class="w-full text-sm text-gray-700 bg-white">
       <thead>
-        <tr class="bg-white ">
-          <th class="p-2 border text-left"> </th>
-          <th class="p-2 border text-center">Tue</th>
-          <th class="p-2 border text-center">Wed</th>
-          <th class="p-2 border text-center">Thu</th>
-          <th class="p-2 border text-center">Fri</th>
-          <th class="p-2 border text-center">Sat</th>
-          <th class="p-2 border text-center">Sun</th>
-          <th class="p-2 border text-center">Mon</th>
-          <th class="p-2 border text-center">Total Commission</th>
-          <th class="p-2 border text-center">Total Deductions</th>
-          <th class="p-2 border text-center">Overall TOTAL</th>
-          <th class="p-2 border text-center"> </th>
+        <tr class="bg-white">
+            <th class="p-2 border text-left"></th>
+            <th class="p-2 border text-center">Mon</th>
+            <th class="p-2 border text-center">Tue</th>
+            <th class="p-2 border text-center">Wed</th>
+            <th class="p-2 border text-center">Thu</th>
+            <th class="p-2 border text-center">Fri</th>
+            <th class="p-2 border text-center">Sat</th>
+            <th class="p-2 border text-center">Sun</th>
+            <th class="p-2 border text-center">Total Commission</th>
+            <th class="p-2 border text-center">Total Deductions</th>
+            <th class="p-2 border text-center">Overall TOTAL</th>
+            <th class="p-2 border text-center"></th>
         </tr>
-      </thead>
+        </thead>
+
       <tbody id="employeeTableBody">
 
         <!-- Dynamic Rows via jQuery -->
@@ -76,30 +79,49 @@ include "../src/components/view/footer.php";
 <script>
 $(document).ready(function(){
 
-  // --- Month / Year Selector ---
   const monthNames = [
     "January","February","March","April","May","June",
     "July","August","September","October","November","December"
   ];
 
-  let currentDate = new Date(); // ngayon
-  updateMonthLabel();
+  // set to today (Monday-Sunday aligned)
+  let currentDate = new Date();
+  alignToMonday(currentDate);
 
-  $("#prevMonth").click(function(){
-    currentDate.setMonth(currentDate.getMonth() - 1);
-    updateMonthLabel();
-  });
-
-  $("#nextMonth").click(function(){
-    currentDate.setMonth(currentDate.getMonth() + 1);
-    updateMonthLabel();
-  });
-
-  function updateMonthLabel(){
-    let month = monthNames[currentDate.getMonth()];
-    let year = currentDate.getFullYear();
-    $("#monthLabel").text(`${month} ${year}`);
+  function alignToMonday(date){
+    let day = date.getDay(); // 0=Sun ... 6=Sat
+    let diff = (day === 0 ? -6 : 1 - day); 
+    date.setDate(date.getDate() + diff);
   }
+
+  function updateLabels(){
+    let monday = new Date(currentDate);
+    let sunday = new Date(currentDate);
+    sunday.setDate(monday.getDate() + 6);
+
+    let month = monthNames[monday.getMonth()];
+    let year = monday.getFullYear();
+
+    // compute week number in month
+    let firstDayOfMonth = new Date(year, monday.getMonth(), 1);
+    let startOffset = (firstDayOfMonth.getDay() + 6) % 7;
+    let weekNumber = Math.ceil((monday.getDate() + startOffset) / 7);
+
+    $("#monthLabel").text(`${month} ${year}`);
+    $("#weekLabel").text(`( Week ${weekNumber} )`);
+  }
+
+  $("#prevWeek").click(function(){
+    currentDate.setDate(currentDate.getDate() - 7);
+    updateLabels();
+  });
+
+  $("#nextWeek").click(function(){
+    currentDate.setDate(currentDate.getDate() + 7);
+    updateLabels();
+  });
+
+  updateLabels();
 
   // --- Sample employee data ---
   let employees = [
@@ -124,8 +146,19 @@ $(document).ready(function(){
       let row = `<tr class="hover:bg-gray-50">
         <td class="p-2 border-r font-medium">${emp.name}</td>`;
 
-      emp.days.forEach((val,i)=>{
-        row += `<td class="p-2  text-center">${val}</td>`;
+      // reorder: Monday → Sunday
+      let reorderedDays = [
+        emp.days[6], // Mon
+        emp.days[0], // Tue
+        emp.days[1], // Wed
+        emp.days[2], // Thu
+        emp.days[3], // Fri
+        emp.days[4], // Sat
+        emp.days[5], // Sun
+      ];
+
+      reorderedDays.forEach((val,i)=>{
+        row += `<td class="p-2 text-center">${val}</td>`;
         colTotals[i]+=val;
       });
 
@@ -145,13 +178,13 @@ $(document).ready(function(){
     });
 
     // update footer totals
-    $("#colTue").text(colTotals[0]);
-    $("#colWed").text(colTotals[1]);
-    $("#colThu").text(colTotals[2]);
-    $("#colFri").text(colTotals[3]);
-    $("#colSat").text(colTotals[4]);
-    $("#colSun").text(colTotals[5]);
-    $("#colMon").text(colTotals[6]);
+    $("#colMon").text(colTotals[0]);
+    $("#colTue").text(colTotals[1]);
+    $("#colWed").text(colTotals[2]);
+    $("#colThu").text(colTotals[3]);
+    $("#colFri").text(colTotals[4]);
+    $("#colSat").text(colTotals[5]);
+    $("#colSun").text(colTotals[6]);
     $("#colCommission").text(totalCommission.toLocaleString());
     $("#colDeductions").text(totalDeductions.toLocaleString());
     $("#colOverall").text(totalOverall.toLocaleString());
