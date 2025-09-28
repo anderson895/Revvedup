@@ -12,18 +12,24 @@ include "../src/components/view/header.php";
     <h1 class="text-lg font-semibold">Employee Management</h1>
   </header>
 
-  <!-- Month Selector -->
-  <div class="flex items-center bg-white  px-4 py-2">
-    <button class="material-icons text-gray-600 hover:text-gray-800" id="prevMonth">chevron_left</button>
-    <span class="mx-2 font-medium text-gray-700" id="monthLabel">April</span>
-    <button class="material-icons text-gray-600 hover:text-gray-800" id="nextMonth">chevron_right</button>
-  </div>
+    <!-- Month Selector -->
+  <div class="flex items-center bg-white px-4 py-2">
+    <button class="material-icons text-gray-600 hover:text-gray-800 cursor-pointer" id="prevMonth">
+        chevron_left
+    </button>
+    <span class="mx-2 font-medium text-gray-700" id="monthLabel"></span>
+    <button class="material-icons text-gray-600 hover:text-gray-800 cursor-pointer" id="nextMonth">
+        chevron_right
+    </button>
+    </div>
+
+
 
   <!-- Employee Table -->
   <div class="overflow-x-auto px-4 py-4">
-    <table class="w-full border text-sm text-gray-700 bg-white">
+    <table class="w-full text-sm text-gray-700 bg-white">
       <thead>
-        <tr class="bg-white border-b">
+        <tr class="bg-white ">
           <th class="p-2 border text-left"> </th>
           <th class="p-2 border text-center">Tue</th>
           <th class="p-2 border text-center">Wed</th>
@@ -38,7 +44,8 @@ include "../src/components/view/header.php";
           <th class="p-2 border text-center"> </th>
         </tr>
       </thead>
-      <tbody id="employeeTableBody" class="divide-y">
+      <tbody id="employeeTableBody">
+
         <!-- Dynamic Rows via jQuery -->
       </tbody>
       <tfoot>
@@ -65,11 +72,36 @@ include "../src/components/view/header.php";
 include "../src/components/view/footer.php";
 ?>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
 <script>
 $(document).ready(function(){
 
-  // Sample employee data
+  // --- Month / Year Selector ---
+  const monthNames = [
+    "January","February","March","April","May","June",
+    "July","August","September","October","November","December"
+  ];
+
+  let currentDate = new Date(); // ngayon
+  updateMonthLabel();
+
+  $("#prevMonth").click(function(){
+    currentDate.setMonth(currentDate.getMonth() - 1);
+    updateMonthLabel();
+  });
+
+  $("#nextMonth").click(function(){
+    currentDate.setMonth(currentDate.getMonth() + 1);
+    updateMonthLabel();
+  });
+
+  function updateMonthLabel(){
+    let month = monthNames[currentDate.getMonth()];
+    let year = currentDate.getFullYear();
+    $("#monthLabel").text(`${month} ${year}`);
+  }
+
+  // --- Sample employee data ---
   let employees = [
     {name: "JOMEL", days:[200,350,120,230,300,250,380], commission:1830, deductions:0},
     {name: "LOYD", days:[200,350,120,230,300,250,380], commission:1830, deductions:0},
@@ -90,17 +122,17 @@ $(document).ready(function(){
 
     employees.forEach(emp=>{
       let row = `<tr class="hover:bg-gray-50">
-        <td class="p-2 border font-medium">${emp.name}</td>`;
+        <td class="p-2 border-r font-medium">${emp.name}</td>`;
 
       emp.days.forEach((val,i)=>{
-        row += `<td class="p-2 border text-center">${val}</td>`;
+        row += `<td class="p-2  text-center">${val}</td>`;
         colTotals[i]+=val;
       });
 
       row += `<td class="p-2 border text-center">${emp.commission.toLocaleString()}</td>`;
       row += `<td class="p-2 border text-center">${emp.deductions.toLocaleString()}</td>`;
       row += `<td class="p-2 border text-center font-bold">${(emp.commission - emp.deductions).toLocaleString()}</td>`;
-      row += `<td class="p-2 border text-center flex items-center justify-center space-x-1">
+      row += `<td class="p-2 text-center flex items-center justify-center space-x-1">
                 <button class="text-gray-600 hover:text-blue-600 material-icons text-sm">edit</button>
                 <button class="text-gray-600 hover:text-red-600 material-icons text-sm">delete</button>
               </td></tr>`;
