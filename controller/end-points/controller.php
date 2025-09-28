@@ -397,13 +397,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     echo json_encode(['status'=>404,'message'=>'Item not found']);
                 }
         }else if ($_GET['requestType'] === 'fetch_all_employee_record') {
-                $result = $db->fetch_all_employee_record(); 
+                $month = isset($_GET['month']) ? intval($_GET['month']) : null;
+                $year  = isset($_GET['year']) ? intval($_GET['year']) : null;
+                $week  = isset($_GET['week']) ? intval($_GET['week']) : null;
+
+                $result = $db->fetch_all_employee_record($month, $year, $week);
 
                 if ($result) {
                     echo json_encode(['status'=>200,'data'=>$result]);
                 } else {
                     echo json_encode(['status'=>404,'message'=>'Item not found']);
                 }
+
         }
 
 

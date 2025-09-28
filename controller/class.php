@@ -907,72 +907,154 @@ public function InsertWeekForTransaction($transactionId) {
 
 
 
-    public function fetch_all_employee_record() {
-    $query = $this->conn->prepare("
-        SELECT transaction_id, transaction_date, transaction_service 
-        FROM transaction 
-        WHERE transaction_status = 1
-    ");
-    $query->execute();
-    $result = $query->get_result();
 
-    $employees = [];
+    // public function fetch_all_employee_record() {
+    //     $query = $this->conn->prepare("
+    //         SELECT transaction_id, transaction_date, transaction_service 
+    //         FROM transaction 
+    //         WHERE transaction_status = 1
+    //     ");
+    //     $query->execute();
+    //     $result = $query->get_result();
 
-    while ($row = $result->fetch_assoc()) {
-        $date = new DateTime($row['transaction_date']);
-        $dayOfWeek = $date->format('N'); // 1=Mon ... 7=Sun
-        $month = $date->format('F');
-        $year = $date->format('Y');
+    //     $employees = [];
 
-        $services = json_decode($row['transaction_service'], true);
+    //     while ($row = $result->fetch_assoc()) {
+    //         $date = new DateTime($row['transaction_date']);
+    //         $dayOfWeek = $date->format('N'); // 1=Mon ... 7=Sun
+    //         $month = $date->format('F');
+    //         $year = $date->format('Y');
 
-        if (!empty($services)) {
-            foreach ($services as $svc) {
-                $empId = isset($svc['emp_id']) ? intval($svc['emp_id']) : 0;
-                $price = isset($svc['price']) ? floatval($svc['price']) : 0;
+    //         $services = json_decode($row['transaction_service'], true);
 
-                // ✅ Fetch employee name from DB instead of JSON
-                $empName = "Unknown";
-                if ($empId > 0) {
-                    $stmtEmp = $this->conn->prepare("SELECT CONCAT(emp_fname, ' ', emp_lname) AS fullname 
-                                                     FROM employee 
-                                                     WHERE emp_id = ?");
-                    $stmtEmp->bind_param("i", $empId);
-                    $stmtEmp->execute();
-                    $stmtEmp->bind_result($fullname);
-                    if ($stmtEmp->fetch()) {
-                        $empName = $fullname;
+    //         if (!empty($services)) {
+    //             foreach ($services as $svc) {
+    //                 $empId = isset($svc['emp_id']) ? intval($svc['emp_id']) : 0;
+    //                 $price = isset($svc['price']) ? floatval($svc['price']) : 0;
+
+    //                 // ✅ Fetch employee name from DB instead of JSON
+    //                 $empName = "Unknown";
+    //                 if ($empId > 0) {
+    //                     $stmtEmp = $this->conn->prepare("SELECT CONCAT(emp_fname, ' ', emp_lname) AS fullname 
+    //                                                     FROM employee 
+    //                                                     WHERE emp_id = ?");
+    //                     $stmtEmp->bind_param("i", $empId);
+    //                     $stmtEmp->execute();
+    //                     $stmtEmp->bind_result($fullname);
+    //                     if ($stmtEmp->fetch()) {
+    //                         $empName = $fullname;
+    //                     }
+    //                     $stmtEmp->close();
+    //                 }
+
+    //                 // ✅ Initialize employee record if not exists
+    //                 if (!isset($employees[$empId])) {
+    //                     $employees[$empId] = [
+    //                         "id" => $empId,
+    //                         "name" => $empName,
+    //                         "days" => array_fill(1, 7, 0), // Mon–Sun
+    //                         "commission" => 0,
+    //                         "deductions" => 0,
+    //                         "months" => []
+    //                     ];
+    //                 }
+
+    //                 // ✅ Add commission & day
+    //                 $employees[$empId]["days"][$dayOfWeek] += $price;
+    //                 $employees[$empId]["commission"] += $price;
+
+    //                 // ✅ Group by month
+    //                 if (!isset($employees[$empId]["months"][$month])) {
+    //                     $employees[$empId]["months"][$month] = 0;
+    //                 }
+    //                 $employees[$empId]["months"][$month] += $price;
+    //             }
+    //         }
+    //     }
+
+    //     return array_values($employees); // return as indexed array
+    // }
+
+    public function fetch_all_employee_record($filterMonth = null, $filterYear = null, $filterWeek = null) {
+        $query = $this->conn->prepare("
+            SELECT transaction_id, transaction_date, transaction_service 
+            FROM transaction 
+            WHERE transaction_status = 1
+        ");
+        $query->execute();
+        $result = $query->get_result();
+
+        $employees = [];
+
+        while ($row = $result->fetch_assoc()) {
+            $date = new DateTime($row['transaction_date']);
+            $dayOfWeek = $date->format('N'); // 1=Mon ... 7=Sun
+            $monthName = $date->format('F'); // September, October...
+            $year = intval($date->format('Y'));
+
+            // ✅ Calculate week of the month
+            $dayOfMonth = intval($date->format('j'));
+            $weekOfMonth = ceil($dayOfMonth / 7);
+
+            // 🔹 Apply filters
+            if ($filterMonth && $filterMonth != intval($date->format('m'))) {
+                continue;
+            }
+            if ($filterYear && $filterYear != $year) {
+                continue;
+            }
+            if ($filterWeek && $filterWeek != $weekOfMonth) {
+                continue;
+            }
+
+            $services = json_decode($row['transaction_service'], true);
+
+            if (!empty($services)) {
+                foreach ($services as $svc) {
+                    $empId = isset($svc['emp_id']) ? intval($svc['emp_id']) : 0;
+                    $price = isset($svc['price']) ? floatval($svc['price']) : 0;
+
+                    // Fetch employee name
+                    $empName = "Unknown";
+                    if ($empId > 0) {
+                        $stmtEmp = $this->conn->prepare("SELECT CONCAT(emp_fname, ' ', emp_lname) AS fullname FROM employee WHERE emp_id = ?");
+                        $stmtEmp->bind_param("i", $empId);
+                        $stmtEmp->execute();
+                        $stmtEmp->bind_result($fullname);
+                        if ($stmtEmp->fetch()) {
+                            $empName = $fullname;
+                        }
+                        $stmtEmp->close();
                     }
-                    $stmtEmp->close();
-                }
 
-                // ✅ Initialize employee record if not exists
-                if (!isset($employees[$empId])) {
-                    $employees[$empId] = [
-                        "id" => $empId,
-                        "name" => $empName,
-                        "days" => array_fill(1, 7, 0), // Mon–Sun
-                        "commission" => 0,
-                        "deductions" => 0,
-                        "months" => []
-                    ];
-                }
+                    // Initialize employee record if not exists
+                    if (!isset($employees[$empId])) {
+                        $employees[$empId] = [
+                            "id" => $empId,
+                            "name" => $empName,
+                            "days" => array_fill(1, 7, 0),
+                            "commission" => 0,
+                            "deductions" => 0,
+                            "months" => []
+                        ];
+                    }
 
-                // ✅ Add commission & day
-                $employees[$empId]["days"][$dayOfWeek] += $price;
-                $employees[$empId]["commission"] += $price;
+                    // Add commission & day
+                    $employees[$empId]["days"][$dayOfWeek] += $price;
+                    $employees[$empId]["commission"] += $price;
 
-                // ✅ Group by month
-                if (!isset($employees[$empId]["months"][$month])) {
-                    $employees[$empId]["months"][$month] = 0;
+                    // Group by month
+                    if (!isset($employees[$empId]["months"][$monthName])) {
+                        $employees[$empId]["months"][$monthName] = 0;
+                    }
+                    $employees[$empId]["months"][$monthName] += $price;
                 }
-                $employees[$empId]["months"][$month] += $price;
             }
         }
+
+        return array_values($employees);
     }
 
-    return array_values($employees); // return as indexed array
-}
 
 
 

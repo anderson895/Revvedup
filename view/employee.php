@@ -127,42 +127,55 @@ $(document).ready(function () {
   let employees = [];
 
   function fetchEmployees() {
-    $.ajax({
-      url: "../controller/end-points/controller.php",
-      method: "GET",
-      data: { requestType: "fetch_all_employee_record" },
-      dataType: "json",
-      success: function (res) {
-        if (res.status === 200) {
-          employees = res.data.map((emp) => {
-            // days are {1:0,2:0,...7:0} => convert to array [Mon..Sun]
-            let dayArr = [];
-            for (let i = 1; i <= 7; i++) {
-              dayArr.push(emp.days[i] ?? 0);
-            }
+  let monday = new Date(currentDate);
+  let month = monday.getMonth() + 1; // 1-12
+  let year = monday.getFullYear();
 
-            return {
-              id: emp.id,
-              name: emp.name,
-              days: dayArr,
-              commission: parseFloat(emp.commission),
-              deductions: parseFloat(emp.deductions),
-              months: emp.months,
-            };
-          });
-          renderTable();
-        } else {
-          console.warn("No employee records found");
-          $("#employeeTableBody").html(
-            `<tr><td colspan="11" class="text-center p-4 text-gray-500">No records available</td></tr>`
-          );
-        }
-      },
-      error: function (err) {
-        console.error("AJAX Error:", err);
-      },
-    });
-  }
+  // compute week number in month
+  let firstDayOfMonth = new Date(year, month - 1, 1);
+  let startOffset = (firstDayOfMonth.getDay() + 6) % 7;
+  let weekNumber = Math.ceil((monday.getDate() + startOffset) / 7);
+
+  $.ajax({
+    url: "../controller/end-points/controller.php",
+    method: "GET",
+    data: { 
+      requestType: "fetch_all_employee_record",
+      month: month,
+      year: year,
+      week: weekNumber
+    },
+    dataType: "json",
+    success: function (res) {
+      if (res.status === 200) {
+        employees = res.data.map((emp) => {
+          let dayArr = [];
+          for (let i = 1; i <= 7; i++) {
+            dayArr.push(emp.days[i] ?? 0);
+          }
+
+          return {
+            id: emp.id,
+            name: emp.name,
+            days: dayArr,
+            commission: parseFloat(emp.commission),
+            deductions: parseFloat(emp.deductions),
+            months: emp.months,
+          };
+        });
+        renderTable();
+      } else {
+        $("#employeeTableBody").html(
+          `<tr><td colspan="11" class="text-center p-4 text-gray-500">No records available</td></tr>`
+        );
+      }
+    },
+    error: function (err) {
+      console.error("AJAX Error:", err);
+    },
+  });
+}
+
 
   function renderTable() {
     let tbody = $("#employeeTableBody");
@@ -212,7 +225,6 @@ $(document).ready(function () {
     $("#colOverall").text(totalOverall.toLocaleString());
   }
 
-  // 🔹 initial fetch
   fetchEmployees();
 });
 
