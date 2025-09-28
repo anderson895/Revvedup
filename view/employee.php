@@ -77,8 +77,7 @@ include "../src/components/view/footer.php";
 
 
 <script>
-$(document).ready(function(){
-
+$(document).ready(function () {
   const monthNames = [
     "January","February","March","April","May","June",
     "July","August","September","October","November","December"
@@ -88,13 +87,13 @@ $(document).ready(function(){
   let currentDate = new Date();
   alignToMonday(currentDate);
 
-  function alignToMonday(date){
+  function alignToMonday(date) {
     let day = date.getDay(); // 0=Sun ... 6=Sat
-    let diff = (day === 0 ? -6 : 1 - day); 
+    let diff = (day === 0 ? -6 : 1 - day);
     date.setDate(date.getDate() + diff);
   }
 
-  function updateLabels(){
+  function updateLabels() {
     let monday = new Date(currentDate);
     let sunday = new Date(currentDate);
     sunday.setDate(monday.getDate() + 6);
@@ -111,29 +110,61 @@ $(document).ready(function(){
     $("#weekLabel").text(`( Week ${weekNumber} )`);
   }
 
-  $("#prevWeek").click(function(){
+  $("#prevWeek").click(function () {
     currentDate.setDate(currentDate.getDate() - 7);
     updateLabels();
+    fetchEmployees();
   });
 
-  $("#nextWeek").click(function(){
+  $("#nextWeek").click(function () {
     currentDate.setDate(currentDate.getDate() + 7);
     updateLabels();
+    fetchEmployees();
   });
 
   updateLabels();
 
-  // --- Sample employee data ---
-  let employees = [
-    {name: "JOMEL", days:[200,350,120,230,300,250,380], commission:1830, deductions:0},
-    {name: "LOYD", days:[200,350,120,230,300,250,380], commission:1830, deductions:0},
-    {name: "BUKOL", days:[200,350,120,230,300,250,380], commission:1830, deductions:0},
-    {name: "ANTOT", days:[200,350,120,230,300,250,380], commission:1830, deductions:0},
-    {name: "BOSS NEO", days:[200,350,120,230,300,250,380], commission:1830, deductions:0},
-    {name: "DAVE", days:[200,350,120,230,300,250,380], commission:1830, deductions:0},
-  ];
+  let employees = [];
 
-  function renderTable(){
+  function fetchEmployees() {
+    $.ajax({
+      url: "../controller/end-points/controller.php",
+      method: "GET",
+      data: { requestType: "fetch_all_employee_record" },
+      dataType: "json",
+      success: function (res) {
+        if (res.status === 200) {
+          employees = res.data.map((emp) => {
+            // days are {1:0,2:0,...7:0} => convert to array [Mon..Sun]
+            let dayArr = [];
+            for (let i = 1; i <= 7; i++) {
+              dayArr.push(emp.days[i] ?? 0);
+            }
+
+            return {
+              id: emp.id,
+              name: emp.name,
+              days: dayArr,
+              commission: parseFloat(emp.commission),
+              deductions: parseFloat(emp.deductions),
+              months: emp.months,
+            };
+          });
+          renderTable();
+        } else {
+          console.warn("No employee records found");
+          $("#employeeTableBody").html(
+            `<tr><td colspan="11" class="text-center p-4 text-gray-500">No records available</td></tr>`
+          );
+        }
+      },
+      error: function (err) {
+        console.error("AJAX Error:", err);
+      },
+    });
+  }
+
+  function renderTable() {
     let tbody = $("#employeeTableBody");
     tbody.empty();
 
@@ -142,29 +173,20 @@ $(document).ready(function(){
     let totalDeductions = 0;
     let totalOverall = 0;
 
-    employees.forEach(emp=>{
+    employees.forEach((emp) => {
       let row = `<tr class="hover:bg-gray-50">
         <td class="p-2 border-r font-medium">${emp.name}</td>`;
 
-      // reorder: Monday → Sunday
-      let reorderedDays = [
-        emp.days[6], // Mon
-        emp.days[0], // Tue
-        emp.days[1], // Wed
-        emp.days[2], // Thu
-        emp.days[3], // Fri
-        emp.days[4], // Sat
-        emp.days[5], // Sun
-      ];
-
-      reorderedDays.forEach((val,i)=>{
+      emp.days.forEach((val, i) => {
         row += `<td class="p-2 text-center">${val}</td>`;
-        colTotals[i]+=val;
+        colTotals[i] += val;
       });
 
       row += `<td class="p-2 border text-center">${emp.commission.toLocaleString()}</td>`;
       row += `<td class="p-2 border text-center">${emp.deductions.toLocaleString()}</td>`;
-      row += `<td class="p-2 border text-center font-bold">${(emp.commission - emp.deductions).toLocaleString()}</td>`;
+      row += `<td class="p-2 border text-center font-bold">${(
+        emp.commission - emp.deductions
+      ).toLocaleString()}</td>`;
       row += `<td class="p-2 text-center flex items-center justify-center space-x-1">
                 <button class="text-gray-600 hover:text-blue-600 material-icons text-sm">edit</button>
                 <button class="text-gray-600 hover:text-red-600 material-icons text-sm">delete</button>
@@ -174,7 +196,7 @@ $(document).ready(function(){
 
       totalCommission += emp.commission;
       totalDeductions += emp.deductions;
-      totalOverall += (emp.commission - emp.deductions);
+      totalOverall += emp.commission - emp.deductions;
     });
 
     // update footer totals
@@ -190,6 +212,9 @@ $(document).ready(function(){
     $("#colOverall").text(totalOverall.toLocaleString());
   }
 
-  renderTable();
+  // 🔹 initial fetch
+  fetchEmployees();
 });
+
+
 </script>

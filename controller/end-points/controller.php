@@ -396,6 +396,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 } else {
                     echo json_encode(['status'=>404,'message'=>'Item not found']);
                 }
+        }else if ($_GET['requestType'] === 'fetch_all_employee_record') {
+                $result = $db->fetch_all_employee_record(); 
+
+                if ($result) {
+                    echo json_encode(['status'=>200,'data'=>$result]);
+                } else {
+                    echo json_encode(['status'=>404,'message'=>'Item not found']);
+                }
         }
 
 
