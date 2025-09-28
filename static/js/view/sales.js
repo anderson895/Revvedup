@@ -81,21 +81,21 @@ function renderPagination(totalRows) {
     let paginationHtml = "";
 
     paginationHtml += `
-        <button class="px-3 py-1 mx-1 rounded-md border ${currentPage === 1 ? "bg-gray-300 text-gray-500 cursor-not-allowed" : "bg-white hover:bg-gray-100 text-gray-700"} prev-btn" ${currentPage === 1 ? "disabled" : ""}>
+        <button class="cursor-pointer px-3 py-1 mx-1 rounded-md border ${currentPage === 1 ? "bg-gray-300 text-gray-500 cursor-not-allowed" : "bg-white hover:bg-gray-100 text-gray-700"} prev-btn" ${currentPage === 1 ? "disabled" : ""}>
             ‹ Prev
         </button>
     `;
 
     for (let i = 1; i <= totalPages; i++) {
         paginationHtml += `
-            <button class="px-3 py-1 mx-1 rounded-md border ${i === currentPage ? "bg-red-800 text-white border-red-800" : "bg-white hover:bg-gray-100 text-gray-700"} page-btn" data-page="${i}">
+            <button class="cursor-pointer px-3 py-1 mx-1 rounded-md border ${i === currentPage ? "bg-red-800 text-white border-red-800" : "bg-white hover:bg-gray-100 text-gray-700"} page-btn" data-page="${i}">
                 ${i}
             </button>
         `;
     }
 
     paginationHtml += `
-        <button class="px-3 py-1 mx-1 rounded-md border ${currentPage === totalPages ? "bg-gray-300 text-gray-500 cursor-not-allowed" : "bg-white hover:bg-gray-100 text-gray-700"} next-btn" ${currentPage === totalPages ? "disabled" : ""}>
+        <button class="cursor-pointer px-3 py-1 mx-1 rounded-md border ${currentPage === totalPages ? "bg-gray-300 text-gray-500 cursor-not-allowed" : "bg-white hover:bg-gray-100 text-gray-700"} next-btn" ${currentPage === totalPages ? "disabled" : ""}>
             Next ›
         </button>
     `;
