@@ -424,6 +424,9 @@
   .w-80 {
     width: calc(var(--spacing) * 80);
   }
+  .w-96 {
+    width: calc(var(--spacing) * 96);
+  }
   .w-auto {
     width: auto;
   }
@@ -1141,6 +1144,13 @@
     &:hover {
       @media (hover: hover) {
         background-color: var(--color-red-700);
+      }
+    }
+  }
+  .hover\:bg-red-800 {
+    &:hover {
+      @media (hover: hover) {
+        background-color: var(--color-red-800);
       }
     }
   }

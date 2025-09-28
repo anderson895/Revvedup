@@ -51,182 +51,76 @@ include "../src/components/view/header.php";
 
         <!-- Dynamic Rows via jQuery -->
       </tbody>
-      <tfoot>
-        <tr class="bg-red-900 text-white font-semibold">
-          <td class="p-2 "> </td>
-          <td class="p-2  text-center" id="colTue">0</td>
-          <td class="p-2  text-center" id="colWed">0</td>
-          <td class="p-2  text-center" id="colThu">0</td>
-          <td class="p-2  text-center" id="colFri">0</td>
-          <td class="p-2  text-center" id="colSat">0</td>
-          <td class="p-2  text-center" id="colSun">0</td>
-          <td class="p-2  text-center" id="colMon">0</td>
-          <td class="p-2  text-center" id="colCommission">0</td>
-          <td class="p-2  text-center" id="colDeductions">0</td>
-          <td class="p-2  text-center" id="colOverall">0</td>
-          <td class="p-2 "> </td>
-        </tr>
-      </tfoot>
+        <tfoot id="tableFooter" style="display:none;">
+            <tr class="bg-red-900 text-white font-semibold">
+                <td class="p-2 "> </td> <!-- Name column -->
+                <td class="p-2 text-center" id="colMon">0</td>
+                <td class="p-2 text-center" id="colTue">0</td>
+                <td class="p-2 text-center" id="colWed">0</td>
+                <td class="p-2 text-center" id="colThu">0</td>
+                <td class="p-2 text-center" id="colFri">0</td>
+                <td class="p-2 text-center" id="colSat">0</td>
+                <td class="p-2 text-center" id="colSun">0</td>
+                <td class="p-2 text-center" id="colCommission">0</td>
+                <td class="p-2 text-center" id="colDeductions">0</td>
+                <td class="p-2 text-center" id="colOverall">0</td>
+                <td class="p-2 "> </td> <!-- Actions column -->
+            </tr>
+        </tfoot>
+
+
     </table>
   </div>
 </main>
+
+
+
+
+<!-- Edit Deductions Modal -->
+<div id="UpdateEmpRecorModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm" style="display:none;">
+  <div class="bg-white rounded-lg shadow-lg w-96 p-6 relative">
+    <h2 class="text-lg font-semibold mb-2">Update Total Deduction</h2>
+
+    <!-- Display Employee Name and Date/Week -->
+    <div class="mb-4">
+      <p class="text-sm text-gray-600">
+        Employee: <span id="modalEmpName" class="font-medium"></span>
+      </p>
+      <p class="text-sm text-gray-600">
+        Date / Week: <span id="modalMonthWeek" class="font-medium"></span>
+      </p>
+    </div>
+
+    <form id="FrmEditDeduction">
+      <input type="hidden" id="empId" name="empId">
+
+      <div class="mb-4">
+        <label for="deductionDate" class="block text-sm font-medium text-gray-700 mb-1">Total Deduction</label>
+
+
+        <input type="hidden" id="deductionDate" name="deductionDate" class="w-full border rounded px-3 py-2">
+
+
+        <input type="text" id="deduction" name="deduction" class="w-full border rounded px-3 py-2" required>
+      </div>
+      <div class="flex justify-end space-x-2">
+        <button type="button" id="closeEmpRecorModal" class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">Cancel</button>
+        <button type="submit" class="px-4 py-2 bg-red-900 text-white rounded hover:bg-red-800">Update</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+
+
 
 <?php 
 include "../src/components/view/footer.php";
 ?>
 
 
-<script>
-$(document).ready(function () {
-  const monthNames = [
-    "January","February","March","April","May","June",
-    "July","August","September","October","November","December"
-  ];
-
-  // set to today (Monday-Sunday aligned)
-  let currentDate = new Date();
-  alignToMonday(currentDate);
-
-  function alignToMonday(date) {
-    let day = date.getDay(); // 0=Sun ... 6=Sat
-    let diff = (day === 0 ? -6 : 1 - day);
-    date.setDate(date.getDate() + diff);
-  }
-
-  function updateLabels() {
-    let monday = new Date(currentDate);
-    let sunday = new Date(currentDate);
-    sunday.setDate(monday.getDate() + 6);
-
-    let month = monthNames[monday.getMonth()];
-    let year = monday.getFullYear();
-
-    // compute week number in month
-    let firstDayOfMonth = new Date(year, monday.getMonth(), 1);
-    let startOffset = (firstDayOfMonth.getDay() + 6) % 7;
-    let weekNumber = Math.ceil((monday.getDate() + startOffset) / 7);
-
-    $("#monthLabel").text(`${month} ${year}`);
-    $("#weekLabel").text(`( Week ${weekNumber} )`);
-  }
-
-  $("#prevWeek").click(function () {
-    currentDate.setDate(currentDate.getDate() - 7);
-    updateLabels();
-    fetchEmployees();
-  });
-
-  $("#nextWeek").click(function () {
-    currentDate.setDate(currentDate.getDate() + 7);
-    updateLabels();
-    fetchEmployees();
-  });
-
-  updateLabels();
-
-  let employees = [];
-
-  function fetchEmployees() {
-  let monday = new Date(currentDate);
-  let month = monday.getMonth() + 1; // 1-12
-  let year = monday.getFullYear();
-
-  // compute week number in month
-  let firstDayOfMonth = new Date(year, month - 1, 1);
-  let startOffset = (firstDayOfMonth.getDay() + 6) % 7;
-  let weekNumber = Math.ceil((monday.getDate() + startOffset) / 7);
-
-  $.ajax({
-    url: "../controller/end-points/controller.php",
-    method: "GET",
-    data: { 
-      requestType: "fetch_all_employee_record",
-      month: month,
-      year: year,
-      week: weekNumber
-    },
-    dataType: "json",
-    success: function (res) {
-      if (res.status === 200) {
-        employees = res.data.map((emp) => {
-          let dayArr = [];
-          for (let i = 1; i <= 7; i++) {
-            dayArr.push(emp.days[i] ?? 0);
-          }
-
-          return {
-            id: emp.id,
-            name: emp.name,
-            days: dayArr,
-            commission: parseFloat(emp.commission),
-            deductions: parseFloat(emp.deductions),
-            months: emp.months,
-          };
-        });
-        renderTable();
-      } else {
-        $("#employeeTableBody").html(
-          `<tr><td colspan="11" class="text-center p-4 text-gray-500">No records available</td></tr>`
-        );
-      }
-    },
-    error: function (err) {
-      console.error("AJAX Error:", err);
-    },
-  });
-}
 
 
-  function renderTable() {
-    let tbody = $("#employeeTableBody");
-    tbody.empty();
 
-    let colTotals = Array(7).fill(0);
-    let totalCommission = 0;
-    let totalDeductions = 0;
-    let totalOverall = 0;
-
-    employees.forEach((emp) => {
-      let row = `<tr class="hover:bg-gray-50">
-        <td class="p-2 border-r font-medium">${emp.name}</td>`;
-
-      emp.days.forEach((val, i) => {
-        row += `<td class="p-2 text-center">${val}</td>`;
-        colTotals[i] += val;
-      });
-
-      row += `<td class="p-2 border text-center">${emp.commission.toLocaleString()}</td>`;
-      row += `<td class="p-2 border text-center">${emp.deductions.toLocaleString()}</td>`;
-      row += `<td class="p-2 border text-center font-bold">${(
-        emp.commission - emp.deductions
-      ).toLocaleString()}</td>`;
-      row += `<td class="p-2 text-center flex items-center justify-center space-x-1">
-                <button class="text-gray-600 hover:text-blue-600 material-icons text-sm">edit</button>
-                <button class="text-gray-600 hover:text-red-600 material-icons text-sm">delete</button>
-              </td></tr>`;
-
-      tbody.append(row);
-
-      totalCommission += emp.commission;
-      totalDeductions += emp.deductions;
-      totalOverall += emp.commission - emp.deductions;
-    });
-
-    // update footer totals
-    $("#colMon").text(colTotals[0]);
-    $("#colTue").text(colTotals[1]);
-    $("#colWed").text(colTotals[2]);
-    $("#colThu").text(colTotals[3]);
-    $("#colFri").text(colTotals[4]);
-    $("#colSat").text(colTotals[5]);
-    $("#colSun").text(colTotals[6]);
-    $("#colCommission").text(totalCommission.toLocaleString());
-    $("#colDeductions").text(totalDeductions.toLocaleString());
-    $("#colOverall").text(totalOverall.toLocaleString());
-  }
-
-  fetchEmployees();
-});
-
-
-</script>
+<script src="../static/js/view/employee.js"></script>

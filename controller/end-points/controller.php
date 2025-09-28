@@ -87,6 +87,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 echo json_encode(['status'=>500,'message'=>'Failed to update item']);
             }
             exit;
+        }else if($_POST['requestType'] === 'EditDeduction'){
+        
+
+            $empId =$_POST['empId'];
+            $deductionDate =$_POST['deductionDate'];
+            $deduction =$_POST['deduction'];
+            
+
+            $result = $db->EditDeduction($empId, $deductionDate, $deduction); 
+
+            if($result){
+                echo json_encode(['status'=>200,'message'=>'updated successfully']);
+            } else {
+                echo json_encode(['status'=>500,'message'=>'Failed to update item']);
+            }
+            exit;
+
+            
         }else if ($_POST['requestType'] == 'removeProduct') {
 
             $prod_id=$_POST['prod_id'];

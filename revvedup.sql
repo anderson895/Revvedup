@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 28, 2025 at 05:34 PM
+-- Generation Time: Sep 28, 2025 at 07:15 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -20,6 +20,27 @@ SET time_zone = "+00:00";
 --
 -- Database: `revvedup`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `deduction`
+--
+
+CREATE TABLE `deduction` (
+  `deduction_id` int(11) NOT NULL,
+  `deduction_date` varchar(60) NOT NULL,
+  `deduction_emp_id` int(11) NOT NULL,
+  `deduction_amount` decimal(10,2) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `deduction`
+--
+
+INSERT INTO `deduction` (`deduction_id`, `deduction_date`, `deduction_emp_id`, `deduction_amount`) VALUES
+(1, 'September 2025 Week 5 ', 3, 50.00),
+(2, 'September 2025 Week 5 ', 2, 300.00);
 
 -- --------------------------------------------------------
 
@@ -130,7 +151,8 @@ INSERT INTO `transaction` (`transaction_id`, `transaction_date`, `transaction_se
 (41, '2025-08-28 14:28:21', '[{\"service_id\":\"28\",\"name\":\"cvt cleaning\",\"price\":\"300\",\"emp_id\":\"1\"},{\"service_id\":\"26\",\"name\":\"change oil\",\"price\":\"100\",\"emp_id\":\"1\"},{\"service_id\":\"27\",\"name\":\"gear oil\",\"price\":\"50\",\"emp_id\":\"4\"}]', '[]', 0.00, 0.00, 450.00, 500.00, 50.00, 1),
 (42, '2025-09-28 14:29:33', '[{\"service_id\":\"29\",\"name\":\"bulcanize\",\"price\":\"60\",\"emp_id\":\"1\"}]', '[]', 0.00, 0.00, 60.00, 100.00, 40.00, 1),
 (43, '2025-09-25 15:22:13', '[{\"service_id\":\"30\",\"name\":\"cvt repair\",\"price\":\"1500\",\"emp_id\":\"1\"}]', '[]', 0.00, 0.00, 1500.00, 15000.00, 13500.00, 1),
-(44, '2025-09-28 15:33:50', '[{\"service_id\":\"32\",\"name\":\"car wash\",\"price\":\"150\",\"emp_id\":\"1\"},{\"service_id\":\"31\",\"name\":\"car wash\",\"price\":\"150\",\"emp_id\":\"4\"}]', '[{\"item_id\":\"37\",\"prod_id\":\"5\",\"name\":\"product 3\",\"qty\":\"1\",\"subtotal\":\"300\",\"capital\":\"280\"}]', 0.00, 36.00, 636.00, 700.00, 64.00, 1);
+(44, '2025-09-28 15:33:50', '[{\"service_id\":\"32\",\"name\":\"car wash\",\"price\":\"150\",\"emp_id\":\"1\"},{\"service_id\":\"31\",\"name\":\"car wash\",\"price\":\"150\",\"emp_id\":\"4\"}]', '[{\"item_id\":\"37\",\"prod_id\":\"5\",\"name\":\"product 3\",\"qty\":\"1\",\"subtotal\":\"300\",\"capital\":\"280\"}]', 0.00, 36.00, 636.00, 700.00, 64.00, 1),
+(45, '2025-09-28 16:01:16', '[{\"service_id\":\"34\",\"name\":\"painting\",\"price\":\"500\",\"emp_id\":\"2\"},{\"service_id\":\"33\",\"name\":\"change color\",\"price\":\"250\",\"emp_id\":\"3\"}]', '[]', 0.00, 0.00, 750.00, 1000.00, 250.00, 1);
 
 -- --------------------------------------------------------
 
@@ -160,6 +182,13 @@ INSERT INTO `user` (`user_id`, `firstname`, `lastname`, `username`, `password`, 
 --
 -- Indexes for dumped tables
 --
+
+--
+-- Indexes for table `deduction`
+--
+ALTER TABLE `deduction`
+  ADD PRIMARY KEY (`deduction_id`),
+  ADD KEY `deduction_emp_id` (`deduction_emp_id`);
 
 --
 -- Indexes for table `employee`
@@ -204,6 +233,12 @@ ALTER TABLE `user`
 --
 
 --
+-- AUTO_INCREMENT for table `deduction`
+--
+ALTER TABLE `deduction`
+  MODIFY `deduction_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
 -- AUTO_INCREMENT for table `employee`
 --
 ALTER TABLE `employee`
@@ -225,13 +260,13 @@ ALTER TABLE `product`
 -- AUTO_INCREMENT for table `service_cart`
 --
 ALTER TABLE `service_cart`
-  MODIFY `service_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=33;
+  MODIFY `service_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
 
 --
 -- AUTO_INCREMENT for table `transaction`
 --
 ALTER TABLE `transaction`
-  MODIFY `transaction_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=45;
+  MODIFY `transaction_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=46;
 
 --
 -- AUTO_INCREMENT for table `user`
@@ -242,6 +277,12 @@ ALTER TABLE `user`
 --
 -- Constraints for dumped tables
 --
+
+--
+-- Constraints for table `deduction`
+--
+ALTER TABLE `deduction`
+  ADD CONSTRAINT `deduction_ibfk_1` FOREIGN KEY (`deduction_emp_id`) REFERENCES `employee` (`emp_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `service_cart`
