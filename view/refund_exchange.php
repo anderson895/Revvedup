@@ -1,32 +1,22 @@
 <?php 
 include "../src/components/view/header.php";
 
-
 $transactionId=$_GET['transactionId'];
 ?>
-  
 
-  
-<!-- Main Content -->
 <main class="flex-1 flex flex-col">
-
 
 <header class="bg-red-900 text-white flex items-center space-x-3 px-6 py-6">
     <h1 class="text-lg font-semibold">REFUND AND EXCHANGE</h1>
-  </header>
-
+</header>
 
 <header class="px-4 py-3 border-b bg-white flex flex-col gap-2">
-  <!-- Top Row -->
   <div class="flex justify-between text-sm text-gray-600">
-
-  <input type="hidden" id="transactionId" name="transactionId" value="<?=$transactionId?>">
-
+    <input type="hidden" id="transactionId" name="transactionId" value="<?=$transactionId?>">
     <span>Transaction No. <strong>123456</strong></span>
     <span>Date: <strong><?= date("Y/m/d") ?></strong></span>
   </div>
 
-  <!-- Bottom Row (Buttons) -->
   <div class="flex flex-wrap gap-2 justify-end">
     <a href="#" <?=$authorize?> 
        class="btnRefundExchange flex items-center gap-2 bg-pink-200 text-red-800 px-4 py-2 rounded border border-black-300 text-sm font-bold shadow-sm">
@@ -45,12 +35,9 @@ $transactionId=$_GET['transactionId'];
   </div>
 </header>
 
-
-  <!-- Table / Cart -->
-  <section class="flex-1 flex flex-col px-4 py-3">
+<section class="flex-1 flex flex-col px-4 py-3">
   <div class="overflow-x-auto rounded-lg shadow">
     <table class="min-w-full border border-gray-200 text-sm">
-      <!-- Table Header -->
       <thead class="bg-gray-100 text-gray-700">
         <tr>
           <th class="px-4 py-2 text-left font-semibold border-b">Item Name</th>
@@ -60,67 +47,34 @@ $transactionId=$_GET['transactionId'];
           <th class="px-4 py-2 text-left font-semibold border-b">Exchange</th>
         </tr>
       </thead>
-
-      <!-- Table Body -->
-      <tbody class="transactionTableBody">
-        <!-- <tr class="hover:bg-gray-50 transition">
-          <td class="px-4 py-2 border-b">ItemName_2</td>
-          <td class="px-4 py-2 border-b">4</td>
-          <td class="px-4 py-2 border-b">1,896.00</td>
-
-          <td class="px-4 py-2 border-b">
-            <div class="flex flex-row gap-2">
-              <input type="number" placeholder="Quantity"
-                class="border rounded px-2 py-1 w-24 focus:outline-none focus:ring focus:ring-blue-300">
-
-              <input type="text" placeholder="Total Price"
-                class="border rounded px-2 py-1 w-32 focus:outline-none focus:ring focus:ring-blue-300">
-            </div>
-          </td>
-
-          <td class="px-4 py-2 border-b">
-            <input type="number" placeholder="Qty"
-              class="border rounded px-2 py-1 w-20 focus:outline-none focus:ring focus:ring-blue-300">
-          </td>
-        </tr> -->
-      </tbody>
+      <tbody class="transactionTableBody"></tbody>
     </table>
-
   </div>
 </section>
 
-<!-- Footer -->
 <footer class="flex flex-col sm:flex-row gap-3 justify-between items-center bg-white border-t px-4 py-4">
-  <!-- Left: Total Refund -->
   <div class="flex-1">
     <div class="flex justify-between items-center bg-gray-50 border px-4 py-2 rounded shadow-sm w-full sm:w-80">
       <span class="font-medium text-gray-700">Total Refund</span>
-      <span class="font-bold text-lg text-gray-900">1,896.00</span>
+      <span class="font-bold text-lg text-gray-900">0.00</span>
     </div>
   </div>
 
-  <!-- Right: Action Buttons -->
   <div class="flex flex-col sm:flex-row gap-3 items-center">
-    <!-- Complete Transaction -->
     <button class="bg-red-800 hover:bg-red-700 text-white px-6 py-2 rounded shadow font-medium w-full sm:w-auto">
       Complete Transaction
     </button>
-
-    <!-- Refund All -->
     <button class="bg-red-800 hover:bg-red-700 text-white px-4 py-2 rounded shadow font-medium">
       Refund All
     </button>
-
-    <!-- Exchange All -->
     <button class="bg-red-800 hover:bg-red-700 text-white px-4 py-2 rounded shadow font-medium">
       Exchange All
     </button>
   </div>
 </footer>
 
-
-  <br class="block sm:hidden">
-  <br class="block sm:hidden">
+<br class="block sm:hidden">
+<br class="block sm:hidden">
 </main>
 
 <?php 
@@ -128,28 +82,51 @@ include "../src/components/view/footer.php";
 include "modal_refund.php";
 ?>
 
-
-
 <script>
- const transactionId = $('#transactionId').val();
+const transactionId = $('#transactionId').val();
+
+function updateGrandTotal() {
+    let grandTotal = 0;
+    $('.refund-total').each(function () {
+        const val = parseFloat($(this).val().replace(/,/g, '')) || 0;
+        grandTotal += val;
+    });
+    $('.flex-1 span.font-bold').text(grandTotal.toLocaleString());
+}
+
+function enforceMaxCombinedQty($row) {
+    const maxQty = parseInt($row.find('td:nth-child(2)').text());
+    let refundQty = parseInt($row.find('.refund-qty').val()) || 0;
+    let exchangeQty = parseInt($row.find('.exchange-qty').val()) || 0;
+
+    if (refundQty + exchangeQty > maxQty) {
+        const $input = $(document.activeElement);
+        const otherInput = $input.hasClass('refund-qty') ? $row.find('.exchange-qty') : $row.find('.refund-qty');
+        const adjusted = Math.max(maxQty - (parseInt(otherInput.val()) || 0), 0);
+        $input.val(adjusted);
+
+        if ($input.hasClass('refund-qty')) {
+            const price = parseFloat($input.data('price'));
+            const total = (adjusted * price).toFixed(2);
+            $input.siblings('.refund-total').val(parseFloat(total).toLocaleString());
+        }
+    }
+}
 
 $.ajax({
     url: "../controller/end-points/controller.php",
     method: "GET",
     data: { transactionId: transactionId, requestType: "fetch_transaction_record" },
     dataType: "json",
-    success: function (res) {
+    success: function(res) {
         const tbody = $('.transactionTableBody');
-        tbody.empty(); // Clear existing rows
+        tbody.empty();
 
         if (res.status === 200 && res.data.transaction_item.length > 0) {
             const transaction = res.data;
-
-            // Update transaction info in header
             $('span:contains("Transaction No.") strong').text(transaction.transaction_id);
             $('span:contains("Date:") strong').text(new Date(transaction.transaction_date).toLocaleDateString());
 
-            // Populate table with items
             transaction.transaction_item.forEach(item => {
                 const unitPrice = (item.subtotal / item.qty).toFixed(2);
                 const row = `
@@ -162,90 +139,124 @@ $.ajax({
                         <div class="flex flex-row gap-2">
                             <input type="number" placeholder="Quantity"
                                 class="refund-qty border rounded px-2 py-1 w-24 focus:outline-none focus:ring focus:ring-blue-300"
-                                data-price="${unitPrice}" max="${item.qty}" min="0">
+                                data-price="${unitPrice}" max="${item.qty}" min="0" value="0">
                             <input type="text" placeholder="Total Price"
-                                class="refund-total border rounded px-2 py-1 w-32 focus:outline-none focus:ring focus:ring-blue-300" readonly>
+                                class="refund-total border rounded px-2 py-1 w-32 focus:outline-none focus:ring focus:ring-blue-300" readonly value="0.00">
                         </div>
                     </td>
 
                     <td class="px-4 py-2 border-b">
                         <input type="number" placeholder="Qty"
                             class="exchange-qty border rounded px-2 py-1 w-20 focus:outline-none focus:ring focus:ring-blue-300"
-                            max="${item.qty}" min="0">
+                            max="${item.qty}" min="0" value="0">
                     </td>
                 </tr>`;
                 tbody.append(row);
             });
 
-            // Initialize total refund
-            $('.flex-1 span.font-bold').text('0.00');
+            // Handle input events
+            $(document).on('input', '.refund-qty, .exchange-qty', function() {
+                let val = $(this).val();
+                if (val === null || val === "" || isNaN(val)) val = 0;
+                val = parseInt(val);
+                if (val < 0) val = 0;
+                $(this).val(val);
 
-            // Event listener for refund quantity
-            $(document).on('input', '.refund-qty', function () {
-                let qty = parseInt($(this).val()) || 0;
-                const maxQty = parseInt($(this).attr('max'));
+                const $row = $(this).closest('tr');
+                enforceMaxCombinedQty($row);
 
-                // Enforce max quantity
-                if (qty > maxQty) {
-                    qty = maxQty;
-                    $(this).val(qty);
+                if ($(this).hasClass('refund-qty')) {
+                    const price = parseFloat($(this).data('price'));
+                    const total = (parseInt($(this).val()) * price).toFixed(2);
+                    $(this).siblings('.refund-total').val(parseFloat(total).toLocaleString());
+                    updateGrandTotal();
                 }
-
-                const price = parseFloat($(this).data('price'));
-                const total = (qty * price).toFixed(2);
-                $(this).siblings('.refund-total').val(parseFloat(total).toLocaleString());
-
-                // Update grand total refund
-                let grandTotal = 0;
-                $('.refund-total').each(function () {
-                    const val = parseFloat($(this).val().replace(/,/g, '')) || 0;
-                    grandTotal += val;
-                });
-                $('.flex-1 span.font-bold').text(grandTotal.toLocaleString());
             });
 
-            // Event listener for exchange quantity
-            $(document).on('input', '.exchange-qty', function () {
-                let qty = parseInt($(this).val()) || 0;
-                const maxQty = parseInt($(this).attr('max'));
+            // Refund All button
+            $('button:contains("Refund All")').click(function() {
+                $('table tbody tr').each(function() {
+                    const maxQty = parseInt($(this).find('td:nth-child(2)').text());
+                    $(this).find('.exchange-qty').val(0);
+                    $(this).find('.refund-qty').val(maxQty).trigger('input');
+                });
+            });
 
-                // Enforce max quantity
-                if (qty > maxQty) {
-                    qty = maxQty;
-                    $(this).val(qty);
+            // Exchange All button
+            $('button:contains("Exchange All")').click(function() {
+                $('table tbody tr').each(function() {
+                    const maxQty = parseInt($(this).find('td:nth-child(2)').text());
+                    $(this).find('.refund-qty').val(0).trigger('input');
+                    $(this).find('.exchange-qty').val(maxQty);
+                });
+            });
+
+            // Complete Transaction button
+            $('button:contains("Complete Transaction")').click(function() {
+                const refundData = [];
+                const exchangeData = [];
+                let valid = true;
+
+                $('table tbody tr').each(function() {
+                    const itemName = $(this).find('td:first').text();
+                    let refundQty = parseInt($(this).find('.refund-qty').val()) || 0;
+                    let exchangeQty = parseInt($(this).find('.exchange-qty').val()) || 0;
+
+                    const maxQty = parseInt($(this).find('td:nth-child(2)').text());
+                    if (refundQty + exchangeQty > maxQty) {
+                        alert(`The combined refund and exchange quantity for "${itemName}" exceeds the transaction quantity.`);
+                        valid = false;
+                        return false;
+                    }
+
+                    if (refundQty > 0) refundData.push({name: itemName, qty: refundQty});
+                    if (exchangeQty > 0) exchangeData.push({name: itemName, qty: exchangeQty});
+                });
+
+                if (!valid) return;
+
+                $.ajax({
+                url: "../controller/end-points/controller.php",
+                method: "POST",
+                data: {
+                    transactionId: transactionId,
+                    requestType: "complete_transaction",
+                    refund: JSON.stringify(refundData),
+                    exchange: JSON.stringify(exchangeData)
+                },
+                dataType: "json",
+                success: function(res) {
+                    if (res.status === 200) {
+                        alertify.success('Transaction completed successfully!');
+                          setTimeout(() => {
+                              location.reload();
+                          }, 1000); // 1000 milliseconds = 1 second
+
+                    } else {
+                        alertify.error(res.message);
+                    }
                 }
+            });
+
             });
 
         } else {
-            // Show "No records found"
-            const noRecordRow = `
-            <tr>
-                <td colspan="5" class="text-center py-4 text-gray-500 font-medium">No records found</td>
-            </tr>`;
-            tbody.append(noRecordRow);
-
-            // Reset transaction info
+            tbody.append(`<tr><td colspan="5" class="text-center py-4 text-gray-500 font-medium">No records found</td></tr>`);
             $('span:contains("Transaction No.") strong').text('-');
             $('span:contains("Date:") strong').text('-');
             $('.flex-1 span.font-bold').text('0.00');
         }
     },
-    error: function () {
+    error: function() {
         const tbody = $('.transactionTableBody');
         tbody.empty();
-        const errorRow = `
-        <tr>
-            <td colspan="5" class="text-center py-4 text-red-500 font-medium">Failed to fetch transaction data</td>
-        </tr>`;
-        tbody.append(errorRow);
-
+        tbody.append(`<tr><td colspan="5" class="text-center py-4 text-red-500 font-medium">Failed to fetch transaction data</td></tr>`);
         $('span:contains("Transaction No.") strong').text('-');
         $('span:contains("Date:") strong').text('-');
         $('.flex-1 span.font-bold').text('0.00');
     }
 });
-
-
 </script>
 
-<script src="../static/js/view/refund_exchange.js"></script>
+
+<!-- <script src="../static/js/view/refund_exchange.js"></script> -->

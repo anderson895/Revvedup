@@ -13,34 +13,101 @@ class global_class extends db_connect
         $this->connect();
     }
 
-    public function fetch_transaction_record($transactionId) {
-        // Prepare SQL with placeholder to prevent SQL injection
-        $sql = "
-            SELECT *
-            FROM `transaction`
-            WHERE transaction_status = 1
-            AND transaction_id = ?
-        ";
 
-        // Prepare and execute
-        $stmt = $this->conn->prepare($sql);
-        $stmt->bind_param("i", $transactionId);
-        $stmt->execute();
 
-        // Get result
-        $result = $stmt->get_result();
-        if ($result->num_rows > 0) {
-            $transaction = $result->fetch_assoc();
+ public function complete_transaction($transactionId, $refundData, $exchangeData) {
+    // Fetch transaction date
+    $stmt = $this->conn->prepare("SELECT transaction_date FROM `transaction` WHERE transaction_id = ?");
+    $stmt->bind_param("i", $transactionId);
+    $stmt->execute();
+    $result = $stmt->get_result();
 
-            // Optionally, decode JSON fields for easier use
-            $transaction['transaction_service'] = json_decode($transaction['transaction_service'], true);
-            $transaction['transaction_item'] = json_decode($transaction['transaction_item'], true);
-
-            return $transaction;
-        } else {
-            return null; // no record found
-        }
+    if ($result->num_rows === 0) {
+        return ["status" => false, "message" => "Transaction not found"];
     }
+
+    $transaction = $result->fetch_assoc();
+    $transactionDate = strtotime($transaction['transaction_date']);
+    $currentDate = strtotime(date("Y-m-d H:i:s"));
+
+    // Check if transaction is within 7 days
+    $diffDays = ($currentDate - $transactionDate) / (60 * 60 * 24);
+    if ($diffDays > 7) {
+        return ["status" => false, "message" => "Refund/Exchange period has expired"];
+    }
+
+    // Process refund
+    foreach ($refundData as $item) {
+        $item['type'] = 'refund'; // add type
+        $returnItemJson = $this->conn->real_escape_string(json_encode([$item]));
+        $returnQty = intval($item['qty']);
+        $transactionIdInt = intval($transactionId);
+
+        $sql = "INSERT INTO returns (return_transaction_item, return_qty, return_transaction_id) 
+                VALUES ('$returnItemJson', $returnQty, $transactionIdInt)";
+        $this->conn->query($sql); 
+    }
+
+    // Process exchange
+    foreach ($exchangeData as $item) {
+        $item['type'] = 'exchange'; // add type
+        $exchangeJson = $this->conn->real_escape_string(json_encode([$item]));
+        $itemQty = intval($item['qty']);
+        $transactionIdInt = intval($transactionId);
+
+        $sql = "INSERT INTO returns (return_transaction_item, return_qty, return_transaction_id) 
+                VALUES ('$exchangeJson', $itemQty, $transactionIdInt)";
+        $this->conn->query($sql);
+    }
+
+    return ["status" => true, "message" => "Transaction completed successfully"];
+}
+
+
+
+
+public function fetch_transaction_record($transactionId) {
+    // Fetch transaction
+    $sql = "SELECT * FROM `transaction` WHERE transaction_status = 1 AND transaction_id = ?";
+    $stmt = $this->conn->prepare($sql);
+    $stmt->bind_param("i", $transactionId);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($result->num_rows > 0) {
+        $transaction = $result->fetch_assoc();
+        $transaction['transaction_service'] = json_decode($transaction['transaction_service'], true);
+        $transactionItems = json_decode($transaction['transaction_item'], true);
+
+        // Fetch refunds & exchanges
+        $sql2 = "SELECT * FROM `returns` WHERE return_transaction_id = ?";
+        $stmt2 = $this->conn->prepare($sql2);
+        $stmt2->bind_param("i", $transactionId);
+        $stmt2->execute();
+        $res2 = $stmt2->get_result();
+
+        $returns = [];
+        while ($row = $res2->fetch_assoc()) {
+            $item = json_decode($row['return_transaction_item'], true);
+            $item[0]['qty'] = intval($row['return_qty']);
+            $returns[] = $item[0];
+
+            // Subtract returned/exchanged qty from original transaction items
+            foreach ($transactionItems as &$tItem) {
+                if ($tItem['name'] == $item[0]['name']) {
+                    $tItem['qty'] = max(0, intval($tItem['qty']) - $item[0]['qty']);
+                }
+            }
+        }
+
+        $transaction['transaction_item'] = $transactionItems; 
+        $transaction['returns'] = $returns; 
+
+        return $transaction;
+    } else {
+        return null;
+    }
+}
 
 
 
@@ -48,29 +115,17 @@ public function fetch_analytics($scope = "weekly") {
     $conn = $this->conn;
     $analytics = [];
 
-    if ($scope === "weekly") {
-        // Get all weeks with transactions
-        $sql = "SELECT transaction_date, transaction_item
-                FROM transaction
-                WHERE transaction_status = 1
-                ORDER BY transaction_date ASC";
-    } elseif ($scope === "monthly") {
-        // Get all months with transactions
-        $sql = "SELECT transaction_date, transaction_item
-                FROM transaction
-                WHERE transaction_status = 1
-                ORDER BY transaction_date ASC";
-    } else {
-        $sql = "SELECT transaction_date, transaction_item
-                FROM transaction
-                WHERE transaction_status = 1
-                ORDER BY transaction_date ASC";
-    }
+    // Fetch transactions
+    $sql = "SELECT transaction_id, transaction_date, transaction_item
+            FROM transaction
+            WHERE transaction_status = 1
+            ORDER BY transaction_date ASC";
 
     $result = mysqli_query($conn, $sql);
     if (!$result) return [];
 
     while ($row = mysqli_fetch_assoc($result)) {
+        $transactionId = intval($row['transaction_id']);
         $date = strtotime($row['transaction_date']);
 
         if ($scope === "weekly") {
@@ -86,10 +141,32 @@ public function fetch_analytics($scope = "weekly") {
         $items = json_decode($row['transaction_item'], true);
         if (!is_array($items)) continue;
 
+        // Fetch returns/exchanges for this transaction
+        $sqlReturns = "SELECT return_transaction_item, return_qty 
+                       FROM `returns` 
+                       WHERE return_transaction_id = $transactionId";
+        $resReturns = mysqli_query($conn, $sqlReturns);
+
+        $refundMap = [];
+        while ($ret = mysqli_fetch_assoc($resReturns)) {
+            $retItem = json_decode($ret['return_transaction_item'], true);
+            // Only include items of type 'refund'
+            if (isset($retItem[0]['name']) && isset($retItem[0]['type']) && $retItem[0]['type'] === 'refund') {
+                $refundMap[$retItem[0]['name']] = intval($ret['return_qty']);
+            }
+        }
+
         foreach ($items as $it) {
+            $name = $it['name'];
+            $qty = intval($it['qty']);
+
+            // Subtract only refund qty
+            if (isset($refundMap[$name])) {
+                $qty = max(0, $qty - $refundMap[$name]);
+            }
+
             $subtotal = (float)$it['subtotal'];
             $capital = (float)$it['capital'];
-            $qty = (int)$it['qty'];
             $capitalTotal = $capital * $qty;
             $revenue = $subtotal - $capitalTotal;
 
@@ -102,7 +179,8 @@ public function fetch_analytics($scope = "weekly") {
                 ];
             }
 
-            $analytics[$label]['total_sales'] += $subtotal;
+            // Pro-rate subtotal based on net quantity after refund
+            $analytics[$label]['total_sales'] += $subtotal * ($qty / max(1, intval($it['qty'])));
             $analytics[$label]['capital_total'] += $capitalTotal;
             $analytics[$label]['revenue'] += $revenue;
         }
@@ -110,6 +188,8 @@ public function fetch_analytics($scope = "weekly") {
 
     return array_values($analytics);
 }
+
+
 
 
 

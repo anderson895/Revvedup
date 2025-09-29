@@ -44,9 +44,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
     
         }else if ($_POST['requestType'] == 'CheckOutOrder') {
-
-        
-
                 $services = $_POST['services'] ?? [];
                 $items = $_POST['items'] ?? [];
                 $discount = $_POST['discount'] ?? 0;
@@ -70,9 +67,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         'message' => $errorMsg
                     ]);
                 }
-
-
-
     
         }else if($_POST['requestType'] === 'updateItemCart'){
             $item_id = intval($_POST['item_id']);
@@ -80,13 +74,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $qty = intval($_POST['modalProdQty']);
             $user_id = $_SESSION['user_id'];
 
-            $updated = $db->updateItemCart($prod_id, $qty, $user_id, $item_id); // create this function
+            $updated = $db->updateItemCart($prod_id, $qty, $user_id, $item_id); 
             if($updated){
                 echo json_encode(['status'=>200,'message'=>'Item updated successfully']);
             } else {
                 echo json_encode(['status'=>500,'message'=>'Failed to update item']);
             }
             exit;
+        }else if($_POST['requestType'] === 'complete_transaction'){
+
+            $transactionId = $_POST['transactionId'];
+            $refund = json_decode($_POST['refund'], true);    
+            $exchange = json_decode($_POST['exchange'], true);
+
+            // validate
+            if (!$transactionId) {
+                echo json_encode(['status'=>400,'message'=>'Invalid transaction ID']);
+                exit;
+            }
+
+            // Pass data to your database function
+            $result = $db->complete_transaction($transactionId, $refund, $exchange);
+
+            // Check result based on status
+            if (isset($result['status']) && $result['status'] === true) {
+                echo json_encode(['status'=>200,'message'=>$result['message']]);
+            } else {
+                $msg = isset($result['message']) ? $result['message'] : 'Failed to update item';
+                echo json_encode(['status'=>500,'message'=>$msg]);
+            }
+            exit;
+
+
         }else if($_POST['requestType'] === 'EditDeduction'){
         
 

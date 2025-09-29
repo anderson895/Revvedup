@@ -33,12 +33,10 @@ function renderTimeButtons(data){
     });
 }
 
-// Load analytics from API
 function loadAnalytics(scope, view="sales", filterLabel=null){
     currentScope = scope;
     currentView = view;
 
-    // show loader
     $("#loader").css("display", "flex");
 
     $.ajax({
@@ -47,66 +45,87 @@ function loadAnalytics(scope, view="sales", filterLabel=null){
         data: { requestType: "fetch_analytics", scope: scope },
         dataType: "json",
         success: function(res){
-            if(!res || res.status !== 200 || !res.data) {
-                chart.updateSeries([{ name:'Product Sales', data: [] }]);
-                chart.updateOptions({ xaxis:{ categories: [] } });
+            // Fallback for invalid responses
+            if(!res || res.status !== 200 || !Array.isArray(res.data) || res.data.length === 0){
+                chart.updateSeries([{ name:'Product Sales', data:[0] }]);
+                chart.updateOptions({ xaxis:{ categories:['N/A'] }, colors:['#9ca3af'] });
                 $("#infoValue1").text("₱ 0.00");
                 $("#infoValue2").text("₱ 0.00");
                 $("#timeButtons").html('');
+                return;
+            }
+
+            let data = res.data;
+
+            if(filterLabel){
+                data = data.filter(d => d.label === filterLabel);
             } else {
-                let data = res.data;
+                renderTimeButtons(data);
+            }
 
-                if(filterLabel){
-                    data = data.filter(d => d.label === filterLabel);
-                } else {
-                    renderTimeButtons(data);
-                }
+            // Sanitize data
+            let labels = data.map(d => d.label ? String(d.label) : 'N/A');
+            let sales = data.map(d => isFinite(Number(d.total_sales)) ? Number(d.total_sales) : 0);
+            let capital = data.map(d => isFinite(Number(d.capital_total)) ? Number(d.capital_total) : 0);
+            let revenue = data.map(d => isFinite(Number(d.revenue)) ? Number(d.revenue) : 0);
 
-                let labels = data.map(d => d.label);
-                let sales = data.map(d => d.total_sales || 0);
-                let capital = data.map(d => d.capital_total || 0);
-                let revenue = data.map(d => d.revenue || 0);
+            // Ensure arrays are not empty
+            if(labels.length === 0) { labels = ['N/A']; }
+            if(sales.length === 0) { sales = [0]; }
+            if(capital.length === 0) { capital = [0]; }
+            if(revenue.length === 0) { revenue = [0]; }
 
-                if(view === "revenue"){
-                    $("#chartTitle").text("Total Sales, Capital & Revenue");
-                    $("#btnBackToSales").removeClass("hidden");
+            if(view === "revenue"){
+                $("#chartTitle").text("Total Sales, Capital & Revenue");
+                $("#btnBackToSales").removeClass("hidden");
 
-                    chart.updateSeries([
-                        { name: 'Total Sales', data: sales },
-                        { name: 'Capital', data: capital },
-                        { name: 'Revenue', data: revenue }
-                    ]);
+                chart.updateOptions({
+                    xaxis:{ categories: labels },
+                    colors:['#9ca3af','#991b1b','#3a3a3aff']
+                });
 
-                    chart.updateOptions({ xaxis:{ categories: labels }, colors: ['#9ca3af','#991b1b','#3a3a3aff'] });
+                chart.updateSeries([
+                    { name:'Total Sales', data:sales },
+                    { name:'Capital', data:capital },
+                    { name:'Revenue', data:revenue }
+                ]);
 
-                    $("#infoLabel1").text("Total Sales");
-                    $("#infoValue1").text("₱ " + sales.reduce((a,b)=>a+Number(b),0).toLocaleString());
-                    $("#infoBox2").removeClass("hidden");
-                    $("#infoLabel2").text("Revenue");
-                    $("#infoValue2").text("₱ " + revenue.reduce((a,b)=>a+Number(b),0).toLocaleString());
+                $("#infoLabel1").text("Total Sales");
+                $("#infoValue1").text("₱ " + sales.reduce((a,b)=>a+b,0).toLocaleString());
+                $("#infoBox2").removeClass("hidden");
+                $("#infoLabel2").text("Revenue");
+                $("#infoValue2").text("₱ " + revenue.reduce((a,b)=>a+b,0).toLocaleString());
 
-                } else {
-                    $("#chartTitle").text("Product Sales");
-                    $("#btnBackToSales").addClass("hidden");
+            } else {
+                $("#chartTitle").text("Product Sales");
+                $("#btnBackToSales").addClass("hidden");
 
-                    chart.updateSeries([{ name:'Product Sales', data: sales }]);
-                    chart.updateOptions({ xaxis:{ categories: labels }, colors:['#9ca3af'] });
+                chart.updateOptions({
+                    xaxis:{ categories: labels },
+                    colors:['#9ca3af']
+                });
 
-                    $("#infoLabel1").text("Product Sales");
-                    $("#infoValue1").text("₱ " + sales.reduce((a,b)=>a+Number(b),0).toLocaleString());
-                    $("#infoBox2").addClass("hidden");
-                }
+                chart.updateSeries([{ name:'Product Sales', data:sales }]);
+
+                $("#infoLabel1").text("Product Sales");
+                $("#infoValue1").text("₱ " + sales.reduce((a,b)=>a+b,0).toLocaleString());
+                $("#infoBox2").addClass("hidden");
             }
         },
-        error: function(err){ 
-            console.error(err); 
+        error: function(err){
+            console.error(err);
+            chart.updateSeries([{ name:'Product Sales', data:[0] }]);
+            chart.updateOptions({ xaxis:{ categories:['N/A'] }, colors:['#9ca3af'] });
+            $("#infoValue1").text("₱ 0.00");
+            $("#infoValue2").text("₱ 0.00");
+            $("#timeButtons").html('');
         },
         complete: function(){
-            // hide loader kapag tapos na kahit success or error
             $("#loader").css("display", "none");
         }
     });
 }
+
 
 
 // Button bindings
