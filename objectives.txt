@@ -34,9 +34,9 @@ POS & INVENTORY
 
 
 		
-account settings (ADMIN) (EMPLOYEE)
-	1.Change Email
-	2.Change Password
+✔account settings (ADMIN) (EMPLOYEE)
+	✔1.Change Email
+	✔2.Change Password
 
 
 notification (ADMIN)

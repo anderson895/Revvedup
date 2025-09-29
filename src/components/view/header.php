@@ -65,7 +65,7 @@ $business = $db->get_business_details();
       </a>
     </div>
 
-    <!-- Menu Items (ilagay agad sa ilalim ng logo) -->
+    <!-- Menu Items -->
     <div class="flex flex-col space-y-2">
       <a href="dashboard" class="flex justify-center w-full p-2 rounded-lg hover:bg-gray-200 hover:scale-105 transition duration-200">
         <img src="../static/images/menus.png" alt="dashboard">
@@ -82,6 +82,15 @@ $business = $db->get_business_details();
       <a href="employee" class="flex justify-center w-full p-2 rounded-lg hover:bg-gray-200 hover:scale-105 transition duration-200 <?= $authorize ?>">
         <img src="../static/images/team_management.png" alt="Employee">
       </a>
+
+       <a href="manage_user" class="flex justify-center w-full p-2 rounded-lg hover:bg-gray-200 hover:scale-105 transition duration-200 <?= $authorize ?>">
+        <img src="../static/images/employees.png" alt="Employee">
+      </a>
+
+      <a href="booking_request" class="flex justify-center w-full p-2 rounded-lg hover:bg-gray-200 hover:scale-105 transition duration-200 <?= $authorize ?>">
+        <img src="../static/images/email.png" alt="email">
+      </a>
+
     </div>
   </div>
 

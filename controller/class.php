@@ -531,7 +531,54 @@ public function AddToItem($selectedProductId,$modalProdQty,$user_id){
 }
 
 
+// Fetch all users with position 'employee', without password or pin
+public function fetch_all_users() {
+    $sql = "SELECT user.*
+            FROM user 
+            WHERE position = 'employee'
+            ORDER BY user_id DESC";
+    $result = $this->conn->query($sql);
 
+    $users = [];
+    if ($result && $result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            $users[] = $row;
+        }
+    }
+    return $users;
+}
+
+
+// Add user (firstname, lastname, username, email, pin)
+public function add_user($firstname, $lastname, $username, $email, $pin = null) {
+    $stmt = $this->conn->prepare("INSERT INTO user (firstname, lastname, username, email, pin) VALUES (?, ?, ?, ?, ?)");
+    $stmt->bind_param("sssss", $firstname, $lastname, $username, $email, $pin);
+    return $stmt->execute() ? "User added successfully" : "Error adding user";
+}
+
+// Update user (firstname, lastname, username, email, pin)
+public function update_user($user_id, $firstname, $lastname, $username, $email, $pin = null) {
+    $stmt = $this->conn->prepare("UPDATE user SET firstname=?, lastname=?, username=?, email=?, pin=? WHERE user_id=?");
+    $stmt->bind_param("sssssi", $firstname, $lastname, $username, $email, $pin, $user_id);
+    return $stmt->execute() ? "User updated successfully" : "Error updating user";
+}
+
+
+// Deactivate user (unchanged)
+public function removeUser($user_id) {
+    $stmt = $this->conn->prepare("UPDATE user SET status=0 WHERE user_id=?");
+    $stmt->bind_param("i", $user_id);
+    return $stmt->execute() ? "User deactivated successfully" : "Error deactivating user";
+}
+
+
+
+
+public function restore_user($user_id) {
+    $stmt = $this->conn->prepare("UPDATE user SET status=1 WHERE user_id=?");
+    $stmt->bind_param("i", $user_id);
+    return $stmt->execute() ? "User restored successfully" : "Error restoring user";
+}
 
 
 

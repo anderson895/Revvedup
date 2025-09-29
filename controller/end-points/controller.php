@@ -6,6 +6,7 @@ $db = new global_class();
 session_start();
 
 
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['requestType'])) {
          if ($_POST['requestType'] == 'Login_admin') {
@@ -43,6 +44,78 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 ]);
             }
     
+        }else if ($_POST['requestType'] == 'AddUser') {
+                $firstname = trim($_POST['firstname']);
+                $lastname  = trim($_POST['lastname']);
+                $username  = trim($_POST['username']);
+                $email     = trim($_POST['email']);
+                $pin       = !empty($_POST['pin']) ? $_POST['pin'] : null; // <-- Added PIN
+
+                $result = $db->add_user($firstname, $lastname, $username, $email, $pin);
+
+                echo json_encode([
+                    "status" => $result === "User added successfully" ? 200 : 500,
+                    "message" => $result
+                ]);
+                exit;
+
+            } else if ($_POST['requestType'] == 'UpdateUser') {
+
+                // echo "<pre>";
+                // print_r($_POST);
+                // echo "</pre>";
+                $userId    = $_POST['userId'] ;
+                $firstname = trim($_POST['firstname']);
+                $lastname  = trim($_POST['lastname']);
+                $username  = trim($_POST['username']);
+                $email     = trim($_POST['email']);
+                $pin       = $_POST['pin']; 
+
+                if (!$userId) {
+                    echo json_encode(["status" => 400, "message" => "Missing userId"]);
+                    exit;
+                }
+
+                $result = $db->update_user($userId, $firstname, $lastname, $username, $email, $pin);
+
+                echo json_encode([
+                    "status" => $result === "User updated successfully" ? 200 : 500,
+                    "message" => $result
+                ]);
+                exit;
+            } else if ($_POST['requestType'] == 'deactivateUser') {
+
+                $userId = $_POST['userId'] ?? null;
+
+                if (!$userId) {
+                    echo json_encode(["status" => 400, "message" => "Missing userId"]);
+                    exit;
+                }
+
+                $result = $db->removeUser($userId);
+
+                echo json_encode([
+                    "status" => $result === "User deactivated successfully" ? 200 : 500,
+                    "message" => $result
+                ]);
+                exit;
+
+        } else if ($_POST['requestType'] == 'restoreUser') {
+
+            $userId = $_POST['userId'] ?? null;
+
+            if (!$userId) {
+                echo json_encode(["status" => 400, "message" => "Missing userId"]);
+                exit;
+            }
+
+            $result = $db->restore_user($userId);
+
+            echo json_encode([
+                "status" => $result === "User restored successfully" ? 200 : 500,
+                "message" => $result
+            ]);
+            exit;
         }else if ($_POST['requestType'] == 'CheckOutOrder') {
                 $services = $_POST['services'] ?? [];
                 $items = $_POST['items'] ?? [];
@@ -402,6 +475,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     {
         if ($_GET['requestType'] == 'fetch_all_product') {
             $result = $db->fetch_all_product();
+            echo json_encode([
+                'status' => 200,
+                'data' => $result
+            ]);
+        }else if ($_GET['requestType'] == 'fetch_all_users') {
+            $result = $db->fetch_all_users();
             echo json_encode([
                 'status' => 200,
                 'data' => $result
