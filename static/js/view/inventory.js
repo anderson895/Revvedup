@@ -118,8 +118,6 @@ $("#frmAddProduct").submit(function (e) {
 
 
 
-
-
 $.ajax({
     url: "../controller/end-points/controller.php",
     method: "GET",
@@ -132,19 +130,15 @@ $.ajax({
 
             if (res.data.length > 0) {
                 res.data.forEach(data => {
-                    // Determine badge color based on movement
-                    let movementColor = '';
-                    let movementFontColor = '';
 
-                    if (data.movement === 'Fast moving') {
-                        movementColor = 'bg-green-600';
-                        movementFontColor = 'text-green-600';
-                    } else if (data.movement === 'Slow moving') {
-                        movementColor = 'bg-yellow-500';
-                        movementFontColor = 'text-yellow-500';
-                    } else {
-                        movementColor = 'bg-red-600';
-                        movementFontColor = 'text-red-600';
+                    // Stock color logic
+                    let stockColor = '';
+                    if (data.prod_qty > 10) {
+                        stockColor = 'bg-green-600';
+                    } else if (data.prod_qty > 0 && data.prod_qty <= 10) {
+                        stockColor = 'bg-yellow-500';
+                    } else if (data.prod_qty <= 0) {
+                        stockColor = 'bg-red-600';
                     }
 
                     $('#productTableBody').append(`
@@ -159,11 +153,11 @@ $.ajax({
                             <td class="px-4 py-2">₱ ${data.prod_capital}</td>
                             <td class="px-4 py-2">₱ ${data.prod_price}</td>
                             <td class="px-4 py-2">${data.prod_qty}</td>
-                            <td class="px-4 py-2 ${movementFontColor} font-semibold">
+                            <td class="px-4 py-2 font-semibold">
                                 ${data.movement} (${data.total_sold_week} pcs per week)
                             </td>
                             <td class="px-4 py-2">
-                                <span class="inline-block w-3 h-3 rounded-full ${movementColor}"></span>
+                                <span class="inline-block w-3 h-3 rounded-full ${stockColor}"></span>
                             </td>
                             <td class="px-4 py-2 flex justify-center space-x-2">
                                 <button class="updateBtn text-gray-700 hover:text-blue-600"
@@ -197,6 +191,7 @@ $.ajax({
         }
     }
 });
+
 
 
 

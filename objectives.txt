@@ -13,7 +13,7 @@ POS & INVENTORY
 		-refund all
 		-exchange all
 
-inventory (ADMIN)
+✔inventory (ADMIN)
 	✔1.Item ID start 1 auto increment
 	✔2.Sales feed 
 		✔-Slow moving (9pcs < per week)

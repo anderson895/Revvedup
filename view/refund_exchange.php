@@ -21,7 +21,7 @@ include "../src/components/view/header.php";
   <!-- Bottom Row (Buttons) -->
   <div class="flex flex-wrap gap-2 justify-end">
     <a href="refund_exchange" <?=$authorize?> 
-       class="flex items-center gap-2 bg-pink-200 text-red-800 px-4 py-2 rounded border border-black-300 text-sm font-bold shadow-sm">
+       class=" flex items-center gap-2 bg-pink-200 text-red-800 px-4 py-2 rounded border border-black-300 text-sm font-bold shadow-sm">
       REFUND | EXCHANGE
     </a>
 

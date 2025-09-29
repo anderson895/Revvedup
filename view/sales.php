@@ -17,8 +17,8 @@ include "../src/components/view/header.php";
       class="flex-1 min-w-[150px] border rounded px-3 py-2 text-sm focus:outline-none focus:ring focus:border-red-400">
 
     <!-- Buttons with Material Icons -->
-    <a href="refund_exchange" <?=$authorize?> 
-       class="font-bold flex items-center gap-2 bg-red-800 hover:bg-red-700 transition text-white px-4 py-2 rounded text-sm whitespace-nowrap inline-block text-center shadow">
+    <a href="#" <?=$authorize?> 
+       class="btnRefundExchange font-bold flex items-center gap-2 bg-red-800 hover:bg-red-700 transition text-white px-4 py-2 rounded text-sm whitespace-nowrap inline-block text-center shadow">
       REFUND | EXCHANGE
     </a>
 
@@ -75,12 +75,17 @@ include "../src/components/view/header.php";
 
 
 
+<?php 
 
+?>
 
 
 
 <?php 
 include "../src/components/view/footer.php";
+include "modal_refund.php";
 ?>
+
+
 
 <script src="../static/js/view/sales.js"></script>
