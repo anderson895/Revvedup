@@ -63,7 +63,7 @@ $(document).ready(function(){
                 <td class="px-4 py-2">${statusText || ''}</td>
                 <td class="px-4 py-2 flex justify-center space-x-2">
                   <button 
-                  class="updateBtn flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-100 text-gray-700 
+                  class="updateBtn cursor-pointer flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-100 text-gray-700 
                         hover:bg-blue-50 hover:text-blue-600 transition-colors shadow-sm"
                   data-user_id="${data.user_id}" 
                   data-firstname="${data.firstname}" 
@@ -76,7 +76,7 @@ $(document).ready(function(){
                 </button>
 
                 <button 
-                  class="statusBtn flex items-center gap-2 px-4 py-2 rounded-lg font-medium shadow-sm 
+                  class="statusBtn cursor-pointer flex items-center gap-2 px-4 py-2 rounded-lg font-medium shadow-sm 
                         ${btnClass} transition-colors"
                   data-user_id="${data.user_id}" 
                   data-status="${data.status}">

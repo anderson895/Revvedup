@@ -23,6 +23,7 @@
     --color-green-500: oklch(72.3% 0.219 149.579);
     --color-green-600: oklch(62.7% 0.194 149.214);
     --color-green-700: oklch(52.7% 0.154 150.069);
+    --color-green-800: oklch(44.8% 0.119 151.328);
     --color-blue-50: oklch(97% 0.014 254.604);
     --color-blue-300: oklch(80.9% 0.105 251.813);
     --color-blue-600: oklch(54.6% 0.245 262.881);
@@ -1179,6 +1180,13 @@
       }
     }
   }
+  .hover\:bg-green-700 {
+    &:hover {
+      @media (hover: hover) {
+        background-color: var(--color-green-700);
+      }
+    }
+  }
   .hover\:bg-red-200 {
     &:hover {
       @media (hover: hover) {
@@ -1333,6 +1341,11 @@
     &:focus {
       --tw-outline-style: none;
       outline-style: none;
+    }
+  }
+  .active\:bg-green-800 {
+    &:active {
+      background-color: var(--color-green-800);
     }
   }
   .sm\:col-span-3 {

@@ -17,7 +17,14 @@ include "../src/components/view/header.php";
     <div class="bg-white rounded-xl shadow overflow-hidden">
       <div class="flex justify-between items-center px-4 py-3">
         <h2 class="text-gray-700 font-semibold">Employee List</h2>
-        <button class="p-2 rounded-md hover:bg-gray-100" id="addUserBtn"><span class="text-green-600 font-bold">+ Add Employee</span></button>
+        <button 
+          id="addUserBtn"
+          class="cursor-pointer flex items-center gap-2 px-4 py-2 rounded-lg bg-green-600 text-white 
+                hover:bg-green-700 active:bg-green-800 transition-colors shadow-sm">
+          <span class="material-icons text-base">person_add</span>
+          <span class="font-medium">Add Employee</span>
+        </button>
+
       </div>
 
       <div class="overflow-x-auto">
