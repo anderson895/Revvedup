@@ -62,7 +62,7 @@ include "../src/components/view/header.php";
 
 
 <!-- Loader -->
-<div id="loader" style="display:none;" class="fixed inset-0 bg-black bg-opacity-20 flex items-center justify-center z-50">
+<div id="loader" style="display:none; background-color: rgba(0,0,0,0.2);" class="fixed inset-0 flex items-center justify-center z-50">
   <div class="w-12 h-12 border-4 border-red-900 border-t-transparent rounded-full animate-spin"></div>
 </div>
 
