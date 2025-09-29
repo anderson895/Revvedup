@@ -27,9 +27,9 @@ inventory (ADMIN)
 
 employee management (ADMIN)
 
-	1.Monday - Sunday Compute total Commission
-	2.Manual Input Total Deduction
-	3.Compute Overall
+	✔ 1.Monday - Sunday Compute total Commission
+	✔ 2.Manual Input Total Deduction
+	✔ 3.Compute Overall
 	4.Archived
 
 

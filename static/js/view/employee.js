@@ -114,7 +114,7 @@ $(document).ready(function () {
 
     employees.forEach(emp => {
       let row = `<tr class="hover:bg-gray-50">
-        <td class="p-2 border font-medium">${emp.name}</td>`;
+        <td class="p-2 border font-medium capitalize">${emp.name}</td>`;
 
       emp.days.forEach((val, i) => {
         row += `<td class="p-2 border text-center">${val}</td>`;
@@ -132,6 +132,7 @@ $(document).ready(function () {
             data-emp_name="${emp.name}">
             edit
         </button>
+        
       </td></tr>`;
 
       tbody.append(row);
@@ -242,3 +243,52 @@ $("#FrmEditDeduction").submit(function (e) {
 
 });
 
+
+
+
+
+
+
+
+
+
+// DELETE EMPLOYEE RECORD
+// $(document).on("click", ".btnDeleteEmpRecord", function () {
+//     const emp_id = $(this).data('emp_id');
+//     const emp_name = $(this).data('emp_name');
+
+//     Swal.fire({
+//         title: `Archive ${emp_name}?`,
+//         icon: 'warning',
+//         showCancelButton: true,
+//         confirmButtonColor: '#d33',
+//         cancelButtonColor: '#3085d6',
+//         confirmButtonText: 'Yes, delete it!',
+//         cancelButtonText: 'Cancel'
+//     }).then((result) => {
+//         if (result.isConfirmed) {
+//             $.ajax({
+//                 type: "POST",
+//                 url: "../controller/end-points/controller.php",
+//                 data: {
+//                     requestType: "ArchivedEmployeeRecord",
+//                     emp_id: emp_id
+//                 },
+//                 dataType: "json",
+//                 success: function(response) {
+//                     if (response.status === 200) {
+//                         Swal.fire('Deleted!', response.message, 'success');
+//                         // Refresh the table
+//                         fetchEmployees();
+//                     } else {
+//                         Swal.fire('Error', response.message || 'Unable to delete record.', 'error');
+//                     }
+//                 },
+//                 error: function(err) {
+//                     console.error("AJAX Error:", err);
+//                     Swal.fire('Error', 'Server error while deleting record.', 'error');
+//                 }
+//             });
+//         }
+//     });
+// });
