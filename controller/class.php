@@ -51,10 +51,23 @@ class global_class extends db_connect
     }
 
     public function update_pin($user_id, $pin) {
+        // Check kung may existing na gumagamit ng same PIN maliban sa kasalukuyang user
+        $stmt = $this->conn->prepare("SELECT user_id FROM user WHERE pin=? AND user_id!=?");
+        $stmt->bind_param("ii", $pin, $user_id);
+        $stmt->execute();
+        $stmt->store_result();
+
+        if ($stmt->num_rows > 0) {
+            return "PIN already exists."; // ❌ Duplicate PIN
+        }
+        $stmt->close();
+
+        // Kung wala pang gumagamit, proceed update
         $stmt = $this->conn->prepare("UPDATE user SET pin=? WHERE user_id=?");
         $stmt->bind_param("ii", $pin, $user_id);
         return $stmt->execute() ? "success" : "error";
     }
+
 
  // ✅ Fetch user account
     public function check_account($id) {
