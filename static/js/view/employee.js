@@ -117,15 +117,15 @@ $(document).ready(function () {
         <td class="p-2 border-r font-medium capitalize">${emp.name}</td>`;
 
       emp.days.forEach((val, i) => {
-        row += `<td class="p-2 border text-center">${val}</td>`;
+        row += `<td class="p-2 border-r text-center">${val}</td>`;
         colTotals[i] += val;
       });
 
-      row += `<td class="p-2 border text-center">${emp.commission.toLocaleString()}</td>`;
-      row += `<td class="p-2 border text-center">${emp.deductions.toLocaleString()}</td>`;
-      row += `<td class="p-2 border text-center font-bold">${(emp.commission - emp.deductions).toLocaleString()}</td>`;
+      row += `<td class="p-2 border-r text-center">${emp.commission.toLocaleString()}</td>`;
+      row += `<td class="p-2 border-r text-center">${emp.deductions.toLocaleString()}</td>`;
+      row += `<td class="p-2 border-r text-center font-bold">${(emp.commission - emp.deductions).toLocaleString()}</td>`;
 
-      row += `<td class="p-2 border text-center flex items-center justify-center space-x-1">
+      row += `<td class="p-2 border-r text-center flex items-center justify-center space-x-1">
         <button class="btnUpdateEmpRecord text-gray-600 hover:text-blue-600 material-icons text-sm"
             data-emp_id="${emp.emp_id}"
             data-deductions="${emp.deductions}"
