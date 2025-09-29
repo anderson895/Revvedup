@@ -73,10 +73,10 @@ $authorize = (strtolower($On_Session['position']) !== "admin") ? "hidden" : "";
       <a href="sales" class="flex justify-center w-full p-2 rounded-lg hover:bg-gray-200 hover:scale-105 transition duration-200">
         <img src="../static/images/transaction.png" alt="sales">
       </a>
-      <a href="inventory" class="flex justify-center w-full p-2 rounded-lg hover:bg-gray-200 hover:scale-105 transition duration-200">
+      <a href="inventory" class="flex justify-center w-full p-2 rounded-lg hover:bg-gray-200 hover:scale-105 transition duration-200 <?= $authorize ?>">
         <img src="../static/images/inventory.png" alt="Inventory">
       </a>
-      <a href="analytics" class="flex justify-center w-full p-2 rounded-lg hover:bg-gray-200 hover:scale-105 transition duration-200">
+      <a href="analytics" class="flex justify-center w-full p-2 rounded-lg hover:bg-gray-200 hover:scale-105 transition duration-200" <?= $authorize ?>>
         <img src="../static/images/analytics.png" alt="Analytics">
       </a>
       <a href="employee" class="flex justify-center w-full p-2 rounded-lg hover:bg-gray-200 hover:scale-105 transition duration-200 <?= $authorize ?>">
@@ -87,10 +87,10 @@ $authorize = (strtolower($On_Session['position']) !== "admin") ? "hidden" : "";
 
   <!-- Bottom Items -->
   <div class="space-y-6 mb-4">
-    <a href="logout.php" class="flex justify-center w-full p-2 rounded-lg hover:bg-gray-100 hover:scale-105 transition duration-200">
+    <a href="logout" class="flex justify-center w-full p-2 rounded-lg hover:bg-gray-100 hover:scale-105 transition duration-200">
       <img src="../static/images/logout.png" alt="Logout">
     </a>
-    <a href="settings" class="flex justify-center w-full p-2 rounded-lg hover:bg-gray-200 hover:scale-105 transition duration-200 <?= $authorize ?>">
+    <a href="settings" class="flex justify-center w-full p-2 rounded-lg hover:bg-gray-200 hover:scale-105 transition duration-200 ">
       <img src="../static/images/settings.png" alt="Settings">
     </a>
   </div>
@@ -102,17 +102,20 @@ $authorize = (strtolower($On_Session['position']) !== "admin") ? "hidden" : "";
     <a href="sales" class="p-2 rounded-lg hover:bg-gray-200 hover:scale-110 transition duration-200">
       <img src="../static/images/menus.png" alt="Sales" class="h-6">
     </a>
-    <a href="transaction" class="p-2 rounded-lg hover:bg-gray-200 hover:scale-110 transition duration-200">
+    <a href="transaction" class="p-2 rounded-lg hover:bg-gray-200 hover:scale-110 transition duration-200" <?= $authorize ?>>
       <img src="../static/images/transaction.png" alt="Transaction" class="h-6">
     </a>
-    <a href="inventory" class="p-2 rounded-lg hover:bg-gray-200 hover:scale-110 transition duration-200">
+    <a href="inventory" class="p-2 rounded-lg hover:bg-gray-200 hover:scale-110 transition duration-200" <?= $authorize ?>>
       <img src="../static/images/inventory.png" alt="Inventory" class="h-6">
     </a>
-    <a href="analytics" class="p-2 rounded-lg hover:bg-gray-200 hover:scale-110 transition duration-200">
+    <a href="analytics" class="p-2 rounded-lg hover:bg-gray-200 hover:scale-110 transition duration-200" <?= $authorize ?>>
       <img src="../static/images/analytics.png" alt="Analytics" class="h-6">
     </a>
     <a href="employee" class="p-2 rounded-lg hover:bg-gray-200 hover:scale-110 transition duration-200 <?= $authorize ?>">
       <img src="../static/images/team_management.png" alt="Employee" class="h-6">
+    </a>
+    <a href="logout" class="p-2 rounded-lg hover:bg-gray-200 hover:scale-110 transition duration-200 ">
+      <img src="../static/images/logout.png" alt="Logout" class="h-6">
     </a>
   </nav>
 

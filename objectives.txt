@@ -1,6 +1,6 @@
 POS & INVENTORY
 
-pos (ADMIN) (EMPLOYEE)
+✔pos (ADMIN) (EMPLOYEE)
   	✔1. proceed to payment (ADMIN) (EMPLOYEE)
 		-merge service and item on the receipt
 		-add VAT 12%
@@ -15,10 +15,10 @@ pos (ADMIN) (EMPLOYEE)
 
 inventory (ADMIN)
 	✔1.Item ID start 1 auto increment
-	2.Sales feed 
-		-Slow moving (9pcs < per week)
-		-Fast Moving (10pcs > per week)
-	3.Status 
+	✔2.Sales feed 
+		✔-Slow moving (9pcs < per week)
+		✔-Fast Moving (10pcs > per week)
+	✔3.Status 
 	✔	-10 > In stock
 	✔	-10 < Low stock
 	✔	-0 == NO stock
@@ -30,7 +30,7 @@ employee management (ADMIN)
 	✔ 1.Monday - Sunday Compute total Commission
 	✔ 2.Manual Input Total Deduction
 	✔ 3.Compute Overall
-	4.Archived
+	
 
 
 		
