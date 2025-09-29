@@ -1,22 +1,11 @@
-$(".btnRefundExchange").click(function (e) { 
-    e.preventDefault();
 
-    $("#RefundExchangeModal").fadeIn();
-    
-});
-
-
-// Close button
-$("#closeAddProductModal").click(function (e) { 
-    e.preventDefault();
-    $("#addProductModal").fadeOut();
-});
-
-// Close kapag click outside modal-content
-$(document).on("click", function (e) {
-    if ($(e.target).is("#RefundExchangeModal")) {
-        $("#RefundExchangeModal").fadeOut();
+const transactionId =$('#transactionId').val();
+$.ajax({
+    url: "../controller/end-points/controller.php",
+    method: "GET",
+    data: {transactionId:transactionId, requestType: "fetch_transaction_record" },
+    dataType: "json",
+    success: function (res) {
+        
     }
 });
-
-

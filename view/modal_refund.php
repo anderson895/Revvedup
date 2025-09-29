@@ -37,4 +37,4 @@
 
 
 
-<script src="../static/js/view/refund_exchange.js"></script>
+<script src="../static/js/view/modal_refund.js"></script>

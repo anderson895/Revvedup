@@ -13,6 +13,36 @@ class global_class extends db_connect
         $this->connect();
     }
 
+    public function fetch_transaction_record($transactionId) {
+        // Prepare SQL with placeholder to prevent SQL injection
+        $sql = "
+            SELECT *
+            FROM `transaction`
+            WHERE transaction_status = 1
+            AND transaction_id = ?
+        ";
+
+        // Prepare and execute
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param("i", $transactionId);
+        $stmt->execute();
+
+        // Get result
+        $result = $stmt->get_result();
+        if ($result->num_rows > 0) {
+            $transaction = $result->fetch_assoc();
+
+            // Optionally, decode JSON fields for easier use
+            $transaction['transaction_service'] = json_decode($transaction['transaction_service'], true);
+            $transaction['transaction_item'] = json_decode($transaction['transaction_item'], true);
+
+            return $transaction;
+        } else {
+            return null; // no record found
+        }
+    }
+
+
 
 public function fetch_analytics($scope = "weekly") {
     $conn = $this->conn;
@@ -499,6 +529,8 @@ public function count_transactions($filter = "") {
     $res = $stmt->get_result()->fetch_assoc();
     return $res['total'] ?? 0;
 }
+
+
 
 
 
