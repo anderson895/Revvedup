@@ -14,7 +14,7 @@ pos (ADMIN) (EMPLOYEE)
 		-exchange all
 
 inventory (ADMIN)
-	✔1.Item ID start 1
+	✔1.Item ID start 1 auto increment
 	2.Sales feed 
 		-Slow moving (9pcs < per week)
 		-Fast Moving (10pcs > per week)

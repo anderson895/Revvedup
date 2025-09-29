@@ -120,26 +120,32 @@ $("#frmAddProduct").submit(function (e) {
 
 
 
-
-
-        
-
-   $.ajax({
+$.ajax({
     url: "../controller/end-points/controller.php",
     method: "GET",
     data: { requestType: "fetch_all_product" },
     dataType: "json",
     success: function (res) {
         if (res.status === 200) {
-            let count = 1;
-
-            // Clear previous content (optional)
+            // Clear previous content
             $('#productTableBody').empty();
 
-            // Check if there is data
             if (res.data.length > 0) {
                 res.data.forEach(data => {
+                    // Determine badge color based on movement
+                    let movementColor = '';
+                    let movementFontColor = '';
 
+                    if (data.movement === 'Fast moving') {
+                        movementColor = 'bg-green-600';
+                        movementFontColor = 'text-green-600';
+                    } else if (data.movement === 'Slow moving') {
+                        movementColor = 'bg-yellow-500';
+                        movementFontColor = 'text-yellow-500';
+                    } else {
+                        movementColor = 'bg-red-600';
+                        movementFontColor = 'text-red-600';
+                    }
 
                     $('#productTableBody').append(`
                         <tr>
@@ -153,43 +159,36 @@ $("#frmAddProduct").submit(function (e) {
                             <td class="px-4 py-2">₱ ${data.prod_capital}</td>
                             <td class="px-4 py-2">₱ ${data.prod_price}</td>
                             <td class="px-4 py-2">${data.prod_qty}</td>
-                            <td class="px-4 py-2">Fast Moving <br>(Pending functionalities)</td>
+                            <td class="px-4 py-2 ${movementFontColor} font-semibold">
+                                ${data.movement} (${data.total_sold_week} pcs per week)
+                            </td>
                             <td class="px-4 py-2">
-                                <span class="inline-block w-3 h-3 rounded-full
-                                    ${data.prod_qty > 10 
-                                        ? 'bg-green-600' 
-                                        : (data.prod_qty > 0 
-                                            ? 'bg-yellow-500' 
-                                            : 'bg-red-600')
-                                    }">
-                                </span>
+                                <span class="inline-block w-3 h-3 rounded-full ${movementColor}"></span>
                             </td>
                             <td class="px-4 py-2 flex justify-center space-x-2">
                                 <button class="updateBtn text-gray-700 hover:text-blue-600"
-                                data-prod_id ='${data.prod_id}'
-                                data-prod_name='${data.prod_name}'
-                                data-prod_capital='${data.prod_capital}'
-                                data-prod_price='${data.prod_price}'
-                                data-prod_qty='${data.prod_qty}'
+                                    data-prod_id ='${data.prod_id}'
+                                    data-prod_name='${data.prod_name}'
+                                    data-prod_capital='${data.prod_capital}'
+                                    data-prod_price='${data.prod_price}'
+                                    data-prod_qty='${data.prod_qty}'
                                 >
                                     <span class="material-icons text-sm">edit</span>
                                 </button>
                                 <button class="removeBtn text-gray-700 hover:text-red-600"
-                                data-prod_id='${data.prod_id}'
-                                data-prod_name='${data.prod_name}'
+                                    data-prod_id='${data.prod_id}'
+                                    data-prod_name='${data.prod_name}'
                                 >
                                     <span class="material-icons text-sm">delete</span>
                                 </button>
                             </td>
                         </tr>
                     `);
-
-
                 });
             } else {
                 $('#productTableBody').append(`
                     <tr>
-                        <td colspan="7" class="p-4 text-center text-gray-400 italic">
+                        <td colspan="8" class="p-4 text-center text-gray-400 italic">
                             No record found
                         </td>
                     </tr>
@@ -198,6 +197,8 @@ $("#frmAddProduct").submit(function (e) {
         }
     }
 });
+
+
 
 
 
