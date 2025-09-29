@@ -67,7 +67,7 @@ $business = $db->get_business_details();
 
     <!-- Menu Items -->
     <div class="flex flex-col space-y-2">
-      <a href="dashboard" class="flex justify-center w-full p-2 rounded-lg hover:bg-gray-200 hover:scale-105 transition duration-200">
+      <a href="dashboard" class="flex justify-center w-full p-2 rounded-lg hover:bg-gray-200 hover:scale-105 transition duration-200" <?= $authorize ?>>
         <img src="../static/images/menus.png" alt="dashboard">
       </a>
       <a href="sales" class="flex justify-center w-full p-2 rounded-lg hover:bg-gray-200 hover:scale-105 transition duration-200">
