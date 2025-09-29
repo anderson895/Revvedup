@@ -14,6 +14,62 @@ class global_class extends db_connect
     }
 
 
+    public function update_business($name, $address, $contact) {
+        $sql = "UPDATE business_details 
+                SET business_name=?, business_address=?, business_contact_num=? 
+                WHERE business_id=1"; 
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param("sss", $name, $address, $contact);
+        return $stmt->execute() ? "success" : "error";
+    }
+
+    public function update_basic($user_id, $firstname, $lastname, $username, $email) {
+        $sql = "UPDATE user 
+                SET firstname=?, lastname=?, username=?, email=? 
+                WHERE user_id=?";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param("ssssi", $firstname, $lastname, $username, $email, $user_id);
+        return $stmt->execute() ? "success" : "error";
+    }
+
+    public function update_password($user_id, $old_pass, $new_pass) {
+        $stmt = $this->conn->prepare("SELECT password FROM user WHERE user_id=?");
+        $stmt->bind_param("i", $user_id);
+        $stmt->execute();
+        $stmt->bind_result($hashed);
+        $stmt->fetch();
+        $stmt->close();
+
+        if (!password_verify($old_pass, $hashed)) {
+            return "Current password is incorrect.";
+        }
+
+        $newHash = password_hash($new_pass, PASSWORD_BCRYPT);
+        $stmt = $this->conn->prepare("UPDATE user SET password=? WHERE user_id=?");
+        $stmt->bind_param("si", $newHash, $user_id);
+        return $stmt->execute() ? "success" : "error";
+    }
+
+    public function update_pin($user_id, $pin) {
+        $stmt = $this->conn->prepare("UPDATE user SET pin=? WHERE user_id=?");
+        $stmt->bind_param("ii", $pin, $user_id);
+        return $stmt->execute() ? "success" : "error";
+    }
+
+ // ✅ Fetch user account
+    public function check_account($id) {
+        $id = intval($id);
+        $query = "SELECT * FROM `user` WHERE user_id = $id AND `status` = 1";
+
+        $result = $this->conn->query($query);
+
+        if ($result && $result->num_rows > 0) {
+            return $result->fetch_assoc(); 
+        }
+        return null;
+    }
+
+
 
  public function complete_transaction($transactionId, $refundData, $exchangeData) {
     // Fetch transaction date
@@ -1280,6 +1336,23 @@ public function EditDeduction($empId, $deductionDate, $deductionAmount) {
 }
 
 
+
+
+
+
+
+
+
+ // ✅ Fetch business details
+    public function get_business_details() {
+        $query = "SELECT * FROM `business_details` LIMIT 1"; // since only one business record
+        $result = $this->conn->query($query);
+
+        if ($result && $result->num_rows > 0) {
+            return $result->fetch_assoc();
+        }
+        return null;
+    }
 
 
 }

@@ -2,16 +2,16 @@ POS & INVENTORY
 
 ✔pos (ADMIN) (EMPLOYEE)
   	✔1. proceed to payment (ADMIN) (EMPLOYEE)
-		-merge service and item on the receipt
-		-add VAT 12%
+		✔-merge service and item on the receipt
+		✔-add VAT 12%
 	✔2. generate receipt (ADMIN) (EMPLOYEE)
 	✔3. record pdf report (weekly, monthly) and generate BAR GRAPH for Product sales and Total sales Revenue  (ADMIN)
 	✔4. record on transaction history (ADMIN)
-   	5. Refund (ADMIN)
-		-set 7 days validity
-		-complete transactions
-		-refund all
-		-exchange all
+   	✔5. Refund (ADMIN)
+		✔-set 7 days validity
+		✔-complete transactions
+		✔-refund all
+		✔-exchange all
 
 ✔inventory (ADMIN)
 	✔1.Item ID start 1 auto increment

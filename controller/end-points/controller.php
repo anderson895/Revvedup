@@ -338,9 +338,60 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                
 
-        }else{
-            echo "404";
-        }
+        }else if ($_POST['requestType'] == 'update_business') {
+                $result = $db->update_business(
+                    $_POST['businessName'],
+                    $_POST['businessAdd'],
+                    $_POST['contactNum']
+                );
+                echo $result;
+
+            } else if ($_POST['requestType'] == 'update_basic') {
+                $result = $db->update_basic(
+                    $_SESSION['user_id'],
+                    $_POST['firstname'],
+                    $_POST['lastname'],
+                    $_POST['username'],
+                    $_POST['email']
+                );
+                echo $result;
+
+            } else if ($_POST['requestType'] == 'update_security') {
+
+                $On_Session = $db->check_account($_SESSION['user_id']);
+                $password   = trim($_POST['password'] ?? '');
+                $confirm    = trim($_POST['confirm_password'] ?? '');
+                $old_pass   = trim($_POST['old_password'] ?? '');
+                $pin        = trim($_POST['pin'] ?? '');
+
+                if ($On_Session['position'] === 'admin') {
+                    // Admin → password update
+                    if (empty($password) || empty($confirm) || empty($old_pass)) {
+                        echo "Password fields cannot be empty.";
+                    } elseif ($password !== $confirm) {
+                        echo "Passwords do not match.";
+                    } else {
+                        $result = $db->update_password($_SESSION['user_id'], $old_pass, $password);
+                        echo $result;
+                    }
+                } elseif ($On_Session['position'] === 'employee') {
+                    // Employee → PIN update
+                    if (empty($pin)) {
+                        echo "PIN required.";
+                    } else {
+                        $result = $db->update_pin($_SESSION['user_id'], $pin);
+                        echo $result;
+                    }
+                } else {
+                    echo "Invalid user role.";
+                }
+
+
+
+            } else {
+                echo "404";
+            }
+
     }else {
         echo 'No POST REQUEST';
     }

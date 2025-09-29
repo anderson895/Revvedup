@@ -21,8 +21,8 @@ if (isset($_SESSION['user_id'])) {
 // Authorization
 $authorize = (strtolower($On_Session['position']) !== "admin") ? "hidden" : "";
 
-
-
+// ✅ Fetch Business Details
+$business = $db->get_business_details();
             
 
 

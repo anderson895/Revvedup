@@ -10,6 +10,10 @@ $transactionId = intval($_GET['transaction_id']);
 $db = new global_class(); // gumamit ng global_class
 $data = $db->fetch_transaction_by_id($transactionId);
 
+
+$business = $db->get_business_details();
+            
+
 if (!$data) {
     die("Transaction not found.");
 }
@@ -58,9 +62,9 @@ foreach ($items as $i) {
 <body onload="window.print()">
   <div class="print-container">
     <div style="text-align:center; margin-bottom:5px;">
-      <h1>Revvedup</h1>
-      <p>123 Main Street, City</p>
-      <p>Tel: (123) 456-7890</p>
+      <h1><?=htmlspecialchars($business['business_name'])?></h1>
+      <p><?=htmlspecialchars($business['business_address'])?></p>
+      <p>Tel: <?=htmlspecialchars($business['business_contact_num'])?></p>
     </div>
     <hr>
 
