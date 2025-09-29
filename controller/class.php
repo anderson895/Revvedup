@@ -310,8 +310,8 @@ public function fetch_transaction_by_id($transactionId) {
         $services = json_decode($row['transaction_service'], true) ?? [];
         $empIds = [];
         foreach ($services as $s) {
-            if (!empty($s['emp_id'])) {
-                $empIds[] = (int)$s['emp_id'];
+            if (!empty($s['user_id '])) {
+                $empIds[] = (int)$s['user_id '];
             }
         }
 
@@ -319,18 +319,18 @@ public function fetch_transaction_by_id($transactionId) {
         $employees = [];
         if (!empty($empIds)) {
             $ids = implode(',', array_unique($empIds));
-            $empQuery = $this->conn->prepare("SELECT emp_id, emp_fname, emp_lname FROM employee WHERE emp_id IN ($ids)");
+            $empQuery = $this->conn->prepare("SELECT user_id , firstname, lastname FROM user WHERE user_id  IN ($ids)");
             $empQuery->execute();
             $empRes = $empQuery->get_result();
             while ($emp = $empRes->fetch_assoc()) {
-                $employees[$emp['emp_id']] = $emp['emp_fname'].' '.$emp['emp_lname'];
+                $employees[$emp['user_id ']] = $emp['firstname'].' '.$emp['lastname'];
             }
         }
 
-        // Merge employee names into services
+        // Merge user names into services
         foreach ($services as &$s) {
-            $id = (int)$s['emp_id'];
-            $s['employee_name'] = $employees[$id] ?? "Unknown Employee #$id";
+            $id = (int)$s['user_id '];
+            $s['employee_name'] = $employees[$id] ?? "Unknown user #$id";
         }
 
         // Decode items as array din
@@ -448,7 +448,7 @@ public function Login_employee($pin)
 
 
 
-public function AddServiceCart($itemName,$price,$employee,$user_id) {
+public function AddServiceCart($itemName,$price,$user,$user_id) {
     $query = "INSERT INTO `service_cart` (`service_name`, `service_price`, `service_employee_id`,`service_user_id`) 
               VALUES (?, ?, ?,?)";
 
@@ -457,7 +457,7 @@ public function AddServiceCart($itemName,$price,$employee,$user_id) {
     if (!$stmt) {
         return false; 
     }
-    $stmt->bind_param("sdii", $itemName, $price, $employee,$user_id);
+    $stmt->bind_param("sdii", $itemName, $price, $user,$user_id);
 
     $result = $stmt->execute();
 
@@ -480,7 +480,7 @@ public function AddServiceCart($itemName,$price,$employee,$user_id) {
 
 
 
-public function updateServiceCart($serviceName, $price, $employee, $user_id, $service_id)
+public function updateServiceCart($serviceName, $price, $user, $user_id, $service_id)
 {
     $query = "UPDATE `service_cart` 
               SET service_name = ?, 
@@ -495,7 +495,7 @@ public function updateServiceCart($serviceName, $price, $employee, $user_id, $se
         return false; // prepare failed
     }
 
-    $stmt->bind_param("sdiii", $serviceName, $price, $employee, $user_id, $service_id);
+    $stmt->bind_param("sdiii", $serviceName, $price, $user, $user_id, $service_id);
 
     $result = $stmt->execute();
     $stmt->close();
@@ -531,11 +531,11 @@ public function AddToItem($selectedProductId,$modalProdQty,$user_id){
 }
 
 
-// Fetch all users with position 'employee', without password or pin
+// Fetch all users with position 'user', without password or pin
 public function fetch_all_users() {
     $sql = "SELECT user.*
             FROM user 
-            WHERE position = 'employee'
+            WHERE position = 'user'
             ORDER BY user_id DESC";
     $result = $this->conn->query($sql);
 
@@ -676,29 +676,29 @@ public function fetch_all_transaction($limit = 10, $offset = 0, $filter = "") {
         while($row = $result->fetch_assoc()) {
             $services = json_decode($row['transaction_service'], true) ?? [];
             foreach($services as $s) {
-                if(!empty($s['emp_id'])) $empIds[] = (int)$s['emp_id'];
+                if(!empty($s['user_id '])) $empIds[] = (int)$s['user_id '];
             }
             $allData[] = $row;
         }
 
-        // Fetch employee names
+        // Fetch user names
         $employees = [];
         if(!empty($empIds)) {
             $ids = implode(',', array_unique($empIds));
-            $empQuery = $this->conn->prepare("SELECT emp_id, emp_fname, emp_lname FROM employee WHERE emp_id IN ($ids)");
+            $empQuery = $this->conn->prepare("SELECT user_id , firstname, lastname FROM user WHERE user_id  IN ($ids)");
             $empQuery->execute();
             $empRes = $empQuery->get_result();
             while($emp = $empRes->fetch_assoc()) {
-                $employees[$emp['emp_id']] = $emp['emp_fname'].' '.$emp['emp_lname'];
+                $employees[$emp['user_id ']] = $emp['firstname'].' '.$emp['lastname'];
             }
         }
 
-        // Merge employee names
+        // Merge user names
         foreach($allData as &$row) {
             $services = json_decode($row['transaction_service'], true) ?? [];
             foreach($services as &$s) {
-                $id = (int)$s['emp_id'];
-                $s['employee_name'] = $employees[$id] ?? "Unknown Employee #$id";
+                $id = (int)$s['user_id '];
+                $s['employee_name'] = $employees[$id] ?? "Unknown user #$id";
             }
             $row['transaction_service'] = json_encode($services);
         }
@@ -860,9 +860,9 @@ public function removeProduct($prod_id) {
 
     
     public function fetch_all_employee() {
-        $query = $this->conn->prepare("SELECT * FROM employee
-            where emp_status='1'
-            ORDER BY emp_id DESC");
+        $query = $this->conn->prepare("SELECT * FROM user
+            where status='1'
+            ORDER BY user_id  DESC");
 
             if ($query->execute()) {
                 $result = $query->get_result();
@@ -884,8 +884,8 @@ public function removeProduct($prod_id) {
     {   
             $query = $this->conn->prepare("
                 SELECT * FROM service_cart
-                LEFT JOIN employee
-                ON employee.emp_id  = service_cart.service_employee_id 
+                LEFT JOIN user
+                ON user.user_id   = service_cart.service_employee_id 
                 WHERE service_user_id = ?
                 ORDER BY service_id DESC
             ");
@@ -1007,9 +1007,9 @@ public function removeProduct($prod_id) {
     public function getServiceById($service_id)
     {
             $query = $this->conn->prepare("
-                SELECT sc.*, e.emp_fname, e.emp_lname 
+                SELECT sc.*, e.firstname, e.lastname 
                 FROM service_cart sc
-                LEFT JOIN employee e ON e.emp_id = sc.service_employee_id
+                LEFT JOIN user e ON e.user_id  = sc.service_employee_id
                 WHERE sc.service_id = ?
                 LIMIT 1
             ");
@@ -1175,15 +1175,15 @@ public function CheckOutOrder($services, $items, $discount, $vat, $grandTotal, $
 
     //         if (!empty($services)) {
     //             foreach ($services as $svc) {
-    //                 $empId = isset($svc['emp_id']) ? intval($svc['emp_id']) : 0;
+    //                 $empId = isset($svc['user_id ']) ? intval($svc['user_id ']) : 0;
     //                 $price = isset($svc['price']) ? floatval($svc['price']) : 0;
 
-    //                 // ✅ Fetch employee name from DB instead of JSON
+    //                 // ✅ Fetch user name from DB instead of JSON
     //                 $empName = "Unknown";
     //                 if ($empId > 0) {
-    //                     $stmtEmp = $this->conn->prepare("SELECT CONCAT(emp_fname, ' ', emp_lname) AS fullname 
-    //                                                     FROM employee 
-    //                                                     WHERE emp_id = ?");
+    //                     $stmtEmp = $this->conn->prepare("SELECT CONCAT(firstname, ' ', lastname) AS fullname 
+    //                                                     FROM user 
+    //                                                     WHERE user_id  = ?");
     //                     $stmtEmp->bind_param("i", $empId);
     //                     $stmtEmp->execute();
     //                     $stmtEmp->bind_result($fullname);
@@ -1193,7 +1193,7 @@ public function CheckOutOrder($services, $items, $discount, $vat, $grandTotal, $
     //                     $stmtEmp->close();
     //                 }
 
-    //                 // ✅ Initialize employee record if not exists
+    //                 // ✅ Initialize user record if not exists
     //                 if (!isset($employees[$empId])) {
     //                     $employees[$empId] = [
     //                         "id" => $empId,
@@ -1252,13 +1252,13 @@ public function CheckOutOrder($services, $items, $discount, $vat, $grandTotal, $
 
         if (!empty($services)) {
             foreach ($services as $svc) {
-                $empId = isset($svc['emp_id']) ? intval($svc['emp_id']) : 0;
+                $empId = isset($svc['user_id ']) ? intval($svc['user_id ']) : 0;
                 $price = isset($svc['price']) ? floatval($svc['price']) : 0;
 
-                // Fetch employee name
+                // Fetch user name
                 $empName = "Unknown";
                 if ($empId > 0) {
-                    $stmtEmp = $this->conn->prepare("SELECT CONCAT(emp_fname, ' ', emp_lname) AS fullname FROM employee WHERE emp_id = ?");
+                    $stmtEmp = $this->conn->prepare("SELECT CONCAT(firstname, ' ', lastname) AS fullname FROM user WHERE user_id  = ?");
                     $stmtEmp->bind_param("i", $empId);
                     $stmtEmp->execute();
                     $stmtEmp->bind_result($fullname);
@@ -1266,10 +1266,10 @@ public function CheckOutOrder($services, $items, $discount, $vat, $grandTotal, $
                     $stmtEmp->close();
                 }
 
-                // Initialize employee record if not exists
+                // Initialize user record if not exists
                 if (!isset($employees[$empId])) {
                     $employees[$empId] = [
-                        "emp_id" => $empId,
+                        "user_id " => $empId,
                         "name" => $empName,
                         "days" => array_fill(1, 7, 0),
                         "commission" => 0,
@@ -1289,7 +1289,7 @@ public function CheckOutOrder($services, $items, $discount, $vat, $grandTotal, $
                 $employees[$empId]["months"][$monthName] += $price;
 
                 // ---------------------------
-                // Fetch deduction for this employee & week
+                // Fetch deduction for this user & week
                 // ---------------------------
                 if ($empId > 0) {
                     $dedQuery = "SELECT SUM(deduction_amount) as total_deduction
