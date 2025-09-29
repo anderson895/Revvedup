@@ -21,7 +21,7 @@ function initChart() {
 function renderTimeButtons(data){
     let html = '';
     data.forEach(d => {
-        html += `<button class="timeBtn px-3 py-1 border rounded hover:bg-gray-200" data-label="${d.label}">
+        html += `<button class="timeBtn cursor-pointer px-3 py-1 border rounded hover:bg-gray-200" data-label="${d.label}">
                     ${d.label}
                  </button>`;
     });
@@ -110,8 +110,32 @@ function loadAnalytics(scope, view="sales", filterLabel=null){
 
 
 // Button bindings
-$("#weeklyBtn").click(()=> loadAnalytics("weekly", currentView));
-$("#monthlyBtn").click(()=> loadAnalytics("monthly", currentView));
+$("#weeklyBtn").click(() => {
+    loadAnalytics("weekly", currentView);
+
+    // Weekly becomes active
+    $("#weeklyBtn").removeClass("bg-gray-200 text-gray-700 border-gray-400")
+                   .addClass("bg-red-800 text-white border-red-800");
+
+    // Monthly becomes inactive
+    $("#monthlyBtn").removeClass("bg-red-800 text-white border-red-800")
+                    .addClass("bg-gray-200 text-gray-700 border-gray-400");
+});
+
+$("#monthlyBtn").click(() => {
+    loadAnalytics("monthly", currentView);
+
+    // Monthly becomes active
+    $("#monthlyBtn").removeClass("bg-gray-200 text-gray-700 border-gray-400")
+                    .addClass("bg-red-800 text-white border-red-800");
+
+    // Weekly becomes inactive
+    $("#weeklyBtn").removeClass("bg-red-800 text-white border-red-800")
+                   .addClass("bg-gray-200 text-gray-700 border-gray-400");
+});
+
+
+
 $("#revenueBtn").click(()=> loadAnalytics(currentScope, "revenue"));
 $("#btnBackToSales").click(()=> loadAnalytics(currentScope, "sales"));
 

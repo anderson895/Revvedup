@@ -14,10 +14,16 @@ include "../src/components/view/header.php";
 
 <section class="flex-1 p-6">
   <!-- Toggle Buttons -->
-  <div class="flex justify-end mb-4 space-x-2">
-    <button id="weeklyBtn" class="px-4 py-2 border rounded hover:bg-gray-200">Weekly</button>
-    <button id="monthlyBtn" class="px-4 py-2 border border-red-800 text-red-800 rounded hover:bg-red-500 hover:text-white">Monthly</button>
-  </div>
+ <div class="flex justify-end mb-4 space-x-2">
+    <button id="weeklyBtn" class="cursor-pointer px-4 py-2 border border-red-800 bg-red-800 text-white rounded">
+        Weekly
+    </button>
+    <button id="monthlyBtn" class="cursor-pointer px-4 py-2 border border-gray-400 bg-gray-200 text-gray-700 rounded">
+        Monthly
+    </button>
+</div>
+
+
 
   <!-- Chart Card -->
   <div class="bg-white rounded-lg shadow-md p-6">
