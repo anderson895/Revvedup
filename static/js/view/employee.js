@@ -114,7 +114,7 @@ $(document).ready(function () {
 
     employees.forEach(emp => {
       let row = `<tr class="hover:bg-gray-50">
-        <td class="p-2 border font-medium capitalize">${emp.name}</td>`;
+        <td class="p-2 border-r font-medium capitalize">${emp.name}</td>`;
 
       emp.days.forEach((val, i) => {
         row += `<td class="p-2 border text-center">${val}</td>`;
