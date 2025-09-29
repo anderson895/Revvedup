@@ -11,9 +11,9 @@ include "../src/components/view/header.php";
 
     <!-- Tabs -->
     <nav class="flex space-x-6 text-sm font-medium border-b border-red-800">
-      <button class="tab-btn py-2 border-b-2 border-transparent text-gray-300 hover:text-white" data-tab="business">Business</button>
+      <button class="tab-btn py-2 border-b-2 border-transparent text-gray-300 hover:text-white" data-tab="business" <?= $authorize ?>>Business</button>
       <button class="tab-btn py-2 border-b-2 border-white text-white focus:outline-none" data-tab="basic">Basic Info</button>
-      <button class="tab-btn py-2 border-b-2 border-transparent text-gray-300 hover:text-white" data-tab="security">Security</button>
+      <button class="tab-btn py-2 border-b-2 border-transparent text-gray-300 hover:text-white" data-tab="security" >Security</button>
     </nav>
   </header>
 
