@@ -22,10 +22,10 @@ POS & INVENTORY
 	✔	-10 > In stock
 	✔	-10 < Low stock
 	✔	-0 == NO stock
-	4.Stock in
+	✔4.Stock in
 	✔	- Updating Qty
 
-employee management (ADMIN)
+✔employee management (ADMIN)
 
 	✔ 1.Monday - Sunday Compute total Commission
 	✔ 2.Manual Input Total Deduction

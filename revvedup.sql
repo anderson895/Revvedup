@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 28, 2025 at 07:15 PM
+-- Generation Time: Sep 29, 2025 at 08:44 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -39,8 +39,10 @@ CREATE TABLE `deduction` (
 --
 
 INSERT INTO `deduction` (`deduction_id`, `deduction_date`, `deduction_emp_id`, `deduction_amount`) VALUES
-(1, 'September 2025 Week 5 ', 3, 50.00),
-(2, 'September 2025 Week 5 ', 2, 300.00);
+(3, 'September 2025 Week 5 ', 1, 100.00),
+(4, 'September 2025 Week 5 ', 4, 50.00),
+(5, 'September 2025 Week 5 ', 5, 100.00),
+(6, 'September 2025 Week 1 ', 5, 100.00);
 
 -- --------------------------------------------------------
 
@@ -63,7 +65,8 @@ INSERT INTO `employee` (`emp_id`, `emp_fname`, `emp_lname`, `emp_status`) VALUES
 (1, 'john', 'doe', 1),
 (2, 'patrick', 'beverly', 1),
 (3, 'mario', 'barrios', 1),
-(4, 'maxine', 'santos', 1);
+(4, 'maxine', 'santos', 1),
+(5, 'andy', 'padilla', 1);
 
 -- --------------------------------------------------------
 
@@ -99,11 +102,38 @@ CREATE TABLE `product` (
 --
 
 INSERT INTO `product` (`prod_id`, `prod_name`, `prod_capital`, `prod_price`, `prod_qty`, `prod_img`, `prod_status`) VALUES
-(3, 'product 2', 5.00, 11.00, 205, 'item_68d60b3664f741.76866050.png', 1),
-(4, 'product 1', 130.00, 150.00, 87, 'item_68d6430495df58.36133211.jpg', 1),
-(5, 'product 3', 280.00, 300.00, 63, 'item_68d643420bba08.70461903.jpg', 1),
-(6, 'product 6', 50.00, 55.00, 54, 'item_68d77ad7dc2db3.03460954.avif', 1),
-(7, 'test', 500.00, 600.00, 99, 'item_68d776d7db06b6.21276657.jpg', 1);
+(3, 'product 2', 5.00, 11.00, 84, 'item_68d60b3664f741.76866050.png', 1),
+(4, 'product 1', 130.00, 150.00, 78, 'item_68d6430495df58.36133211.jpg', 1),
+(5, 'product 3', 280.00, 300.00, 48, 'item_68d643420bba08.70461903.jpg', 1),
+(6, 'product 6', 50.00, 55.00, 44, 'item_68d77ad7dc2db3.03460954.avif', 1),
+(7, 'test', 500.00, 600.00, 1, 'item_68d776d7db06b6.21276657.jpg', 1),
+(8, 'test 2', 50.00, 60.00, 0, 'item_68d9f9e9b27152.72092957.jpg', 1);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `returns`
+--
+
+CREATE TABLE `returns` (
+  `return_id` int(11) NOT NULL,
+  `return_transaction_item` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL CHECK (json_valid(`return_transaction_item`)),
+  `return_qty` int(11) NOT NULL,
+  `return_transaction_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `returns`
+--
+
+INSERT INTO `returns` (`return_id`, `return_transaction_item`, `return_qty`, `return_transaction_id`) VALUES
+(8, '[{\"name\":\"product 3\",\"qty\":2,\"type\":\"refund\"}]', 2, 58),
+(9, '[{\"name\":\"product 2\",\"qty\":1,\"type\":\"exchange\"}]', 1, 58),
+(10, '[{\"name\":\"product 2\",\"qty\":1,\"type\":\"exchange\"}]', 1, 58),
+(11, '[{\"name\":\"product 3\",\"qty\":1,\"type\":\"refund\"}]', 1, 58),
+(12, '[{\"name\":\"product 3\",\"qty\":1,\"type\":\"refund\"}]', 1, 58),
+(13, '[{\"name\":\"product 2\",\"qty\":1,\"type\":\"refund\"}]', 1, 58),
+(14, '[{\"name\":\"product 2\",\"qty\":1,\"type\":\"refund\"}]', 1, 58);
 
 -- --------------------------------------------------------
 
@@ -143,16 +173,8 @@ CREATE TABLE `transaction` (
 --
 
 INSERT INTO `transaction` (`transaction_id`, `transaction_date`, `transaction_service`, `transaction_item`, `transaction_discount`, `transaction_vat`, `transaction_total`, `transaction_payment`, `transaction_change`, `transaction_status`) VALUES
-(36, '2025-09-27 06:02:45', '[]', '[{\"item_id\":\"29\",\"prod_id\":\"4\",\"name\":\"product 1\",\"qty\":\"1\",\"subtotal\":\"150\",\"capital\":\"130\"},{\"item_id\":\"28\",\"prod_id\":\"6\",\"name\":\"product 6\",\"qty\":\"5\",\"subtotal\":\"275\",\"capital\":\"50\"}]', 0.00, 51.00, 476.00, 500.00, 24.00, 1),
-(37, '2025-09-27 06:34:25', '[]', '[{\"item_id\":\"30\",\"prod_id\":\"4\",\"name\":\"product 1\",\"qty\":\"1\",\"subtotal\":\"150\",\"capital\":\"130\"}]', 0.00, 18.00, 168.00, 200.00, 32.00, 1),
-(38, '2025-09-27 06:36:49', '[{\"service_id\":\"24\",\"name\":\"chang oil\",\"price\":\"100\",\"emp_id\":\"2\"}]', '[{\"item_id\":\"33\",\"prod_id\":\"4\",\"name\":\"product 1\",\"qty\":\"1\",\"subtotal\":\"150\",\"capital\":\"130\"},{\"item_id\":\"32\",\"prod_id\":\"4\",\"name\":\"product 1\",\"qty\":\"5\",\"subtotal\":\"750\",\"capital\":\"130\"},{\"item_id\":\"31\",\"prod_id\":\"6\",\"name\":\"product 6\",\"qty\":\"1\",\"subtotal\":\"55\",\"capital\":\"50\"}]', 0.00, 114.60, 1169.60, 1200.00, 30.40, 1),
-(39, '2025-10-27 06:38:06', '[]', '[{\"item_id\":\"35\",\"prod_id\":\"3\",\"name\":\"product 2\",\"qty\":\"5\",\"subtotal\":\"55\",\"capital\":\"5\"},{\"item_id\":\"34\",\"prod_id\":\"7\",\"name\":\"test\",\"qty\":\"1\",\"subtotal\":\"600\",\"capital\":\"500\"}]', 0.00, 78.60, 733.60, 750.00, 16.40, 1),
-(40, '2025-09-28 14:14:08', '[{\"service_id\":\"25\",\"name\":\"change color\",\"price\":\"500\",\"emp_id\":\"3\"}]', '[{\"item_id\":\"36\",\"prod_id\":\"5\",\"name\":\"product 3\",\"qty\":\"5\",\"subtotal\":\"1500\",\"capital\":\"280\"}]', 0.00, 180.00, 2180.00, 2200.00, 20.00, 1),
-(41, '2025-08-28 14:28:21', '[{\"service_id\":\"28\",\"name\":\"cvt cleaning\",\"price\":\"300\",\"emp_id\":\"1\"},{\"service_id\":\"26\",\"name\":\"change oil\",\"price\":\"100\",\"emp_id\":\"1\"},{\"service_id\":\"27\",\"name\":\"gear oil\",\"price\":\"50\",\"emp_id\":\"4\"}]', '[]', 0.00, 0.00, 450.00, 500.00, 50.00, 1),
-(42, '2025-09-28 14:29:33', '[{\"service_id\":\"29\",\"name\":\"bulcanize\",\"price\":\"60\",\"emp_id\":\"1\"}]', '[]', 0.00, 0.00, 60.00, 100.00, 40.00, 1),
-(43, '2025-09-25 15:22:13', '[{\"service_id\":\"30\",\"name\":\"cvt repair\",\"price\":\"1500\",\"emp_id\":\"1\"}]', '[]', 0.00, 0.00, 1500.00, 15000.00, 13500.00, 1),
-(44, '2025-09-28 15:33:50', '[{\"service_id\":\"32\",\"name\":\"car wash\",\"price\":\"150\",\"emp_id\":\"1\"},{\"service_id\":\"31\",\"name\":\"car wash\",\"price\":\"150\",\"emp_id\":\"4\"}]', '[{\"item_id\":\"37\",\"prod_id\":\"5\",\"name\":\"product 3\",\"qty\":\"1\",\"subtotal\":\"300\",\"capital\":\"280\"}]', 0.00, 36.00, 636.00, 700.00, 64.00, 1),
-(45, '2025-09-28 16:01:16', '[{\"service_id\":\"34\",\"name\":\"painting\",\"price\":\"500\",\"emp_id\":\"2\"},{\"service_id\":\"33\",\"name\":\"change color\",\"price\":\"250\",\"emp_id\":\"3\"}]', '[]', 0.00, 0.00, 750.00, 1000.00, 250.00, 1);
+(58, '2025-09-28 06:19:50', '[]', '[{\"item_id\":\"51\",\"prod_id\":\"3\",\"name\":\"product 2\",\"qty\":\"10\",\"subtotal\":\"110\",\"capital\":\"5\"},{\"item_id\":\"50\",\"prod_id\":\"5\",\"name\":\"product 3\",\"qty\":\"5\",\"subtotal\":\"1500\",\"capital\":\"280\"}]', 0.00, 193.20, 1803.20, 1900.00, 96.80, 1),
+(59, '2025-09-29 06:44:32', '[{\"service_id\":\"43\",\"name\":\"change oil\",\"price\":\"100\",\"emp_id\":\"5\"}]', '[]', 0.00, 0.00, 100.00, 100.00, 0.00, 1);
 
 -- --------------------------------------------------------
 
@@ -209,6 +231,13 @@ ALTER TABLE `product`
   ADD PRIMARY KEY (`prod_id`);
 
 --
+-- Indexes for table `returns`
+--
+ALTER TABLE `returns`
+  ADD PRIMARY KEY (`return_id`),
+  ADD KEY `return_transaction_id` (`return_transaction_id`);
+
+--
 -- Indexes for table `service_cart`
 --
 ALTER TABLE `service_cart`
@@ -236,37 +265,43 @@ ALTER TABLE `user`
 -- AUTO_INCREMENT for table `deduction`
 --
 ALTER TABLE `deduction`
-  MODIFY `deduction_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `deduction_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `employee`
 --
 ALTER TABLE `employee`
-  MODIFY `emp_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `emp_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `item_cart`
 --
 ALTER TABLE `item_cart`
-  MODIFY `item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=38;
+  MODIFY `item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=52;
 
 --
 -- AUTO_INCREMENT for table `product`
 --
 ALTER TABLE `product`
-  MODIFY `prod_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `prod_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+
+--
+-- AUTO_INCREMENT for table `returns`
+--
+ALTER TABLE `returns`
+  MODIFY `return_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT for table `service_cart`
 --
 ALTER TABLE `service_cart`
-  MODIFY `service_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
+  MODIFY `service_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=44;
 
 --
 -- AUTO_INCREMENT for table `transaction`
 --
 ALTER TABLE `transaction`
-  MODIFY `transaction_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=46;
+  MODIFY `transaction_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=60;
 
 --
 -- AUTO_INCREMENT for table `user`
@@ -283,6 +318,12 @@ ALTER TABLE `user`
 --
 ALTER TABLE `deduction`
   ADD CONSTRAINT `deduction_ibfk_1` FOREIGN KEY (`deduction_emp_id`) REFERENCES `employee` (`emp_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `returns`
+--
+ALTER TABLE `returns`
+  ADD CONSTRAINT `returns_ibfk_1` FOREIGN KEY (`return_transaction_id`) REFERENCES `transaction` (`transaction_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `service_cart`
