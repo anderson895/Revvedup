@@ -52,7 +52,7 @@ class global_class extends db_connect
 
     public function update_pin($user_id, $pin) {
         // Check kung may existing na gumagamit ng same PIN maliban sa kasalukuyang user
-        $stmt = $this->conn->prepare("SELECT user_id FROM user WHERE pin=? AND user_id!=?");
+        $stmt = $this->conn->prepare("SELECT user_idFROM user WHERE pin=? AND user_id!=?");
         $stmt->bind_param("ii", $pin, $user_id);
         $stmt->execute();
         $stmt->store_result();
@@ -72,7 +72,7 @@ class global_class extends db_connect
  // ✅ Fetch user account
     public function check_account($id) {
         $id = intval($id);
-        $query = "SELECT * FROM `user` WHERE user_id = $id AND `status` = 1";
+        $query = "SELECT * FROM `user` WHERE user_id= $id AND `status` = 1";
 
         $result = $this->conn->query($query);
 
@@ -306,12 +306,12 @@ public function fetch_transaction_by_id($transactionId) {
 
         $row = $result->fetch_assoc();
 
-        // Collect emp_ids from services
+        // Collect user_ids from services
         $services = json_decode($row['transaction_service'], true) ?? [];
         $empIds = [];
         foreach ($services as $s) {
-            if (!empty($s['user_id '])) {
-                $empIds[] = (int)$s['user_id '];
+            if (!empty($s['user_id'])) {
+                $empIds[] = (int)$s['user_id'];
             }
         }
 
@@ -319,17 +319,17 @@ public function fetch_transaction_by_id($transactionId) {
         $employees = [];
         if (!empty($empIds)) {
             $ids = implode(',', array_unique($empIds));
-            $empQuery = $this->conn->prepare("SELECT user_id , firstname, lastname FROM user WHERE user_id  IN ($ids)");
+            $empQuery = $this->conn->prepare("SELECT user_id, firstname, lastname FROM user WHERE user_id IN ($ids)");
             $empQuery->execute();
             $empRes = $empQuery->get_result();
             while ($emp = $empRes->fetch_assoc()) {
-                $employees[$emp['user_id ']] = $emp['firstname'].' '.$emp['lastname'];
+                $employees[$emp['user_id']] = $emp['firstname'].' '.$emp['lastname'];
             }
         }
 
         // Merge user names into services
         foreach ($services as &$s) {
-            $id = (int)$s['user_id '];
+            $id = (int)$s['user_id'];
             $s['employee_name'] = $employees[$id] ?? "Unknown user #$id";
         }
 
@@ -535,7 +535,7 @@ public function AddToItem($selectedProductId,$modalProdQty,$user_id){
 public function fetch_all_users() {
     $sql = "SELECT user.*
             FROM user 
-            WHERE position = 'user'
+            WHERE position = 'employee'
             ORDER BY user_id DESC";
     $result = $this->conn->query($sql);
 
@@ -676,7 +676,7 @@ public function fetch_all_transaction($limit = 10, $offset = 0, $filter = "") {
         while($row = $result->fetch_assoc()) {
             $services = json_decode($row['transaction_service'], true) ?? [];
             foreach($services as $s) {
-                if(!empty($s['user_id '])) $empIds[] = (int)$s['user_id '];
+                if(!empty($s['user_id'])) $empIds[] = (int)$s['user_id'];
             }
             $allData[] = $row;
         }
@@ -685,11 +685,11 @@ public function fetch_all_transaction($limit = 10, $offset = 0, $filter = "") {
         $employees = [];
         if(!empty($empIds)) {
             $ids = implode(',', array_unique($empIds));
-            $empQuery = $this->conn->prepare("SELECT user_id , firstname, lastname FROM user WHERE user_id  IN ($ids)");
+            $empQuery = $this->conn->prepare("SELECT user_id, firstname, lastname FROM user WHERE user_id IN ($ids)");
             $empQuery->execute();
             $empRes = $empQuery->get_result();
             while($emp = $empRes->fetch_assoc()) {
-                $employees[$emp['user_id ']] = $emp['firstname'].' '.$emp['lastname'];
+                $employees[$emp['user_id']] = $emp['firstname'].' '.$emp['lastname'];
             }
         }
 
@@ -697,7 +697,7 @@ public function fetch_all_transaction($limit = 10, $offset = 0, $filter = "") {
         foreach($allData as &$row) {
             $services = json_decode($row['transaction_service'], true) ?? [];
             foreach($services as &$s) {
-                $id = (int)$s['user_id '];
+                $id = (int)$s['user_id'];
                 $s['employee_name'] = $employees[$id] ?? "Unknown user #$id";
             }
             $row['transaction_service'] = json_encode($services);
@@ -862,7 +862,7 @@ public function removeProduct($prod_id) {
     public function fetch_all_employee() {
         $query = $this->conn->prepare("SELECT * FROM user
             where status='1'
-            ORDER BY user_id  DESC");
+            ORDER BY user_id DESC");
 
             if ($query->execute()) {
                 $result = $query->get_result();
@@ -885,7 +885,7 @@ public function removeProduct($prod_id) {
             $query = $this->conn->prepare("
                 SELECT * FROM service_cart
                 LEFT JOIN user
-                ON user.user_id   = service_cart.service_employee_id 
+                ON user.user_id  = service_cart.service_employee_id 
                 WHERE service_user_id = ?
                 ORDER BY service_id DESC
             ");
@@ -1009,7 +1009,7 @@ public function removeProduct($prod_id) {
             $query = $this->conn->prepare("
                 SELECT sc.*, e.firstname, e.lastname 
                 FROM service_cart sc
-                LEFT JOIN user e ON e.user_id  = sc.service_employee_id
+                LEFT JOIN user e ON e.user_id = sc.service_employee_id
                 WHERE sc.service_id = ?
                 LIMIT 1
             ");
@@ -1175,7 +1175,7 @@ public function CheckOutOrder($services, $items, $discount, $vat, $grandTotal, $
 
     //         if (!empty($services)) {
     //             foreach ($services as $svc) {
-    //                 $empId = isset($svc['user_id ']) ? intval($svc['user_id ']) : 0;
+    //                 $empId = isset($svc['user_id']) ? intval($svc['user_id']) : 0;
     //                 $price = isset($svc['price']) ? floatval($svc['price']) : 0;
 
     //                 // ✅ Fetch user name from DB instead of JSON
@@ -1183,7 +1183,7 @@ public function CheckOutOrder($services, $items, $discount, $vat, $grandTotal, $
     //                 if ($empId > 0) {
     //                     $stmtEmp = $this->conn->prepare("SELECT CONCAT(firstname, ' ', lastname) AS fullname 
     //                                                     FROM user 
-    //                                                     WHERE user_id  = ?");
+    //                                                     WHERE user_id = ?");
     //                     $stmtEmp->bind_param("i", $empId);
     //                     $stmtEmp->execute();
     //                     $stmtEmp->bind_result($fullname);
@@ -1252,13 +1252,13 @@ public function CheckOutOrder($services, $items, $discount, $vat, $grandTotal, $
 
         if (!empty($services)) {
             foreach ($services as $svc) {
-                $empId = isset($svc['user_id ']) ? intval($svc['user_id ']) : 0;
+                $empId = isset($svc['user_id']) ? intval($svc['user_id']) : 0;
                 $price = isset($svc['price']) ? floatval($svc['price']) : 0;
 
                 // Fetch user name
                 $empName = "Unknown";
                 if ($empId > 0) {
-                    $stmtEmp = $this->conn->prepare("SELECT CONCAT(firstname, ' ', lastname) AS fullname FROM user WHERE user_id  = ?");
+                    $stmtEmp = $this->conn->prepare("SELECT CONCAT(firstname, ' ', lastname) AS fullname FROM user WHERE user_id = ?");
                     $stmtEmp->bind_param("i", $empId);
                     $stmtEmp->execute();
                     $stmtEmp->bind_result($fullname);
@@ -1269,7 +1269,7 @@ public function CheckOutOrder($services, $items, $discount, $vat, $grandTotal, $
                 // Initialize user record if not exists
                 if (!isset($employees[$empId])) {
                     $employees[$empId] = [
-                        "user_id " => $empId,
+                        "user_id" => $empId,
                         "name" => $empName,
                         "days" => array_fill(1, 7, 0),
                         "commission" => 0,
@@ -1294,7 +1294,7 @@ public function CheckOutOrder($services, $items, $discount, $vat, $grandTotal, $
                 if ($empId > 0) {
                     $dedQuery = "SELECT SUM(deduction_amount) as total_deduction
                                  FROM deduction 
-                                 WHERE deduction_emp_id = ?";
+                                 WHERE deduction_user_id = ?";
 
                     $params = [$empId];
                     $types = "i";
@@ -1366,14 +1366,14 @@ public function CheckOutOrder($services, $items, $discount, $vat, $grandTotal, $
     
 public function EditDeduction($empId, $deductionDate, $deductionAmount) {
     // 1. Check if deduction exists
-    $checkStmt = $this->conn->prepare("SELECT deduction_id FROM deduction WHERE deduction_emp_id = ? AND deduction_date = ?");
+    $checkStmt = $this->conn->prepare("SELECT deduction_id FROM deduction WHERE deduction_user_id  = ? AND deduction_date = ?");
     $checkStmt->bind_param("is", $empId, $deductionDate);
     $checkStmt->execute();
     $checkStmt->store_result();
 
     if ($checkStmt->num_rows > 0) {
         // 2a. Update existing deduction
-        $updateStmt = $this->conn->prepare("UPDATE deduction SET deduction_amount = ? WHERE deduction_emp_id = ? AND deduction_date = ?");
+        $updateStmt = $this->conn->prepare("UPDATE deduction SET deduction_amount = ? WHERE deduction_user_id  = ? AND deduction_date = ?");
         $updateStmt->bind_param("dis", $deductionAmount, $empId, $deductionDate);
 
         if ($updateStmt->execute()) {
@@ -1384,7 +1384,7 @@ public function EditDeduction($empId, $deductionDate, $deductionAmount) {
 
     } else {
         // 2b. Insert new deduction
-        $insertStmt = $this->conn->prepare("INSERT INTO deduction (deduction_emp_id, deduction_date, deduction_amount) VALUES (?, ?, ?)");
+        $insertStmt = $this->conn->prepare("INSERT INTO deduction (deduction_user_id, deduction_date, deduction_amount) VALUES (?, ?, ?)");
         $insertStmt->bind_param("isd", $empId, $deductionDate, $deductionAmount);
 
         if ($insertStmt->execute()) {

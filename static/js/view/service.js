@@ -50,8 +50,8 @@ $("#addServiceBtn").click(function (e) {
                 if (res.data.length > 0) {
                     res.data.forEach(emp => {
                         $('#employee').append(`
-                            <option value="${emp.emp_id}">
-                                ${emp.emp_fname} ${emp.emp_lname}
+                            <option value="${emp.user_id }">
+                                ${emp.firstname} ${emp.lastname}
                             </option>
                         `);
                     });
@@ -156,7 +156,7 @@ $('#frmAddService').submit(function(e) {
                         <tr class="hover:bg-gray-200 transition-colors">
                             <td class="p-3 text-center font-mono">${data.service_name}</td>
                             <td class="p-3 text-center font-semibold">${data.service_price}</td>
-                            <td class="p-3 text-center font-semibold">${data.emp_fname} ${data.emp_lname}</td>
+                            <td class="p-3 text-center font-semibold">${data.firstname} ${data.lastname}</td>
                             <td class="p-3 text-center">
                                 <button class="EditBtn bg-yellow-400 hover:bg-yellow-500 text-black px-3 py-1 rounded text-xs font-semibold transition"
                                 data-service_id='${data.service_id}'>Edit</button>
@@ -284,8 +284,8 @@ $(document).on('click', '.removeBtn', function(e) {
                             $('#employee').append(`<option value="" disabled>Select Employee</option>`);
                             empRes.data.forEach(emp => {
                                 $('#employee').append(`
-                                    <option value="${emp.emp_id}" ${emp.emp_id == data.service_employee_id ? 'selected' : ''}>
-                                        ${emp.emp_fname} ${emp.emp_lname}
+                                    <option value="${emp.user_id }" ${emp.user_id  == data.service_employee_id ? 'selected' : ''}>
+                                        ${emp.firstname} ${emp.lastname}
                                     </option>
                                 `);
                             });

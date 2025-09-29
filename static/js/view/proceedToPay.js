@@ -43,7 +43,7 @@ function openTransactionModal() {
                     if (!groupedServices[s.service_employee_id]) {
                         groupedServices[s.service_employee_id] = {
                             employee_name: s.emp_fname && s.emp_lname 
-                                ? `${s.emp_fname} ${s.emp_lname} #${s.emp_id}`
+                                ? `${s.emp_fname} ${s.emp_lname} #${s.user_id}`
                                 : "No Name",
                             services: []
                         };
@@ -163,7 +163,7 @@ $(document).on("input", "input[name=InputedDiscount], #paymentInput", function()
 $('#BtnSubmit').click(function (e) { 
     e.preventDefault();
 
-    // Collect services with emp_id
+    // Collect services with user_id
     let servicesArray = [];
     $(".service-details > div").each(function() {
         let empId = $(this).data("emp-id");
@@ -174,7 +174,7 @@ $('#BtnSubmit').click(function (e) {
                 service_id: $(this).data("service-id"), 
                 name: serviceName, 
                 price: servicePrice, 
-                emp_id: empId 
+                user_id: empId 
             });
         });
     });

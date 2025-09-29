@@ -46,14 +46,23 @@ function loadAnalytics(scope, view="sales", filterLabel=null){
         dataType: "json",
         success: function(res){
             // Fallback for invalid responses
-            if(!res || res.status !== 200 || !Array.isArray(res.data) || res.data.length === 0){
-                chart.updateSeries([{ name:'Product Sales', data:[0] }]);
-                chart.updateOptions({ xaxis:{ categories:['N/A'] }, colors:['#9ca3af'] });
+           if(!res || res.status !== 200 || !Array.isArray(res.data) || res.data.length === 0){
+                chart.updateOptions({
+                    xaxis: { categories: ['Empty Record'] },
+                    colors: ['#9ca3af']
+                });
+
+                chart.updateSeries([
+                    { name: 'Product Sales', data: [0] }
+                ]);
+
+                $("#infoLabel1").text("Product Sales");
                 $("#infoValue1").text("₱ 0.00");
-                $("#infoValue2").text("₱ 0.00");
-                $("#timeButtons").html('');
+                $("#infoBox2").addClass("hidden");
+               
                 return;
             }
+
 
             let data = res.data;
 

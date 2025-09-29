@@ -55,27 +55,37 @@ $(document).ready(function(){
 
             $('#userTableBody').append(`
               <tr>
-                <td class="px-4 py-2">${data.firstname}</td>
-                <td class="px-4 py-2">${data.lastname}</td>
-                <td class="px-4 py-2">${data.username}</td>
-                <td class="px-4 py-2">${data.email}</td>
-                <td class="px-4 py-2">${data.pin || '-'}</td>
-                <td class="px-4 py-2">${statusText}</td>
+                <td class="px-4 py-2">${data.firstname || ''}</td>
+                <td class="px-4 py-2">${data.lastname || ''}</td>
+                <td class="px-4 py-2">${data.username || ''}</td>
+                <td class="px-4 py-2">${data.email || ''}</td>
+                <td class="px-4 py-2">${data.pin || ''}</td>
+                <td class="px-4 py-2">${statusText || ''}</td>
                 <td class="px-4 py-2 flex justify-center space-x-2">
-                  <button class="updateBtn text-gray-700 hover:text-blue-600" 
-                          data-user_id="${data.user_id}" 
-                          data-firstname="${data.firstname}" 
-                          data-lastname="${data.lastname}" 
-                          data-username="${data.username}" 
-                          data-email="${data.email}" 
-                          data-pin="${data.pin || ''}">
-                    Edit
-                  </button>
-                  <button class="statusBtn px-3 py-1 rounded ${btnClass}" 
-                          data-user_id="${data.user_id}" 
-                          data-status="${data.status}">
-                    ${btnLabel}
-                  </button>
+                  <button 
+                  class="updateBtn flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-100 text-gray-700 
+                        hover:bg-blue-50 hover:text-blue-600 transition-colors shadow-sm"
+                  data-user_id="${data.user_id}" 
+                  data-firstname="${data.firstname}" 
+                  data-lastname="${data.lastname}" 
+                  data-username="${data.username}" 
+                  data-email="${data.email}" 
+                  data-pin="${data.pin || ''}">
+                  <span class="material-icons text-base">edit</span>
+                  Edit
+                </button>
+
+                <button 
+                  class="statusBtn flex items-center gap-2 px-4 py-2 rounded-lg font-medium shadow-sm 
+                        ${btnClass} transition-colors"
+                  data-user_id="${data.user_id}" 
+                  data-status="${data.status}">
+                  <span class="material-icons text-base">
+                    ${data.status === 'active' ? 'check_circle' : 'block'}
+                  </span>
+                  ${btnLabel}
+                </button>
+
                 </td>
               </tr>
             `);
