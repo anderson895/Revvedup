@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 30, 2025 at 07:08 AM
+-- Generation Time: Sep 30, 2025 at 07:51 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -20,6 +20,32 @@ SET time_zone = "+00:00";
 --
 -- Database: `revvedup`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `appointments`
+--
+
+CREATE TABLE `appointments` (
+  `appointment_id` int(11) NOT NULL,
+  `service` varchar(255) NOT NULL,
+  `employee_id` int(11) NOT NULL,
+  `fullname` varchar(150) NOT NULL,
+  `contact` varchar(50) NOT NULL,
+  `appointmentDate` date NOT NULL,
+  `appointmentTime` time NOT NULL,
+  `emergency` tinyint(1) DEFAULT 0,
+  `status` enum('pending','approved','rejected') DEFAULT 'pending',
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `appointments`
+--
+
+INSERT INTO `appointments` (`appointment_id`, `service`, `employee_id`, `fullname`, `contact`, `appointmentDate`, `appointmentTime`, `emergency`, `status`, `created_at`) VALUES
+(12, 'paiting', 9, 'john doe', '09454454744', '2025-09-30', '01:51:00', 1, 'pending', '2025-09-30 05:51:10');
 
 -- --------------------------------------------------------
 
@@ -228,12 +254,20 @@ CREATE TABLE `user` (
 
 INSERT INTO `user` (`user_id`, `firstname`, `lastname`, `email`, `username`, `password`, `pin`, `position`, `status`) VALUES
 (1, 'juan', 'dela cruz', 'admin@gmail.com', 'admin', '$2a$12$jsAMWl2OcxUyo8OP7mLH4uTRYd5ln04QTtjU5O3qS1Q5N1o6f6yzm', NULL, 'admin', 1),
-(7, 'joshua', 'padilla', 'joshua@gmail.com', NULL, NULL, '12345', 'employee', 1),
-(8, 'john', 'doe', 'johndoe123@gmail.com', 'johndoe', NULL, '000000', 'employee', 1);
+(7, 'joshua', 'padilla', 'joshua@gmail.com', 'masterparj', NULL, '12345', 'employee', 1),
+(8, 'john', 'doe', 'johndoe123@gmail.com', 'johndoe', NULL, '000000', 'employee', 1),
+(9, 'johnloyd', 'cruz', 'johnloyd@gmail.com', 'jhonload123', NULL, '3409834', 'employee', 1);
 
 --
 -- Indexes for dumped tables
 --
+
+--
+-- Indexes for table `appointments`
+--
+ALTER TABLE `appointments`
+  ADD PRIMARY KEY (`appointment_id`),
+  ADD KEY `fk_employee` (`employee_id`);
 
 --
 -- Indexes for table `business_details`
@@ -304,6 +338,12 @@ ALTER TABLE `user`
 --
 
 --
+-- AUTO_INCREMENT for table `appointments`
+--
+ALTER TABLE `appointments`
+  MODIFY `appointment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+
+--
 -- AUTO_INCREMENT for table `business_details`
 --
 ALTER TABLE `business_details`
@@ -361,11 +401,17 @@ ALTER TABLE `transaction`
 -- AUTO_INCREMENT for table `user`
 --
 ALTER TABLE `user`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- Constraints for dumped tables
 --
+
+--
+-- Constraints for table `appointments`
+--
+ALTER TABLE `appointments`
+  ADD CONSTRAINT `fk_employee` FOREIGN KEY (`employee_id`) REFERENCES `user` (`user_id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `deduction`
