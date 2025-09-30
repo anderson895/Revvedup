@@ -116,6 +116,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 "message" => $result
             ]);
             exit;
+        }else if ($_POST['requestType'] == 'approve_appointment') {
+            $appointment_id = $_POST['appointment_id'];
+            $result = $db->approve_appointment($appointment_id);
+
+            if ($result['success']) {
+                echo json_encode([
+                    'status' => 'success',
+                    'message' => $result['message']   // <-- use $result, not $loginResult
+                ]);
+            } else {
+                echo json_encode([
+                    'status' => 'error',
+                    'message' => $result['message']   // <-- use $result, not $loginResult
+                ]);
+            }
+
+        }else if ($_POST['requestType'] == 'cancel_appointment') {
+            $appointment_id = $_POST['appointment_id'];
+            $result = $db->cancel_appointment($appointment_id);
+
+            if ($result['success']) {
+                echo json_encode([
+                    'status' => 'success',
+                    'message' => $result['message']   // <-- use $result, not $loginResult
+                ]);
+            } else {
+                echo json_encode([
+                    'status' => 'error',
+                    'message' => $result['message']   // <-- use $result, not $loginResult
+                ]);
+            }
+
         }else if ($_POST['requestType'] == 'CheckOutOrder') {
                 $services = $_POST['services'] ?? [];
                 $items = $_POST['items'] ?? [];

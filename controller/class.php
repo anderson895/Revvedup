@@ -1434,6 +1434,72 @@ public function EditDeduction($empId, $deductionDate, $deductionAmount) {
                 }
             }
             return $users;
+    }
+
+    
+
+
+     public function cancel_appointment($appointment_id) {
+            // Prepare statement
+            $stmt = $this->conn->prepare("UPDATE appointments SET status = 'canceled' WHERE appointment_id = ?");
+            
+            if ($stmt) {
+                // Bind parameter
+                $stmt->bind_param("i", $appointment_id); // "i" means integer
+                
+                // Execute statement
+                if ($stmt->execute()) {
+                    $stmt->close();
+                    return [
+                        'success' => true,
+                        'message' => 'Appointment canceled successfully.'
+                    ];
+                } else {
+                    $stmt->close();
+                    return [
+                        'success' => false,
+                        'message' => 'Failed to cancel appointment. Please try again.'
+                    ];
+                }
+            } else {
+                return [
+                    'success' => false,
+                    'message' => 'Failed to prepare the statement.'
+                ];
+            }
+        }
+
+
+
+
+         public function approve_appointment($appointment_id) {
+            // Prepare statement
+            $stmt = $this->conn->prepare("UPDATE appointments SET status = 'approved' WHERE appointment_id = ?");
+            
+            if ($stmt) {
+                // Bind parameter
+                $stmt->bind_param("i", $appointment_id); // "i" means integer
+                
+                // Execute statement
+                if ($stmt->execute()) {
+                    $stmt->close();
+                    return [
+                        'success' => true,
+                        'message' => 'Appointment canceled successfully.'
+                    ];
+                } else {
+                    $stmt->close();
+                    return [
+                        'success' => false,
+                        'message' => 'Failed to cancel appointment. Please try again.'
+                    ];
+                }
+            } else {
+                return [
+                    'success' => false,
+                    'message' => 'Failed to prepare the statement.'
+                ];
+            }
         }
 
 

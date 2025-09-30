@@ -1,25 +1,44 @@
 $(document).ready(function () {
     // Fetch appointments
-    function fetchAppointments() {
-        $.ajax({
-            url: "../controller/end-points/controller.php",
-            method: "GET",
-            data: { requestType: "fetch_appointment" },
-            dataType: "json",
-            success: function (res) {
-                const tbody = $('#appointmentTableBody');
-                tbody.empty();
+function fetchAppointments() {
+    $.ajax({
+        url: "../controller/end-points/controller.php",
+        method: "GET",
+        data: { requestType: "fetch_appointment" },
+        dataType: "json",
+        success: function (res) {
+            const tbody = $('#appointmentTableBody');
+            tbody.empty();
 
-                if (res.status === 200 && res.data.length > 0) {
-                    res.data.forEach(data => {
+            if (res.status === 200 && res.data.length > 0) {
+                res.data.forEach(data => {
+                    const statusLower = data.status.toLowerCase();
+
+                    // Determine status color
                     let statusColor = '';
-                    if (data.status === "pending") statusColor = 'bg-yellow-500';
-                    else if (data.status === "completed") statusColor = 'bg-green-600';
-                    else statusColor = 'bg-red-600';
+                    if (statusLower === "pending") statusColor = 'bg-yellow-500';
+                    else if (statusLower === "completed") statusColor = 'bg-green-600';
+                    else if (statusLower === "request canceled") statusColor = 'bg-orange-500';
+                    else if (statusLower === "canceled" || statusLower === "approved") statusColor = 'bg-red-600';
+                    else statusColor = 'bg-gray-500';
 
-                    // Disable cancel button if status is not pending
-                    const disabled = data.status !== "pending" ? "disabled cursor-not-allowed opacity-50" : "";
+                    // Enable buttons only if status is pending or request canceled
+                    const buttonsDisabled = !(statusLower === "pending" || statusLower === "request canceled") 
+                        ? "disabled cursor-not-allowed opacity-50" 
+                        : "";
 
+                    // Buttons
+                    const cancelBtn = `<button class="cancelBtn bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition ${buttonsDisabled}"
+                                            data-appointment_id='${data.appointment_id}' ${buttonsDisabled}>
+                                            <span class="material-icons text-sm align-middle">cancel</span> Cancel
+                                        </button>`;
+
+                    const approveBtn = `<button class="approveBtn bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600 transition ${buttonsDisabled}"
+                                            data-appointment_id='${data.appointment_id}' ${buttonsDisabled}>
+                                            <span class="material-icons text-sm align-middle">check_circle</span> Approve
+                                        </button>`;
+
+                    // Append row
                     $('#appointmentTableBody').append(`
                         <tr class="border-b hover:bg-gray-50 transition-colors">
                             <td class="px-4 py-2 font-medium text-gray-700">${data.reference_number}</td>
@@ -30,7 +49,7 @@ $(document).ready(function () {
                                 </span>
                             </td>
                             <td class="px-4 py-2 flex justify-center gap-2">
-                                <button class="seeDetailsBtn cursor-pointer bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 transition"
+                                <button class="seeDetailsBtn bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 transition"
                                     data-id='${data.appointment_id}'
                                     data-reference='${data.reference_number}'
                                     data-fullname='${data.fullname}'
@@ -42,27 +61,30 @@ $(document).ready(function () {
                                     data-status='${data.status}'>
                                     <span class="material-icons text-sm align-middle">visibility</span> See Details
                                 </button>
-                                <button class="cancelBtn cursor-pointer bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition ${disabled}"
-                                    data-appointment_id='${data.appointment_id}' ${data.status !== "pending" ? "disabled" : ""}>
-                                    <span class="material-icons text-sm align-middle">cancel</span> Cancel
-                                </button>
+                                ${cancelBtn}
+                                ${approveBtn}
                             </td>
                         </tr>
                     `);
                 });
-
-                } else {
-                    tbody.append(`
-                        <tr>
-                            <td colspan="4" class="p-4 text-center text-gray-400 italic">
-                                No record found
-                            </td>
-                        </tr>
-                    `);
-                }
+            } else {
+                tbody.append(`
+                    <tr>
+                        <td colspan="4" class="p-4 text-center text-gray-400 italic">
+                            No record found
+                        </td>
+                    </tr>
+                `);
             }
-        });
-    }
+        }
+    });
+}
+
+
+
+
+
+
 
     // Initial fetch
     fetchAppointments();
@@ -155,6 +177,65 @@ $(document).ready(function () {
 });
 
 
+
+
+
+
+
+
+
+// Approve appointment
+$(document).on('click', '.approveBtn', function () {
+    const appointmentId = $(this).data('appointment_id');
+
+    Swal.fire({
+        title: 'Approve Appointment',
+        text: "Are you sure you want to approve this appointment?",
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#28a745',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Yes, approve it!',
+        cancelButtonText: 'No'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            $.ajax({
+                url: "../controller/end-points/controller.php",
+                method: "POST",
+                data: { requestType: "approve_appointment", appointment_id: appointmentId },
+                dataType: "json",
+                success: function (res) {
+                    if (res.status === "success") {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Approved!',
+                            text: res.message,
+                            timer: 1000,
+                            showConfirmButton: false
+                        });
+
+                        setTimeout(() => {
+                            fetchAppointments();
+                        }, 1000);
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error!',
+                            text: res.message || "Failed to approve appointment."
+                        });
+                    }
+                },
+                error: function () {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: "An error occurred. Please try again."
+                    });
+                }
+            });
+        }
+    });
+});
 
 
 });
