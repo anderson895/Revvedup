@@ -232,100 +232,105 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 
         }else if ($_POST['requestType'] == 'UpdateProduct') {
-           $productId = $_POST['productId'];
-            $itemName = $_POST['itemName'];
-            $capital = $_POST['capital'];
-            $price = $_POST['price'];
-            $stockQty = $_POST['stockQty'];
+                    $productId = $_POST['productId'];
+                    $itemName = $_POST['itemName'];
+                    $capital = $_POST['capital'];
+                    $price = $_POST['price'];
+                    $stockQty = $_POST['stockQty'];
+                    $category = $_POST['category']; // ✅ Category
 
-            // Handle Banner Image Upload
-            $uniqueBannerFileName = null;
-            if (isset($_FILES['itemImage']) && $_FILES['itemImage']['error'] === UPLOAD_ERR_OK) {
-                $uploadDir = '../../static/upload/';
-                $fileExtension = pathinfo($_FILES['itemImage']['name'], PATHINFO_EXTENSION);
-                $uniqueBannerFileName = uniqid('item_', true) . '.' . $fileExtension;
+                    // Handle Banner Image Upload
+                    $uniqueBannerFileName = null;
+                    if (isset($_FILES['itemImage']) && $_FILES['itemImage']['error'] === UPLOAD_ERR_OK) {
+                        $uploadDir = '../../static/upload/';
+                        $fileExtension = pathinfo($_FILES['itemImage']['name'], PATHINFO_EXTENSION);
+                        $uniqueBannerFileName = uniqid('item_', true) . '.' . $fileExtension;
 
-                move_uploaded_file($_FILES['itemImage']['tmp_name'], $uploadDir . $uniqueBannerFileName);
-            }
+                        move_uploaded_file($_FILES['itemImage']['tmp_name'], $uploadDir . $uniqueBannerFileName);
+                    }
 
-            // Update
-            $result = $db->UpdateProduct(
-                $productId,
-                $itemName,
-                $capital,
-                $price,
-                $stockQty,
-                $uniqueBannerFileName 
-            );
+                    // Update
+                    $result = $db->UpdateProduct(
+                        $productId,
+                        $itemName,
+                        $capital,
+                        $price,
+                        $stockQty,
+                        $category,             // ✅ Added category here
+                        $uniqueBannerFileName 
+                    );
 
-            if ($result['status']) {
-                echo json_encode([
-                    'status' => 200,
-                    'message' => $result['message']
-                ]);
-            } else {
-                echo json_encode([
-                    'status' => 500,
-                    'message' => $result['message']
-                ]);
-            }
+                    if ($result['status']) {
+                        echo json_encode([
+                            'status' => 200,
+                            'message' => $result['message']
+                        ]);
+                    } else {
+                        echo json_encode([
+                            'status' => 500,
+                            'message' => $result['message']
+                        ]);
+                    }
+
 
     
         }else if ($_POST['requestType'] == 'AddProduct') {
 
-                $itemName  = $_POST['itemName'];
-                $capital  = $_POST['capital'];
-                $price     = $_POST['price'];
-                $stockQty  = $_POST['stockQty'];
+                            $itemName  = $_POST['itemName'];
+                            $capital   = $_POST['capital'];
+                            $price     = $_POST['price'];
+                            $stockQty  = $_POST['stockQty'];
+                            $category  = $_POST['category']; // ✅ Category
 
-                // FILES
-                $itemImage = $_FILES['itemImage'];
-                $uploadDir = '../../static/upload/';
-                $itemImageFileName = ''; 
+                            // FILES
+                            $itemImage = $_FILES['itemImage'];
+                            $uploadDir = '../../static/upload/';
+                            $itemImageFileName = ''; 
 
-                if (isset($itemImage) && $itemImage['error'] === UPLOAD_ERR_OK) {
-                    $bannerExtension = pathinfo($itemImage['name'], PATHINFO_EXTENSION);
-                    $menuImageFileName = uniqid('item_', true) . '.' . $bannerExtension;
-                    $bannerPath = $uploadDir . $menuImageFileName;
+                            if (isset($itemImage) && $itemImage['error'] === UPLOAD_ERR_OK) {
+                                $bannerExtension = pathinfo($itemImage['name'], PATHINFO_EXTENSION);
+                                $menuImageFileName = uniqid('item_', true) . '.' . $bannerExtension;
+                                $bannerPath = $uploadDir . $menuImageFileName;
 
-                    $bannerUploaded = move_uploaded_file($itemImage['tmp_name'], $bannerPath);
+                                $bannerUploaded = move_uploaded_file($itemImage['tmp_name'], $bannerPath);
 
-                    if ($bannerUploaded) {
-                        $itemImageFileName = $menuImageFileName;
-                    } else {
-                        echo json_encode([
-                            'status' => 500,
-                            'message' => 'Error uploading itemImage image.'
-                        ]);
-                        exit;
-                    }
-                } elseif ($itemImage['error'] !== UPLOAD_ERR_NO_FILE && $itemImage['error'] !== 0) {
-                    echo json_encode([
-                        'status' => 400,
-                        'message' => 'Invalid image upload.'
-                    ]);
-                    exit;
-                }
+                                if ($bannerUploaded) {
+                                    $itemImageFileName = $menuImageFileName;
+                                } else {
+                                    echo json_encode([
+                                        'status' => 500,
+                                        'message' => 'Error uploading item image.'
+                                    ]);
+                                    exit;
+                                }
+                            } elseif ($itemImage['error'] !== UPLOAD_ERR_NO_FILE && $itemImage['error'] !== 0) {
+                                echo json_encode([
+                                    'status' => 400,
+                                    'message' => 'Invalid image upload.'
+                                ]);
+                                exit;
+                            }
 
-                $result = $db->AddProduct(
-                    $itemName,
-                    $capital,
-                    $price,
-                    $stockQty,
-                    $itemImageFileName 
-                );
+                            $result = $db->AddProduct(
+                                $itemName,
+                                $capital,
+                                $price,
+                                $stockQty,
+                                $category,           // ✅ Added category here
+                                $itemImageFileName 
+                            );
 
-                if ($result) {
-                    echo json_encode([
-                        'status' => 200,
-                        'message' => 'Added Successfully.'
-                    ]);
-                } else {
-                    echo json_encode([
-                        'status' => 500,
-                        'message' => 'Error saving data.'
-                    ]);
-                }
+                            if ($result) {
+                                echo json_encode([
+                                    'status' => 200,
+                                    'message' => 'Added Successfully.'
+                                ]);
+                            } else {
+                                echo json_encode([
+                                    'status' => 500,
+                                    'message' => 'Error saving data.'
+                                ]);
+                            }
 
                
 

@@ -24,6 +24,7 @@ $("#frmAddProduct").submit(function (e) {
     var itemName = $('#itemName').val().trim();
     var price = $('#price').val().trim();
     var stockQty = $('#stockQty').val().trim();
+    var category = $('#category').val();  // ✅ Category
     var itemImage = $('#itemImage').val();
 
     // Validate Item Name
@@ -59,6 +60,12 @@ $("#frmAddProduct").submit(function (e) {
     var stockValue = parseInt(stockQty);
     if (stockValue <= 0) {
         alertify.error("Stock quantity must be greater than zero.");
+        return;
+    }
+
+    // ✅ Validate Category
+    if (!category) {
+        alertify.error("Please select a category.");
         return;
     }
 
@@ -156,6 +163,9 @@ $.ajax({
                             <td class="px-4 py-2 font-semibold">
                                 ${data.movement} (${data.total_sold_week} pcs per week)
                             </td>
+                            <td class="px-4 py-2 font-semibold">
+                                ${data.prod_category}
+                            </td>
                             <td class="px-4 py-2">
                                 <span class="inline-block w-3 h-3 rounded-full ${stockColor}"></span>
                             </td>
@@ -166,6 +176,7 @@ $.ajax({
                                     data-prod_capital='${data.prod_capital}'
                                     data-prod_price='${data.prod_price}'
                                     data-prod_qty='${data.prod_qty}'
+                                    data-prod_category='${data.prod_category}'
                                 >
                                     <span class="material-icons text-sm">edit</span>
                                 </button>
@@ -223,26 +234,28 @@ $.ajax({
 
 
   
-
 $(document).on("click", ".updateBtn", function () {
-
   const prod_id = $(this).data("prod_id");
   const prod_name = $(this).data("prod_name");
   const prod_capital = $(this).data("prod_capital");
   const prod_price = $(this).data("prod_price");
   const prod_qty = $(this).data("prod_qty");
+  const prod_category = $(this).data("prod_category"); // ✅ dagdag
 
-
+  // Populate modal fields
   $("#productId").val(prod_id);
   $("#itemNameUpdate").val(prod_name);
   $("#capitalUpdate").val(prod_capital);
   $("#priceUpdate").val(prod_price);
   $("#stockQtyUpdate").val(prod_qty);
 
+  // ✅ set selected category (assume select input with id="categoryUpdate")
+  $("#categoryUpdate").val(prod_category);
 
- $('#updateProductModal').fadeIn();
-
+  // Show modal
+  $('#updateProductModal').fadeIn();
 });
+
 
 // Close modal
 $(document).on("click", "#closeUpdateProductModal", function () {
@@ -264,10 +277,61 @@ $(document).on("click", function (e) {
 
 
 
-
-
 $(document).on("submit", "#frmUpdateProduct", function (e) {
   e.preventDefault();
+
+  var itemName = $('#itemNameUpdate').val().trim();
+  var price = $('#priceUpdate').val().trim();
+  var stockQty = $('#stockQtyUpdate').val().trim();
+  var category = $('#categoryUpdate').val(); // ✅ Category
+  var itemImage = $('#itemImageUpdate').val();
+
+  // Validate Item Name
+  if (!itemName) {
+    alertify.error("Please enter item name.");
+    return;
+  }
+
+  // Validate Price
+  if (!price) {
+    alertify.error("Please enter a price.");
+    return;
+  }
+  if (isNaN(price)) {
+    alertify.error("Price must be a valid number.");
+    return;
+  }
+  var priceValue = parseFloat(price);
+  if (priceValue <= 0) {
+    alertify.error("Price must be greater than zero.");
+    return;
+  }
+
+  // Validate Stock Quantity
+  if (!stockQty) {
+    alertify.error("Please enter stock quantity.");
+    return;
+  }
+  if (isNaN(stockQty)) {
+    alertify.error("Quantity must be a valid number.");
+    return;
+  }
+
+
+  // ✅ Validate Category
+  if (!category) {
+    alertify.error("Please select a category.");
+    return;
+  }
+
+  // Validate Image Upload (optional sa Update, pero kung may laman dapat valid type)
+  if (itemImage) {
+    var allowedExtensions = /(\.jpg|\.jpeg|\.png|\.gif)$/i;
+    if (!allowedExtensions.exec(itemImage)) {
+      alertify.error("Invalid file type. Only JPG, JPEG, PNG, or GIF allowed.");
+      return;
+    }
+  }
 
   const formData = new FormData(this);
   formData.append("requestType", "UpdateProduct");
@@ -281,8 +345,8 @@ $(document).on("submit", "#frmUpdateProduct", function (e) {
     dataType: "json",
     success: function (response) {
       if (response.status === 200) {
-        Swal.fire('Success!', response.message || 'Event info updated.', 'success').then(() => {
-            location.reload();
+        Swal.fire('Success!', response.message || 'Product updated.', 'success').then(() => {
+          location.reload();
         });
       } else {
         alertify.error(response.message || "Error updating.");
@@ -294,8 +358,6 @@ $(document).on("submit", "#frmUpdateProduct", function (e) {
     }
   });
 });
-
-
 
 
 

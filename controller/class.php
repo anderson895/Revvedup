@@ -755,13 +755,13 @@ public function count_transactions($filter = "") {
 
 
 
-
 public function UpdateProduct(
     $productId,
     $itemName,
     $capital,
     $price,
     $stockQty,
+    $category,
     $uniqueBannerFileName = null
 ){
     // Delete old image if new one is provided
@@ -782,9 +782,10 @@ public function UpdateProduct(
     }
 
     // Build query
-    $query = "UPDATE product SET prod_name = ?,prod_capital=?, prod_price = ?, prod_qty = ?";
-    $types = "sddi"; // s = string, d = double, i = integer
-    $params = [$itemName,$capital, $price, $stockQty];
+    $query = "UPDATE product 
+              SET prod_name = ?, prod_capital = ?, prod_price = ?, prod_qty = ?, prod_category = ?";
+    $types = "sddis"; // s = string, d = double, i = integer
+    $params = [$itemName, $capital, $price, $stockQty, $category];
 
     if (!empty($uniqueBannerFileName)) {
         $query .= ", prod_img = ?";
@@ -813,6 +814,7 @@ public function UpdateProduct(
 
     return ['status' => true, 'message' => 'Product updated successfully.'];
 }
+
 
 
 
@@ -980,14 +982,15 @@ public function removeProduct($prod_id) {
 
 
 
-    public function AddProduct($itemName, $capital,$price, $stockQty, $itemImageFileName) {
+    public function AddProduct($itemName, $capital, $price, $stockQty, $itemImageFileName, $category) {
         $query = "INSERT INTO `product` 
-                (`prod_name`,`prod_capital`, `prod_price`, `prod_qty`, `prod_img`) 
-                VALUES (?,?,?,?,?)";
+                (`prod_name`, `prod_capital`, `prod_price`, `prod_qty`, `prod_img`, `prod_category`) 
+                VALUES (?,?,?,?,?,?)";
 
         $stmt = $this->conn->prepare($query);
 
-        $stmt->bind_param("sddis", $itemName,$capital,$price, $stockQty, $itemImageFileName);
+        // s = string, d = double, i = integer
+        $stmt->bind_param("sddiss", $itemName, $capital, $price, $stockQty, $itemImageFileName, $category);
 
         $result = $stmt->execute();
 
@@ -1001,6 +1004,7 @@ public function removeProduct($prod_id) {
 
         return $inserted_id;
     }
+
 
 
 

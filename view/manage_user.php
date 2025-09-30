@@ -22,7 +22,6 @@ include "../src/components/view/header.php";
           class="cursor-pointer flex items-center gap-2 px-4 py-2 rounded-lg bg-green-600 text-white 
                 hover:bg-green-700 active:bg-green-800 transition-colors shadow-sm">
           <span class="material-icons text-base">person_add</span>
-          <span class="font-medium">Add Employee</span>
         </button>
 
       </div>
