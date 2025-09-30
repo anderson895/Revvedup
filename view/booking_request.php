@@ -102,7 +102,16 @@ include "../src/components/view/header.php";
 
 
 
-
+<!-- Modal -->
+<div id="detailsModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 opacity-0 pointer-events-none transition-opacity duration-300">
+  <div class="bg-white rounded-lg shadow-lg w-full max-w-md p-6 relative">
+    <button id="closeModal" class="absolute cursor-pointer top-2 right-2 text-gray-500 hover:text-gray-700">&times;</button>
+    <h2 class="text-xl font-bold mb-4">Appointment Details</h2>
+    <div id="modalContent" class="space-y-2 text-gray-700">
+      <!-- Dynamic content goes here -->
+    </div>
+  </div>
+</div>
 
 
 

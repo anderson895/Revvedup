@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 30, 2025 at 07:51 AM
+-- Generation Time: Sep 30, 2025 at 02:54 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -29,14 +29,16 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `appointments` (
   `appointment_id` int(11) NOT NULL,
+  `reference_number` int(255) NOT NULL,
   `service` varchar(255) NOT NULL,
   `employee_id` int(11) NOT NULL,
+  `appointment_customer_id` int(11) NOT NULL,
   `fullname` varchar(150) NOT NULL,
   `contact` varchar(50) NOT NULL,
   `appointmentDate` date NOT NULL,
   `appointmentTime` time NOT NULL,
   `emergency` tinyint(1) DEFAULT 0,
-  `status` enum('pending','approved','rejected') DEFAULT 'pending',
+  `status` enum('pending','request canceled','approved','canceled') DEFAULT 'pending',
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -44,8 +46,8 @@ CREATE TABLE `appointments` (
 -- Dumping data for table `appointments`
 --
 
-INSERT INTO `appointments` (`appointment_id`, `service`, `employee_id`, `fullname`, `contact`, `appointmentDate`, `appointmentTime`, `emergency`, `status`, `created_at`) VALUES
-(12, 'paiting', 9, 'john doe', '09454454744', '2025-09-30', '01:51:00', 1, 'pending', '2025-09-30 05:51:10');
+INSERT INTO `appointments` (`appointment_id`, `reference_number`, `service`, `employee_id`, `appointment_customer_id`, `fullname`, `contact`, `appointmentDate`, `appointmentTime`, `emergency`, `status`, `created_at`) VALUES
+(17, 561535, 'Brake Service', 8, 1, 'john doe', '09454454744', '2025-09-30', '14:45:00', 1, 'approved', '2025-09-30 06:46:02');
 
 -- --------------------------------------------------------
 
@@ -267,7 +269,8 @@ INSERT INTO `user` (`user_id`, `firstname`, `lastname`, `email`, `username`, `pa
 --
 ALTER TABLE `appointments`
   ADD PRIMARY KEY (`appointment_id`),
-  ADD KEY `fk_employee` (`employee_id`);
+  ADD KEY `fk_employee` (`employee_id`),
+  ADD KEY `fk_customer` (`appointment_customer_id`);
 
 --
 -- Indexes for table `business_details`
@@ -341,7 +344,7 @@ ALTER TABLE `user`
 -- AUTO_INCREMENT for table `appointments`
 --
 ALTER TABLE `appointments`
-  MODIFY `appointment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `appointment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT for table `business_details`
@@ -411,6 +414,7 @@ ALTER TABLE `user`
 -- Constraints for table `appointments`
 --
 ALTER TABLE `appointments`
+  ADD CONSTRAINT `fk_customer` FOREIGN KEY (`appointment_customer_id`) REFERENCES `customer` (`customer_id`) ON DELETE CASCADE,
   ADD CONSTRAINT `fk_employee` FOREIGN KEY (`employee_id`) REFERENCES `user` (`user_id`) ON DELETE CASCADE;
 
 --

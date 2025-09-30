@@ -28,12 +28,12 @@ function fetchAppointments() {
                         : "";
 
                     // Buttons
-                    const cancelBtn = `<button class="cancelBtn bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition ${buttonsDisabled}"
+                    const cancelBtn = `<button class="cancelBtn cursor-pointer bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition ${buttonsDisabled}"
                                             data-appointment_id='${data.appointment_id}' ${buttonsDisabled}>
                                             <span class="material-icons text-sm align-middle">cancel</span> Cancel
                                         </button>`;
 
-                    const approveBtn = `<button class="approveBtn bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600 transition ${buttonsDisabled}"
+                    const approveBtn = `<button class="approveBtn cursor-pointer bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600 transition ${buttonsDisabled}"
                                             data-appointment_id='${data.appointment_id}' ${buttonsDisabled}>
                                             <span class="material-icons text-sm align-middle">check_circle</span> Approve
                                         </button>`;
@@ -49,7 +49,7 @@ function fetchAppointments() {
                                 </span>
                             </td>
                             <td class="px-4 py-2 flex justify-center gap-2">
-                                <button class="seeDetailsBtn bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 transition"
+                                <button class="seeDetailsBtn cursor-pointer bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 transition"
                                     data-id='${data.appointment_id}'
                                     data-reference='${data.reference_number}'
                                     data-fullname='${data.fullname}'
@@ -99,6 +99,8 @@ function fetchAppointments() {
 
     // Show modal on See Details click
     $(document).on('click', '.seeDetailsBtn', function () {
+
+        
         const btn = $(this);
         const content = `
             <p><strong>Reference:</strong> ${btn.data('reference')}</p>
@@ -119,6 +121,13 @@ function fetchAppointments() {
             $('#detailsModal').addClass('opacity-0 pointer-events-none');
         }
     });
+
+
+
+
+
+
+
 
     // Cancel appointment
    $(document).on('click', '.cancelBtn', function () {
