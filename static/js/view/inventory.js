@@ -124,7 +124,6 @@ $("#frmAddProduct").submit(function (e) {
 
 
 
-
 $.ajax({
     url: "../controller/end-points/controller.php",
     method: "GET",
@@ -132,20 +131,38 @@ $.ajax({
     dataType: "json",
     success: function (res) {
         if (res.status === 200) {
-            // Clear previous content
             $('#productTableBody').empty();
+
+            let isAdmin = (res.position === "admin"); // ✅ Check session role
 
             if (res.data.length > 0) {
                 res.data.forEach(data => {
-
-                    // Stock color logic
                     let stockColor = '';
-                    if (data.prod_qty > 10) {
-                        stockColor = 'bg-green-600';
-                    } else if (data.prod_qty > 0 && data.prod_qty <= 10) {
-                        stockColor = 'bg-yellow-500';
-                    } else if (data.prod_qty <= 0) {
-                        stockColor = 'bg-red-600';
+                    if (data.prod_qty > 10) stockColor = 'bg-green-600';
+                    else if (data.prod_qty > 0) stockColor = 'bg-yellow-500';
+                    else stockColor = 'bg-red-600';
+
+                    // Conditionally add buttons
+                    let actionButtons = '';
+                    if (isAdmin) {
+                        actionButtons = `
+                            <button class="updateBtn text-gray-700 hover:text-blue-600"
+                                data-prod_id ='${data.prod_id}'
+                                data-prod_name='${data.prod_name}'
+                                data-prod_capital='${data.prod_capital}'
+                                data-prod_price='${data.prod_price}'
+                                data-prod_qty='${data.prod_qty}'
+                                data-prod_category='${data.prod_category}'
+                            >
+                                <span class="material-icons text-sm">edit</span>
+                            </button>
+                            <button class="removeBtn text-gray-700 hover:text-red-600"
+                                data-prod_id='${data.prod_id}'
+                                data-prod_name='${data.prod_name}'
+                            >
+                                <span class="material-icons text-sm">delete</span>
+                            </button>
+                        `;
                     }
 
                     $('#productTableBody').append(`
@@ -163,29 +180,12 @@ $.ajax({
                             <td class="px-4 py-2 font-semibold">
                                 ${data.movement} (${data.total_sold_week} pcs per week)
                             </td>
-                            <td class="px-4 py-2 font-semibold">
-                                ${data.prod_category}
-                            </td>
+                            <td class="px-4 py-2 font-semibold">${data.prod_category}</td>
                             <td class="px-4 py-2">
                                 <span class="inline-block w-3 h-3 rounded-full ${stockColor}"></span>
                             </td>
                             <td class="px-4 py-2 flex justify-center space-x-2">
-                                <button class="updateBtn text-gray-700 hover:text-blue-600"
-                                    data-prod_id ='${data.prod_id}'
-                                    data-prod_name='${data.prod_name}'
-                                    data-prod_capital='${data.prod_capital}'
-                                    data-prod_price='${data.prod_price}'
-                                    data-prod_qty='${data.prod_qty}'
-                                    data-prod_category='${data.prod_category}'
-                                >
-                                    <span class="material-icons text-sm">edit</span>
-                                </button>
-                                <button class="removeBtn text-gray-700 hover:text-red-600"
-                                    data-prod_id='${data.prod_id}'
-                                    data-prod_name='${data.prod_name}'
-                                >
-                                    <span class="material-icons text-sm">delete</span>
-                                </button>
+                                ${actionButtons}
                             </td>
                         </tr>
                     `);
@@ -193,7 +193,7 @@ $.ajax({
             } else {
                 $('#productTableBody').append(`
                     <tr>
-                        <td colspan="8" class="p-4 text-center text-gray-400 italic">
+                        <td colspan="9" class="p-4 text-center text-gray-400 italic">
                             No record found
                         </td>
                     </tr>

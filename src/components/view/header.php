@@ -1,6 +1,11 @@
 <?php 
 session_start();
 
+
+// echo "<pre>";
+// print_r($_SESSION);
+// echo "</pre>";
+
 include "auth.php";
 
 $db = new auth_class();
@@ -27,6 +32,7 @@ $business = $db->get_business_details();
 
 
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -73,13 +79,13 @@ $business = $db->get_business_details();
       <a href="sales" class="flex justify-center w-full p-2 rounded-lg hover:bg-gray-200 hover:scale-105 transition duration-200">
         <img src="../static/images/transaction.png" alt="sales">
       </a>
-      <a href="inventory" class="flex justify-center w-full p-2 rounded-lg hover:bg-gray-200 hover:scale-105 transition duration-200 <?= $authorize ?>">
+      <a href="inventory" class="flex justify-center w-full p-2 rounded-lg hover:bg-gray-200 hover:scale-105 transition duration-200 ">
         <img src="../static/images/inventory.png" alt="Inventory">
       </a>
       <a href="analytics" class="flex justify-center w-full p-2 rounded-lg hover:bg-gray-200 hover:scale-105 transition duration-200" <?= $authorize ?>>
         <img src="../static/images/analytics.png" alt="Analytics">
       </a>
-      <a href="employee" class="flex justify-center w-full p-2 rounded-lg hover:bg-gray-200 hover:scale-105 transition duration-200 <?= $authorize ?>">
+      <a href="employee" class="flex justify-center w-full p-2 rounded-lg hover:bg-gray-200 hover:scale-105 transition duration-200 ">
         <img src="../static/images/team_management.png" alt="Employee">
       </a>
 

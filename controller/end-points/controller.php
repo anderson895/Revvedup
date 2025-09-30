@@ -529,11 +529,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
    if (isset($_GET['requestType']))
     {
         if ($_GET['requestType'] == 'fetch_all_product') {
+
+
+            $On_Session = $db->check_account($_SESSION['user_id']);
+            $position = $On_Session['position'] ?? "guest";
+
             $result = $db->fetch_all_product();
             echo json_encode([
                 'status' => 200,
-                'data' => $result
+                'data' => $result,
+                "position" => $position
             ]);
+            
         }else if ($_GET['requestType'] == 'fetch_all_users') {
             $result = $db->fetch_all_users();
             echo json_encode([
@@ -619,14 +626,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     echo json_encode(['status'=>404,'message'=>'Item not found']);
                 }
         }else if ($_GET['requestType'] === 'fetch_all_employee_record') {
+
+
+                $On_Session = $db->check_account($_SESSION['user_id']);
+                $position = $On_Session['position'] ?? "guest";
+
+
                 $month = isset($_GET['month']) ? intval($_GET['month']) : null;
                 $year  = isset($_GET['year']) ? intval($_GET['year']) : null;
                 $week  = isset($_GET['week']) ? intval($_GET['week']) : null;
 
-                $result = $db->fetch_all_employee_record($month, $year, $week);
+                if ($position === "admin") {
+                    // Admin fetches all
+                    $result = $db->fetch_all_employee_record($month, $year, $week);
+                } else {
+                    // Non-admin fetches only their own
+                    $result = $db->fetch_employee_record_by_id($_SESSION['user_id'], $month, $year, $week);
+                }
 
                 if ($result) {
-                    echo json_encode(['status'=>200,'data'=>$result]);
+                    echo json_encode([
+                    'status'=>200,
+                    'data'=>$result,
+                    'position'=>$position,
+                ]);
                 } else {
                     echo json_encode(['status'=>404,'message'=>'Item not found']);
                 }

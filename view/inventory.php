@@ -35,7 +35,7 @@ include "../src/components/view/header.php";
       <div class="flex justify-between items-center  px-4 py-3">
         <h2 class="text-gray-700 font-semibold">Inventory List</h2>
 
-        <button class="p-2 rounded-md hover:bg-gray-100" id="addProductBtn">
+        <button class="p-2 rounded-md hover:bg-gray-100" id="addProductBtn" <?= $authorize ?>>
         <span class="material-icons text-green-600">add_box</span>
         </button>
 
@@ -54,7 +54,7 @@ include "../src/components/view/header.php";
               <th class="px-4 py-2 text-left text-sm font-medium text-gray-600">Sales Speed</th>
               <th class="px-4 py-2 text-left text-sm font-medium text-gray-600">Category</th>
               <th class="px-4 py-2 text-left text-sm font-medium text-gray-600">Status</th>
-              <th class="px-4 py-2 text-center text-sm font-medium text-gray-600">Actions</th>
+              <th class="px-4 py-2 text-center text-sm font-medium text-gray-600" <?= $authorize ?>>Actions</th>
             </tr>
           </thead>
           <tbody id="productTableBody" class="divide-y">
