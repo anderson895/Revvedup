@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 30, 2025 at 02:54 PM
+-- Generation Time: Sep 30, 2025 at 05:28 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -39,6 +39,7 @@ CREATE TABLE `appointments` (
   `appointmentTime` time NOT NULL,
   `emergency` tinyint(1) DEFAULT 0,
   `status` enum('pending','request canceled','approved','canceled') DEFAULT 'pending',
+  `seen` int(11) NOT NULL DEFAULT 0 COMMENT '0=unseen,1=seen',
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -46,8 +47,8 @@ CREATE TABLE `appointments` (
 -- Dumping data for table `appointments`
 --
 
-INSERT INTO `appointments` (`appointment_id`, `reference_number`, `service`, `employee_id`, `appointment_customer_id`, `fullname`, `contact`, `appointmentDate`, `appointmentTime`, `emergency`, `status`, `created_at`) VALUES
-(17, 561535, 'Brake Service', 8, 1, 'john doe', '09454454744', '2025-09-30', '14:45:00', 1, 'approved', '2025-09-30 06:46:02');
+INSERT INTO `appointments` (`appointment_id`, `reference_number`, `service`, `employee_id`, `appointment_customer_id`, `fullname`, `contact`, `appointmentDate`, `appointmentTime`, `emergency`, `status`, `seen`, `created_at`) VALUES
+(17, 561535, 'Brake Service', 8, 1, 'john doe', '09454454744', '2025-09-30', '14:45:00', 1, 'pending', 0, '2025-09-30 06:46:02');
 
 -- --------------------------------------------------------
 
@@ -102,30 +103,6 @@ CREATE TABLE `deduction` (
   `deduction_user_id` int(11) NOT NULL,
   `deduction_amount` decimal(10,2) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `employee`
---
-
-CREATE TABLE `employee` (
-  `emp_id` int(11) NOT NULL,
-  `emp_fname` varchar(60) NOT NULL,
-  `emp_lname` varchar(60) NOT NULL,
-  `emp_status` int(11) NOT NULL DEFAULT 1 COMMENT '0=not active,1=active'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `employee`
---
-
-INSERT INTO `employee` (`emp_id`, `emp_fname`, `emp_lname`, `emp_status`) VALUES
-(1, 'john', 'doe', 1),
-(2, 'patrick', 'beverly', 1),
-(3, 'mario', 'barrios', 1),
-(4, 'maxine', 'santos', 1),
-(5, 'andy', 'padilla', 1);
 
 -- --------------------------------------------------------
 
@@ -292,12 +269,6 @@ ALTER TABLE `deduction`
   ADD KEY `deduction_emp_id` (`deduction_user_id`);
 
 --
--- Indexes for table `employee`
---
-ALTER TABLE `employee`
-  ADD PRIMARY KEY (`emp_id`);
-
---
 -- Indexes for table `item_cart`
 --
 ALTER TABLE `item_cart`
@@ -363,12 +334,6 @@ ALTER TABLE `customer`
 --
 ALTER TABLE `deduction`
   MODIFY `deduction_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
-
---
--- AUTO_INCREMENT for table `employee`
---
-ALTER TABLE `employee`
-  MODIFY `emp_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `item_cart`
