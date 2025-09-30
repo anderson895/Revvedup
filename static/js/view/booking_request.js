@@ -1,5 +1,5 @@
 $(document).ready(function () {
-   // Fetch appointments
+    // Fetch appointments
 function fetchAppointments() {
     $.ajax({
         url: "../controller/end-points/controller.php",
@@ -11,48 +11,59 @@ function fetchAppointments() {
             tbody.empty();
 
             if (res.status === 200 && res.data.length > 0) {
-                const appointmentIds = []; // store IDs
+                const appointmentIds = []; // Store fetched appointment IDs
 
                 res.data.forEach(data => {
-                    appointmentIds.push(data.appointment_id);
+                    appointmentIds.push(data.appointment_id); // Add to array
 
                     const statusLower = data.status.toLowerCase();
-                    let statusColor = statusLower === "pending" ? 'bg-yellow-500' :
-                                      statusLower === "completed" ? 'bg-green-600' :
-                                      statusLower === "request canceled" ? 'bg-orange-500' :
-                                      statusLower === "canceled" || statusLower === "approved" ? 'bg-red-600' : 'bg-gray-500';
+
+                    // Determine status color
+                    let statusColor = '';
+                    if (statusLower === "pending") statusColor = 'bg-yellow-500';
+                    else if (statusLower === "completed") statusColor = 'bg-green-600';
+                    else if (statusLower === "request canceled") statusColor = 'bg-orange-500';
+                    else if (statusLower === "canceled" || statusLower === "approved") statusColor = 'bg-red-600';
+                    else statusColor = 'bg-gray-500';
 
                     const buttonsDisabled = !(statusLower === "pending" || statusLower === "request canceled") 
-                                            ? "disabled cursor-not-allowed opacity-50" : "";
+                        ? "disabled cursor-not-allowed opacity-50" 
+                        : "";
 
-                    const seeBtn = `<button class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm transition"
-                                        data-id='${data.appointment_id}'>
-                                        <span class="material-icons align-middle text-sm">visibility</span> See
-                                    </button>`;
-
-                    const approveBtn = `<button class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-sm transition ${buttonsDisabled}"
+                    const cancelBtn = `<button class="cancelBtn cursor-pointer bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition ${buttonsDisabled}"
                                             data-appointment_id='${data.appointment_id}' ${buttonsDisabled}>
-                                            <span class="material-icons align-middle text-sm">check_circle</span> Approve
+                                            <span class="material-icons text-sm align-middle">cancel</span> Cancel
                                         </button>`;
 
-                    const cancelBtn = `<button class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm transition ${buttonsDisabled}"
+                    const approveBtn = `<button class="approveBtn cursor-pointer bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600 transition ${buttonsDisabled}"
                                             data-appointment_id='${data.appointment_id}' ${buttonsDisabled}>
-                                            <span class="material-icons align-middle text-sm">cancel</span> Cancel
+                                            <span class="material-icons text-sm align-middle">check_circle</span> Approve
                                         </button>`;
 
-                    tbody.append(`
-                        <tr class="hover:bg-gray-50 transition-colors">
-                            <td class="px-6 py-4 text-gray-700 font-medium">${data.reference_number}</td>
-                            <td class="px-6 py-4 text-gray-600">${data.appointmentDate} ${data.appointmentTime}</td>
-                            <td class="px-6 py-4">
-                                <span class="inline-block px-3 py-1 text-xs font-semibold text-white ${statusColor} rounded-full">
+                    $('#appointmentTableBody').append(`
+                        <tr class="border-b hover:bg-gray-50 transition-colors">
+                            <td class="px-4 py-2 font-medium text-gray-700">${data.reference_number}</td>
+                            <td class="px-4 py-2 text-gray-600">${data.appointmentDate} ${data.appointmentTime}</td>
+                            <td class="px-4 py-2">
+                                <span class="capitalize px-2 py-1 rounded-full text-white text-xs ${statusColor}">
                                     ${data.status}
                                 </span>
                             </td>
-                            <td class="px-6 py-4 flex justify-center gap-2">
-                                ${seeBtn}
-                                ${approveBtn}
+                            <td class="px-4 py-2 flex justify-center gap-2">
+                                <button class="seeDetailsBtn cursor-pointer bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 transition"
+                                    data-id='${data.appointment_id}'
+                                    data-reference='${data.reference_number}'
+                                    data-fullname='${data.fullname}'
+                                    data-contact='${data.contact}'
+                                    data-service='${data.service}'
+                                    data-date='${data.appointmentDate}'
+                                    data-time='${data.appointmentTime}'
+                                    data-emergency='${data.emergency}'
+                                    data-status='${data.status}'>
+                                    <span class="material-icons text-sm align-middle">visibility</span> See Details
+                                </button>
                                 ${cancelBtn}
+                                ${approveBtn}
                             </td>
                         </tr>
                     `);
@@ -61,13 +72,21 @@ function fetchAppointments() {
                 // Mark all fetched appointments as seen
                 markAsSeen(appointmentIds);
             } else {
-                tbody.append('<tr><td colspan="4" class="p-4 text-center text-gray-400 italic">No record found</td></tr>');
+                tbody.append(`
+                    <tr>
+                        <td colspan="4" class="p-4 text-center text-gray-400 italic">
+                            No record found
+                        </td>
+                    </tr>
+                `);
             }
         }
     });
 }
 
-// Mark appointments as seen
+
+
+
 function markAsSeen(ids) {
     if (ids.length === 0) return;
 
@@ -84,17 +103,21 @@ function markAsSeen(ids) {
     });
 }
 
-// Initial fetch
-fetchAppointments();
 
-// Search filter
-$('#searchInput').on('input', function () {
-    const term = $(this).val().toLowerCase();
-    $('#appointmentTableBody tr').each(function () {
-        $(this).toggle($(this).text().toLowerCase().includes(term));
+
+
+
+
+    // Initial fetch
+    fetchAppointments();
+
+    // Search filter
+    $('#searchInput').on('input', function () {
+        const term = $(this).val().toLowerCase();
+        $('#appointmentTableBody tr').each(function () {
+            $(this).toggle($(this).text().toLowerCase().includes(term));
+        });
     });
-});
-
 
 
 
