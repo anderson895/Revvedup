@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 30, 2025 at 06:40 AM
+-- Generation Time: Sep 30, 2025 at 07:08 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -217,7 +217,7 @@ CREATE TABLE `user` (
   `email` varchar(60) NOT NULL,
   `username` varchar(60) DEFAULT NULL,
   `password` varchar(255) DEFAULT NULL,
-  `pin` int(11) DEFAULT NULL,
+  `pin` text DEFAULT NULL,
   `position` enum('admin','employee','','') NOT NULL DEFAULT 'employee',
   `status` int(11) NOT NULL DEFAULT 1 COMMENT '0=not active , 1=active'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -228,7 +228,8 @@ CREATE TABLE `user` (
 
 INSERT INTO `user` (`user_id`, `firstname`, `lastname`, `email`, `username`, `password`, `pin`, `position`, `status`) VALUES
 (1, 'juan', 'dela cruz', 'admin@gmail.com', 'admin', '$2a$12$jsAMWl2OcxUyo8OP7mLH4uTRYd5ln04QTtjU5O3qS1Q5N1o6f6yzm', NULL, 'admin', 1),
-(7, 'joshua', 'padilla', 'joshua@gmail.com', NULL, NULL, 12345, 'employee', 1);
+(7, 'joshua', 'padilla', 'joshua@gmail.com', NULL, NULL, '12345', 'employee', 1),
+(8, 'john', 'doe', 'johndoe123@gmail.com', 'johndoe', NULL, '000000', 'employee', 1);
 
 --
 -- Indexes for dumped tables
@@ -360,7 +361,7 @@ ALTER TABLE `transaction`
 -- AUTO_INCREMENT for table `user`
 --
 ALTER TABLE `user`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- Constraints for dumped tables
