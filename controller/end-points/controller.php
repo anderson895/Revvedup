@@ -366,8 +366,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 $capital,
                                 $price,
                                 $stockQty,
-                                $category,         
-                                $itemImageFileName 
+                                $itemImageFileName,
+                                $category
                             );
 
                             if ($result) {

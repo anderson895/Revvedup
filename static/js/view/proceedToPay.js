@@ -42,8 +42,8 @@ function openTransactionModal() {
                 services.forEach(s => {
                     if (!groupedServices[s.service_employee_id]) {
                         groupedServices[s.service_employee_id] = {
-                            employee_name: s.emp_fname && s.emp_lname 
-                                ? `${s.emp_fname} ${s.emp_lname} #${s.user_id}`
+                            employee_name: s.firstname && s.lastname 
+                                ? `${s.firstname} ${s.lastname} #${s.user_id}`
                                 : "No Name",
                             services: []
                         };
@@ -59,7 +59,6 @@ function openTransactionModal() {
                     empDiv.append(`<p class="font-medium text-gray-600 capitalize">${emp.employee_name}</p>`);
 
                     const serviceList = $('<div class="ml-4 space-y-1"></div>');
-                    // Service Details
                     emp.services.forEach(s => {
                         serviceList.append(`
                             <div class="flex justify-between text-gray-700" 
@@ -92,9 +91,6 @@ function openTransactionModal() {
                 itemContainer.append(itemList);
                 serviceContainer.after(itemContainer);
 
-                itemContainer.append(itemList);
-                serviceContainer.after(itemContainer);
-
                 // Save totals globally
                 g_totalService = services.reduce((sum,s)=>sum+parseFloat(s.service_price),0);
                 g_totalItem = items.reduce((sum,i)=>sum+parseFloat(i.prod_price)*parseInt(i.item_qty),0);
@@ -123,7 +119,7 @@ function closeTransactionSidebar() {
     }, 300);
 }
 
-// --- Update computation ---
+// --- Update computation (VAT Inclusive) ---
 function updateComputation() {
     const discountInput = $("input[name=InputedDiscount]");
     let discount = parseFloat(discountInput.val()) || 0;
@@ -135,28 +131,42 @@ function updateComputation() {
         discountInput.val(discount.toFixed(2));
     }
 
+    // --- Net totals (after discount) ---
     const discountedItems = g_totalItem - discount;
-    const vat = discountedItems * 0.12;
-    const subtotal = g_totalService + discountedItems;
-    const grandTotal = subtotal + vat;
+    const subtotal = g_totalService + discountedItems; // already VAT inclusive
+
+    // --- Compute VAT (Inclusive logic) ---
+    const vatableSales = subtotal / 1.12;
+    const vat = subtotal - vatableSales;
+
+    // --- Final amounts ---
+    const grandTotal = subtotal; // same as subtotal, kasi VAT inclusive
     const change = payment - grandTotal;
 
-    // Display totals properly
+    // Display main totals
     $("#totalServices").text(`₱${g_totalService > 0 ? g_totalService.toFixed(2) : '0.00'}`);
     $("#totalItems").text(`₱${g_totalItem > 0 ? g_totalItem.toFixed(2) : '0.00'}`);
     $("#subtotal").text(`₱${subtotal.toFixed(2)}`);
-    $("#vatAmount").text(`₱${vat.toFixed(2)}`);
     $("#grandTotal").text(`₱${grandTotal.toFixed(2)}`);
     $("#change").text(`₱${(change > 0 ? change : 0).toFixed(2)}`);
 
+    // Display VAT breakdown
+    $("#vatableSales").text(`₱${vatableSales.toFixed(2)}`);
+    $("#vatExemptSales").text(`₱0.00`);
+    $("#vatZeroRatedSales").text(`₱0.00`);
+    $("#vatAmount").text(`₱${vat.toFixed(2)}`);
+
+    // Update big total at bottom
     $(".mt-4.border-t.pt-3.flex.justify-between.items-center.text-2xl.font-bold.text-gray-900 span:last-child")
         .text(`₱${grandTotal.toFixed(2)}`);
 }
+
 
 // --- Input listeners ---
 $(document).on("input", "input[name=InputedDiscount], #paymentInput", function() {
     updateComputation();
 });
+
 
 
 // --- SUBMIT TRANSACTION ---

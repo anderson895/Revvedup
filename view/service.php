@@ -180,7 +180,6 @@ include "../src/components/view/header.php";
 
 
 
-
 <!-- Transaction Sidebar -->
 <div id="transactionModal" class="fixed inset-0 z-50 flex justify-end bg-black/30 backdrop-blur-sm" style="display:none;">
   <div id="transactionSidebar" 
@@ -212,18 +211,34 @@ include "../src/components/view/header.php";
                class="ml-2 border border-gray-300 rounded px-2 py-1 text-sm w-28 focus:outline-none focus:ring-1 focus:ring-red-500">
       </div>
       <div class="flex justify-between font-semibold text-gray-800">
-        <span>Subtotal</span>
+        <span>Subtotal (VAT Inclusive)</span>
         <span id="subtotal">₱0.00</span>
       </div>
-      <div class="flex justify-between font-semibold text-gray-800">
-        <span>VAT (12%)</span>
-        <span id="vatAmount">₱0.00</span>
+
+      <!-- VAT Breakdown -->
+      <div class="mt-2 border-t pt-2 space-y-1 text-gray-700">
+        <div class="flex justify-between">
+          <span>VATable Sales</span>
+          <span id="vatableSales">₱0.00</span>
+        </div>
+        <div class="flex justify-between">
+          <span>VAT-Exempt Sales</span>
+          <span id="vatExemptSales">₱0.00</span>
+        </div>
+        <div class="flex justify-between">
+          <span>VAT Zero-Rated Sales</span>
+          <span id="vatZeroRatedSales">₱0.00</span>
+        </div>
+        <div class="flex justify-between font-semibold">
+          <span>VAT Amount (12%)</span>
+          <span id="vatAmount">₱0.00</span>
+        </div>
       </div>
     </div>
 
     <!-- Total -->
     <div class="mt-4 border-t pt-3 flex justify-between items-center text-2xl font-bold text-gray-900">
-      <span>Total</span>
+      <span>Total Due</span>
       <span id="grandTotal">₱0.00</span>
     </div>
 
@@ -243,9 +258,10 @@ include "../src/components/view/header.php";
     <!-- Action Buttons -->
     <div class="mt-5 flex gap-3">
       <button type="button" id="BtnSubmit" 
-              class="flex-1 bg-red-900 text-white py-2 rounded-xl hover:bg-red-700 transition cursor-pointer">
+        class="flex-1 bg-red-900 text-white py-2 rounded-xl hover:bg-red-700 transition cursor-pointer">
         Complete Transaction
       </button>
+
       <button type="button" 
               class="flex-1 bg-gray-200 text-gray-700 py-2 rounded-xl hover:bg-gray-300 transition">
         Void Transaction
@@ -254,6 +270,7 @@ include "../src/components/view/header.php";
 
   </div>
 </div>
+
 
 
 
