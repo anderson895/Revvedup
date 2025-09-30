@@ -658,6 +658,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'status' => 200,
                 'data' => $result
             ]);
+        }else if ($_GET['requestType'] == 'getDashboardAnalytics') {
+
+            $result = $db->getDashboardAnalytics();
+            echo json_encode([
+                'status' => 200,
+                'data' => $result
+            ]);
         }
 
 

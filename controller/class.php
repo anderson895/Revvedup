@@ -1503,7 +1503,162 @@ public function EditDeduction($empId, $deductionDate, $deductionAmount) {
         }
 
 
-        public function getDataCounting()
+     
+
+
+
+
+
+
+
+
+    public function getDashboardAnalytics() {
+    $data = [];
+
+    // -----------------------------
+    // Total Customers
+    // -----------------------------
+    $sql = "SELECT COUNT(*) AS total FROM customer";
+    $data['CustomerCount'] = $this->conn->query($sql)->fetch_assoc()['total'];
+
+    // -----------------------------
+    // Total Employees
+    // -----------------------------
+    $sql = "SELECT COUNT(*) AS total FROM user WHERE position='employee'";
+    $data['EmployeeCount'] = $this->conn->query($sql)->fetch_assoc()['total'];
+
+    // -----------------------------
+    // Appointment Counts
+    // -----------------------------
+    $sql = "SELECT 
+                SUM(status='pending') AS PendingAppointmentCount,
+                SUM(status='approved') AS ApprovedAppointmentCount,
+                SUM(status='canceled') AS CanceledAppointmentCount
+            FROM appointments";
+    $apptCounts = $this->conn->query($sql)->fetch_assoc();
+    $data = array_merge($data, $apptCounts);
+
+    // -----------------------------
+    // Total Sales
+    // -----------------------------
+    $sql = "SELECT SUM(transaction_total) AS total FROM transaction WHERE transaction_status=1";
+    $data['TotalSales'] = $this->conn->query($sql)->fetch_assoc()['total'] ?? 0;
+
+    // -----------------------------
+    // Sales Last 7 Days
+    // -----------------------------
+    $sql = "SELECT DATE(transaction_date) AS date, SUM(transaction_total) AS total
+            FROM transaction
+            WHERE transaction_status=1
+            AND transaction_date >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)
+            GROUP BY DATE(transaction_date)
+            ORDER BY DATE(transaction_date) ASC";
+    $result = $this->conn->query($sql);
+    $salesLast7Days = [];
+    while($row = $result->fetch_assoc()) {
+        $salesLast7Days[] = $row;
+    }
+    $data['SalesLast7Days'] = $salesLast7Days;
+
+    // -----------------------------
+    // Employee Services (Most Used Service)
+    // -----------------------------
+    $sql = "SELECT transaction_service FROM transaction WHERE transaction_status=1";
+    $result = $this->conn->query($sql);
+    $employeeServiceCounts = [];
+
+    while($row = $result->fetch_assoc()) {
+        $services = json_decode($row['transaction_service'], true);
+        if(is_array($services)) {
+            foreach($services as $s) {
+                $uid = $s['user_id'];
+                if(!isset($employeeServiceCounts[$uid])) $employeeServiceCounts[$uid] = 0;
+                $employeeServiceCounts[$uid]++;
+            }
+        }
+    }
+
+    // Map user IDs to names
+    $employeeServices = [];
+    if(!empty($employeeServiceCounts)) {
+        $ids = implode(',', array_keys($employeeServiceCounts));
+        $sql = "SELECT user_id, CONCAT(firstname,' ',lastname) AS employee_name FROM user WHERE user_id IN ($ids)";
+        $res = $this->conn->query($sql);
+        $names = [];
+        while($r = $res->fetch_assoc()) {
+            $names[$r['user_id']] = $r['employee_name'];
+        }
+        foreach($employeeServiceCounts as $uid => $count) {
+            $employeeServices[] = [
+                'employee_name' => $names[$uid] ?? 'Unknown',
+                'service_count' => $count
+            ];
+        }
+    }
+    $data['EmployeeServices'] = $employeeServices;
+
+    // -----------------------------
+    // Popular Items (Products Sold)
+    // -----------------------------
+    $sql = "SELECT transaction_item FROM transaction WHERE transaction_status=1";
+    $result = $this->conn->query($sql);
+    $productCounts = [];
+
+    while($row = $result->fetch_assoc()) {
+        $items = json_decode($row['transaction_item'], true);
+        if(is_array($items)) {
+            foreach($items as $i) {
+                $pid = $i['prod_id'];
+                $qty = intval($i['qty']);
+                if(!isset($productCounts[$pid])) $productCounts[$pid] = 0;
+                $productCounts[$pid] += $qty;
+            }
+        }
+    }
+
+    // Map product IDs to names
+    $popularItems = [];
+    if(!empty($productCounts)) {
+        $ids = implode(',', array_keys($productCounts));
+        $sql = "SELECT prod_id, prod_name FROM product WHERE prod_id IN ($ids)";
+        $res = $this->conn->query($sql);
+        $names = [];
+        while($r = $res->fetch_assoc()) {
+            $names[$r['prod_id']] = $r['prod_name'];
+        }
+        foreach($productCounts as $pid => $count) {
+            $popularItems[] = [
+                'name' => $names[$pid] ?? 'Unknown',
+                'total_sold' => $count
+            ];
+        }
+    }
+    $data['PopularItems'] = $popularItems;
+
+    // -----------------------------
+    // Additional Useful Analytics
+    // -----------------------------
+    // Active Appointments Today
+    $sql = "SELECT COUNT(*) AS total FROM appointments WHERE appointmentDate=CURDATE()";
+    $data['AppointmentsToday'] = $this->conn->query($sql)->fetch_assoc()['total'] ?? 0;
+
+    // Total Services Rendered
+    $sql = "SELECT SUM(JSON_LENGTH(transaction_service)) AS total_services FROM transaction WHERE transaction_status=1";
+    $data['TotalServicesRendered'] = $this->conn->query($sql)->fetch_assoc()['total_services'] ?? 0;
+
+    // Total Products Sold
+    $sql = "SELECT SUM(JSON_LENGTH(transaction_item)) AS total_items FROM transaction WHERE transaction_status=1";
+    $data['TotalProductsSold'] = $this->conn->query($sql)->fetch_assoc()['total_items'] ?? 0;
+
+    return $data;
+}
+
+
+
+
+
+
+   public function getDataCounting()
         {
             $query = "
                 SELECT 
@@ -1517,12 +1672,11 @@ public function EditDeduction($empId, $deductionDate, $deductionAmount) {
             $result = $this->conn->query($query);
 
             if ($result) {
-                return $result->fetch_assoc();  // <-- Return array
+                return $result->fetch_assoc();  
             } else {
                 return ['error' => 'Failed to retrieve counts'];
             }
         }
-
 
 
 

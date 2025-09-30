@@ -4,22 +4,14 @@ const getDataAnalytics = () => {
         type: 'GET',
         dataType: 'json',
         success: function(response) {
-
-            $('.PendingAppointmentCount').fadeOut();
-
             if(response.status === 200 && response.data) {
-                const { CustomerCount, PendingAppointmentCount, ApprovedAppointmentCount, EmployeeCount, TotalSales } = response.data;
+                const { PendingAppointmentCount } = response.data;
+                const $badge = $('.PendingAppointmentCount');
 
-                $('.CustomerCount').text(CustomerCount);
-                $('.ApprovedAppointmentCount').text(ApprovedAppointmentCount);
-                $('.EmployeeCount').text(EmployeeCount);
-                $('.TotalSales').text(TotalSales);
-
-                // Update PendingAppointmentCount badge using show/hide
                 if(PendingAppointmentCount > 0){
-                    $('.PendingAppointmentCount').text(PendingAppointmentCount).fadeIn();
+                    $badge.text(PendingAppointmentCount).fadeIn();
                 } else {
-                    $('.PendingAppointmentCount').fadeOut();
+                    $badge.fadeOut();
                 }
             }
         },
