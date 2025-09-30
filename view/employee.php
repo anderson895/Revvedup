@@ -104,8 +104,8 @@ include "../src/components/view/header.php";
         <input type="text" id="deduction" name="deduction" class="w-full border rounded px-3 py-2" required>
       </div>
       <div class="flex justify-end space-x-2">
-        <button type="button" id="closeEmpRecorModal" class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">Cancel</button>
-        <button type="submit" class="px-4 py-2 bg-red-900 text-white rounded hover:bg-red-800">Update</button>
+        <button type="button" id="closeEmpRecorModal" class="cursor-pointer px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">Cancel</button>
+        <button type="submit" class="px-4 cursor-pointer py-2 bg-red-900 text-white rounded hover:bg-red-800">Update</button>
       </div>
     </form>
   </div>

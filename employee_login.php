@@ -26,7 +26,7 @@ include "src/components/header.php";
       <h1 class="text-2xl font-bold text-center mb-4">Employee</h1>
       <form id="frmLogin" method="POST" class="flex flex-col space-y-4">
         <input type="text" placeholder="PIN" name="pin" class="px-4 py-2 rounded bg-white text-black placeholder-gray-500 focus:outline-none">
-        <button type="submit" class="bg-white text-black font-semibold py-2 rounded hover:bg-gray-200">Login</button>
+        <button type="submit" class="bg-white cursor-pointer text-black font-semibold py-2 rounded hover:bg-gray-200">Login</button>
         <a href="#" class="underline text-xs text-gray-300 hover:text-white text-center">Forgot PIN</a>
       </form>
   </div>

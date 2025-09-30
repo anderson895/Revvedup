@@ -49,111 +49,121 @@ $(document).ready(function () {
   updateLabels();
 
   let employees = [];
+let userPosition = ""; // global para ma-access sa renderTable()
 
-  function fetchEmployees() {
-    let monday = new Date(currentDate);
-    let month = monday.getMonth() + 1;
-    let year = monday.getFullYear();
+function fetchEmployees() {
+  let monday = new Date(currentDate);
+  let month = monday.getMonth() + 1;
+  let year = monday.getFullYear();
 
-    let firstDayOfMonth = new Date(year, month - 1, 1);
-    let startOffset = (firstDayOfMonth.getDay() + 6) % 7;
-    let weekNumber = Math.ceil((monday.getDate() + startOffset) / 7);
+  let firstDayOfMonth = new Date(year, month - 1, 1);
+  let startOffset = (firstDayOfMonth.getDay() + 6) % 7;
+  let weekNumber = Math.ceil((monday.getDate() + startOffset) / 7);
 
-    $.ajax({
-      url: "../controller/end-points/controller.php",
-      method: "GET",
-      data: { 
-        requestType: "fetch_all_employee_record",
-        month,
-        year,
-        week: weekNumber
-      },
-      dataType: "json",
-      success: function (res) {
-        if (res.status === 200 && res.data.length > 0) {
-          employees = res.data.map(emp => {
-            let dayArr = [];
-            for (let i = 1; i <= 7; i++) dayArr.push(emp.days[i] ?? 0);
-            return {
-              emp_id: emp.emp_id,
-              name: emp.name,
-              days: dayArr,
-              commission: parseFloat(emp.commission),
-              deductions: parseFloat(emp.deductions),
-              months: emp.months
-            };
-          });
-          renderTable();
-          $("#tableFooter").show(); // show footer when records exist
-        } else {
-          employees = [];
-          $("#employeeTableBody").html(
-            `<tr><td colspan="12" class="text-center p-4 text-gray-500">No records available</td></tr>`
-          );
-          $("#tableFooter").hide(); // hide footer when no records
-        }
-      },
-      error: function (err) {
-        console.error("AJAX Error:", err);
+  $.ajax({
+    url: "../controller/end-points/controller.php",
+    method: "GET",
+    data: { 
+      requestType: "fetch_all_employee_record",
+      month,
+      year,
+      week: weekNumber
+    },
+    dataType: "json",
+    success: function (res) {
+      if (res.status === 200 && res.data.length > 0) {
+        // <-- dito kinukuha ang position ng naka-login na user
+        userPosition = res.position;
+
+        employees = res.data.map(emp => {
+          let dayArr = [];
+          for (let i = 1; i <= 7; i++) dayArr.push(emp.days[i] ?? 0);
+          return {
+            emp_id: emp.user_id, // sa response mo user_id
+            name: emp.name,
+            days: dayArr,
+            commission: parseFloat(emp.commission),
+            deductions: parseFloat(emp.deductions),
+            months: emp.months
+          };
+        });
+
+        renderTable();
+        $("#tableFooter").show();
+      } else {
+        employees = [];
         $("#employeeTableBody").html(
-          `<tr><td colspan="12" class="text-center p-4 text-gray-500">Error loading data</td></tr>`
+          `<tr><td colspan="12" class="text-center p-4 text-gray-500">No records available</td></tr>`
         );
-        $("#tableFooter").hide(); 
+        $("#tableFooter").hide();
       }
-    });
-  }
+    },
+    error: function (err) {
+      console.error("AJAX Error:", err);
+      $("#employeeTableBody").html(
+        `<tr><td colspan="12" class="text-center p-4 text-gray-500">Error loading data</td></tr>`
+      );
+      $("#tableFooter").hide();
+    }
+  });
+}
 
-  function renderTable() {
-    let tbody = $("#employeeTableBody");
-    tbody.empty();
+function renderTable() {
+  let tbody = $("#employeeTableBody");
+  tbody.empty();
 
-    let colTotals = Array(7).fill(0);
-    let totalCommission = 0;
-    let totalDeductions = 0;
-    let totalOverall = 0;
+  let colTotals = Array(7).fill(0);
+  let totalCommission = 0;
+  let totalDeductions = 0;
+  let totalOverall = 0;
 
-    employees.forEach(emp => {
-      let row = `<tr class="hover:bg-gray-50">
-        <td class="p-2 border-r font-medium capitalize">${emp.name}</td>`;
+  employees.forEach(emp => {
+    let row = `<tr class="hover:bg-gray-50">
+      <td class="p-2 border-r font-medium capitalize">${emp.name}</td>`;
 
-      emp.days.forEach((val, i) => {
-        row += `<td class="p-2 border-r text-center">${val}</td>`;
-        colTotals[i] += val;
-      });
-
-      row += `<td class="p-2 border-r text-center">${emp.commission.toLocaleString()}</td>`;
-      row += `<td class="p-2 border-r text-center">${emp.deductions.toLocaleString()}</td>`;
-      row += `<td class="p-2 border-r text-center font-bold">${(emp.commission - emp.deductions).toLocaleString()}</td>`;
-
-      row += `<td class="p-2 border-r text-center flex items-center justify-center space-x-1">
-        <button class="btnUpdateEmpRecord text-gray-600 hover:text-blue-600 material-icons text-sm"
-            data-emp_id="${emp.emp_id}"
-            data-deductions="${emp.deductions}"
-            data-emp_name="${emp.name}">
-            edit
-        </button>
-        
-      </td></tr>`;
-
-      tbody.append(row);
-
-      totalCommission += emp.commission;
-      totalDeductions += emp.deductions;
-      totalOverall += emp.commission - emp.deductions;
+    emp.days.forEach((val, i) => {
+      row += `<td class="p-2 border-r text-center">${val}</td>`;
+      colTotals[i] += val;
     });
 
-    // update footer totals
-    $("#colMon").text(colTotals[0]);
-    $("#colTue").text(colTotals[1]);
-    $("#colWed").text(colTotals[2]);
-    $("#colThu").text(colTotals[3]);
-    $("#colFri").text(colTotals[4]);
-    $("#colSat").text(colTotals[5]);
-    $("#colSun").text(colTotals[6]);
-    $("#colCommission").text(totalCommission.toLocaleString());
-    $("#colDeductions").text(totalDeductions.toLocaleString());
-    $("#colOverall").text(totalOverall.toLocaleString());
-  }
+    row += `<td class="p-2 border-r text-center">${emp.commission.toLocaleString()}</td>`;
+    row += `<td class="p-2 border-r text-center">${emp.deductions.toLocaleString()}</td>`;
+    row += `<td class="p-2 border-r text-center font-bold">${(emp.commission - emp.deductions).toLocaleString()}</td>`;
+
+    // Hide button if user is not admin
+    row += `<td class="p-2 text-center flex items-center justify-center space-x-1">`;
+
+    if (userPosition === "admin") {
+      row += `<button class="btnUpdateEmpRecord cursor-pointer text-gray-600 hover:text-blue-600 material-icons text-sm"
+                  data-emp_id="${emp.emp_id}"
+                  data-deductions="${emp.deductions}"
+                  data-emp_name="${emp.name}">
+                  edit
+              </button>`;
+    }
+
+    row += `</td>
+    </tr>`;
+
+    tbody.append(row);
+
+    totalCommission += emp.commission;
+    totalDeductions += emp.deductions;
+    totalOverall += emp.commission - emp.deductions;
+  });
+
+  $("#colMon").text(colTotals[0]);
+  $("#colTue").text(colTotals[1]);
+  $("#colWed").text(colTotals[2]);
+  $("#colThu").text(colTotals[3]);
+  $("#colFri").text(colTotals[4]);
+  $("#colSat").text(colTotals[5]);
+  $("#colSun").text(colTotals[6]);
+  $("#colCommission").text(totalCommission.toLocaleString());
+  $("#colDeductions").text(totalDeductions.toLocaleString());
+  $("#colOverall").text(totalOverall.toLocaleString());
+}
+
 
   fetchEmployees();
 });
