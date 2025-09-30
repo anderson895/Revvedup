@@ -47,19 +47,19 @@ notification (ADMIN)
 
 
 BOOKING SYSTEM
-	1.registration
-	2.login
-	3.list of items
-		-show availability
-	4.book and repair
-		-select service 
-		-select employee
-		-personal info
-		-appointment date
-		-emergency repair
-		-pending pages for approval
+	✔1.registration
+	✔2.login
+	✔3.list of items
+		✔-show availability
+	✔4.book and repair
+		✔-select service 
+		✔-select employee
+		✔-personal info
+		✔-appointment date
+		✔-emergency repair
+		✔-pending pages for approval
 		
-	5.booking summary
-		-list of appointment
+	✔5.booking summary
+		✔-list of appointment
 
 
