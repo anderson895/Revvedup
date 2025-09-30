@@ -601,8 +601,8 @@ public function fetch_all_product() {
     $products = [];
 
     while ($row = $result->fetch_assoc()) {
-        $row['total_sold_week'] = 0;   // Initialize total sold
-        $row['movement'] = 'Not moving'; // Default category
+        $row['total_sold_week'] = 0;  
+        $row['movement'] = 'Not moving'; 
         $products[$row['prod_id']] = $row;
     }
 
@@ -1409,7 +1409,7 @@ public function EditDeduction($empId, $deductionDate, $deductionAmount) {
 
  // ✅ Fetch business details
     public function get_business_details() {
-        $query = "SELECT * FROM `business_details` LIMIT 1"; // since only one business record
+        $query = "SELECT * FROM `business_details` LIMIT 1";
         $result = $this->conn->query($query);
 
         if ($result && $result->num_rows > 0) {
@@ -1417,6 +1417,24 @@ public function EditDeduction($empId, $deductionDate, $deductionAmount) {
         }
         return null;
     }
+
+
+
+
+    public function fetch_appointment() {
+            $sql = "SELECT appointments.*
+                    FROM appointments 
+                    ORDER BY appointment_id DESC";
+            $result = $this->conn->query($sql);
+
+            $users = [];
+            if ($result && $result->num_rows > 0) {
+                while ($row = $result->fetch_assoc()) {
+                    $users[] = $row;
+                }
+            }
+            return $users;
+        }
 
 
 }

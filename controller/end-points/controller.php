@@ -316,7 +316,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 $capital,
                                 $price,
                                 $stockQty,
-                                $category,           // ✅ Added category here
+                                $category,         
                                 $itemImageFileName 
                             );
 
@@ -594,6 +594,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     echo json_encode(['status'=>404,'message'=>'Item not found']);
                 }
 
+        }else if ($_GET['requestType'] == 'fetch_appointment') {
+
+            $result = $db->fetch_appointment();
+            echo json_encode([
+                'status' => 200,
+                'data' => $result
+            ]);
         }
 
 
