@@ -44,6 +44,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 ]);
             }
     
+        }else if ($_POST['requestType'] == 'mark_seen') {
+              if (isset($_POST['appointmentIds'])) {
+                    $ids = $_POST['appointmentIds'];
+                    $result = $db->mark_seen($ids); // call class method
+
+                    if ($result) {
+                        echo json_encode(['status' => 200, 'message' => 'Marked as seen']);
+                    } else {
+                        echo json_encode(['status' => 500, 'message' => 'Failed to mark as seen']);
+                    }
+                } else {
+                    echo json_encode(['status' => 400, 'message' => 'No appointment IDs provided']);
+                }
+                exit;
+
+
+            
+    
         }else if ($_POST['requestType'] == 'AddUser') {
                 $firstname = trim($_POST['firstname']);
                 $lastname  = trim($_POST['lastname']);
@@ -123,12 +141,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($result['success']) {
                 echo json_encode([
                     'status' => 'success',
-                    'message' => $result['message']   // <-- use $result, not $loginResult
+                    'message' => $result['message']  
                 ]);
             } else {
                 echo json_encode([
                     'status' => 'error',
-                    'message' => $result['message']   // <-- use $result, not $loginResult
+                    'message' => $result['message']   
                 ]);
             }
 
@@ -139,12 +157,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($result['success']) {
                 echo json_encode([
                     'status' => 'success',
-                    'message' => $result['message']   // <-- use $result, not $loginResult
+                    'message' => $result['message']   
                 ]);
             } else {
                 echo json_encode([
                     'status' => 'error',
-                    'message' => $result['message']   // <-- use $result, not $loginResult
+                    'message' => $result['message']   
                 ]);
             }
 
@@ -629,6 +647,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }else if ($_GET['requestType'] == 'fetch_appointment') {
 
             $result = $db->fetch_appointment();
+            echo json_encode([
+                'status' => 200,
+                'data' => $result
+            ]);
+        }else if ($_GET['requestType'] == 'getDataCounting') {
+
+            $result = $db->getDataCounting();
             echo json_encode([
                 'status' => 200,
                 'data' => $result

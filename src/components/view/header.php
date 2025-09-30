@@ -87,9 +87,15 @@ $business = $db->get_business_details();
         <img src="../static/images/employees.png" alt="Employee">
       </a>
 
-      <a href="booking_request" class="flex justify-center w-full p-2 rounded-lg hover:bg-gray-200 hover:scale-105 transition duration-200 <?= $authorize ?>">
-        <img src="../static/images/email.png" alt="email">
-      </a>
+    <a href="booking_request" class="relative flex justify-center w-full p-2 rounded-lg hover:bg-gray-200 hover:scale-105 transition duration-200 <?= $authorize ?>">
+    <img src="../static/images/email.png" alt="email">
+
+        <span style="display:none;" class="PendingAppointmentCount absolute top-6 right-5 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-red-600 rounded-full transform translate-x-1/2 -translate-y-1/2">
+            0
+        </span>
+    </a>
+
+
 
     </div>
   </div>

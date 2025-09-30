@@ -1445,7 +1445,7 @@ public function EditDeduction($empId, $deductionDate, $deductionAmount) {
             
             if ($stmt) {
                 // Bind parameter
-                $stmt->bind_param("i", $appointment_id); // "i" means integer
+                $stmt->bind_param("i", $appointment_id); 
                 
                 // Execute statement
                 if ($stmt->execute()) {
@@ -1478,7 +1478,7 @@ public function EditDeduction($empId, $deductionDate, $deductionAmount) {
             
             if ($stmt) {
                 // Bind parameter
-                $stmt->bind_param("i", $appointment_id); // "i" means integer
+                $stmt->bind_param("i", $appointment_id); 
                 
                 // Execute statement
                 if ($stmt->execute()) {
@@ -1501,6 +1501,45 @@ public function EditDeduction($empId, $deductionDate, $deductionAmount) {
                 ];
             }
         }
+
+
+        public function getDataCounting()
+        {
+            $query = "
+                SELECT 
+                    (SELECT COUNT(*) FROM `appointments` WHERE status='pending' AND seen='0') AS PendingAppointmentCount,
+                    (SELECT COUNT(*) FROM `appointments` WHERE status='approved') AS ApprovedAppointmentCount,
+                    (SELECT COUNT(*) FROM `user` WHERE position='employee') AS EmployeeCount,
+                    (SELECT COUNT(*) FROM `customer`) AS CustomerCount,
+                    (SELECT IFNULL(SUM(transaction_total),0) FROM `transaction` WHERE transaction_status=1) AS TotalSales
+            ";
+
+            $result = $this->conn->query($query);
+
+            if ($result) {
+                return $result->fetch_assoc();  // <-- Return array
+            } else {
+                return ['error' => 'Failed to retrieve counts'];
+            }
+        }
+
+
+
+
+        public function mark_seen($ids)
+        {
+            if (empty($ids)) return false;
+
+            $ids = array_map('intval', $ids);
+            $ids_str = implode(',', $ids);
+
+            $sql = "UPDATE appointments SET seen = 1 WHERE appointment_id IN ($ids_str)";
+            $result = $this->conn->query($sql);
+
+            return $result ? true : false;
+        }
+
+
 
 
 }
