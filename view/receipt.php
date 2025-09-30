@@ -10,9 +10,7 @@ $transactionId = intval($_GET['transaction_id']);
 $db = new global_class(); // gumamit ng global_class
 $data = $db->fetch_transaction_by_id($transactionId);
 
-
 $business = $db->get_business_details();
-            
 
 if (!$data) {
     die("Transaction not found.");
@@ -32,6 +30,10 @@ $totalItems = 0;
 foreach ($items as $i) {
     $totalItems += floatval($i['subtotal']);
 }
+
+// VAT breakdown
+$vatAmount   = $transaction['transaction_vat'] ?? 0;
+$vatableSale = ($transaction['transaction_total'] - $vatAmount);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -39,11 +41,9 @@ foreach ($items as $i) {
   <meta charset="UTF-8">
   <title>Receipt #<?= htmlspecialchars($transactionId) ?></title>
 
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-
-
-    <style>
+  <style>
     body { font-family: monospace; font-size: 12px; margin: 0; padding: 0; }
     .print-container { width: 58mm; margin: 0 auto; padding: 10px; }
     .flex { display: flex; justify-content: space-between; }
@@ -54,10 +54,10 @@ foreach ($items as $i) {
     /* Hide sa print */
     @media print {
         .printButtonDiv {
-        display: none !important;
+            display: none !important;
         }
     }
-    </style>
+  </style>
 </head>
 <body onload="window.print()">
   <div class="print-container">
@@ -82,7 +82,9 @@ foreach ($items as $i) {
           <span>₱ <?= number_format($s['price'], 2) ?></span>
         </div>
       <?php endforeach; ?>
-    <?php else: ?><p style="font-style:italic; color:gray;">No services</p><?php endif; ?>
+    <?php else: ?>
+      <p style="font-style:italic; color:gray;">No services</p>
+    <?php endif; ?>
     <hr>
 
     <h2>Items Details</h2>
@@ -93,14 +95,23 @@ foreach ($items as $i) {
           <span>₱ <?= number_format($i['subtotal'], 2) ?></span>
         </div>
       <?php endforeach; ?>
-    <?php else: ?><p style="font-style:italic; color:gray;">No items</p><?php endif; ?>
+    <?php else: ?>
+      <p style="font-style:italic; color:gray;">No items</p>
+    <?php endif; ?>
     <hr>
 
     <div class="flex"><span>Total Services</span><span>₱ <?= number_format($totalServices,2) ?></span></div>
     <div class="flex"><span>Total Items</span><span>₱ <?= number_format($totalItems,2) ?></span></div>
     <div class="flex"><span>Discount</span><span>₱ <?= number_format($transaction['transaction_discount'] ?? 0, 2) ?></span></div>
-    <div class="flex"><span>Subtotal</span><span>₱ <?= number_format(($transaction['transaction_total'] - ($transaction['transaction_vat'] ?? 0)), 2) ?></span></div>
-    <div class="flex"><span>VAT (12%)</span><span>₱ <?= number_format($transaction['transaction_vat'] ?? 0, 2) ?></span></div>
+
+    <hr>
+    <!-- VAT Breakdown -->
+    <div class="flex"><span>VATable Sales</span><span>₱ <?= number_format($vatableSale, 2) ?></span></div>
+    <div class="flex"><span>VAT-Exempt Sales</span><span>₱ 0.00</span></div>
+    <div class="flex"><span>VAT Zero-Rated Sales</span><span>₱ 0.00</span></div>
+    <div class="flex"><span>VAT Amount (12%)</span><span>₱ <?= number_format($vatAmount, 2) ?></span></div>
+    <hr>
+
     <div class="flex" style="font-weight:bold; border-top:1px dashed #000; padding-top:2px;">
       <span>Total</span><span>₱ <?= number_format($transaction['transaction_total'], 2) ?></span>
     </div>
@@ -113,15 +124,13 @@ foreach ($items as $i) {
       <p><i>Please come again</i></p>
     </div>
   </div>
-   <div class="printButtonDiv" style="display:flex; justify-content:center; margin-top:10px;">
+
+  <div class="printButtonDiv" style="display:flex; justify-content:center; margin-top:10px;">
     <button onclick="window.print()" class="btn-print" 
             style="display:flex; align-items:center; gap:5px; justify-content:center; padding:6px 12px; border:none; border-radius:4px; background:#444; color:white; cursor:pointer;">
         <span class="material-icons">print</span>
         Print Receipt
     </button>
   </div>
-
-
-
 </body>
 </html>
