@@ -33,12 +33,7 @@ include "../src/components/view/header.php";
     <div class="bg-white rounded-xl shadow overflow-hidden">
       <!-- Table Header -->
       <div class="flex justify-between items-center  px-4 py-3">
-        <h2 class="text-gray-700 font-semibold">Inventory List</h2>
-
-        <button class="p-2 rounded-md hover:bg-gray-100" id="addProductBtn">
-        <span class="material-icons text-green-600">add_box</span>
-        </button>
-
+        <h2 class="text-gray-700 font-semibold">Request Appointment List</h2>
       </div>
 
       <!-- Table -->
