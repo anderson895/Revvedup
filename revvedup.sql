@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 30, 2025 at 05:28 PM
+-- Generation Time: Sep 30, 2025 at 06:05 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -144,7 +144,9 @@ INSERT INTO `product` (`prod_id`, `prod_name`, `prod_capital`, `prod_price`, `pr
 (5, 'product 3', 280.00, 300.00, 46, 'item_68d643420bba08.70461903.jpg', 1, 'Wheels & Tires'),
 (6, 'product 6', 50.00, 55.00, 44, 'item_68d77ad7dc2db3.03460954.avif', 1, 'Exhaust Systems'),
 (7, 'test', 500.00, 600.00, 1, 'item_68d776d7db06b6.21276657.jpg', 1, 'Brakes'),
-(8, 'test 2', 50.00, 60.00, 0, 'item_68d9f9e9b27152.72092957.jpg', 1, 'Engine & Transmission');
+(8, 'test 2', 50.00, 60.00, 0, 'item_68d9f9e9b27152.72092957.jpg', 1, 'Engine & Transmission'),
+(9, 'NSCJRIC', 83.00, 93.00, 99, 'item_68dbfe90131176.75854224.jpg', 1, 'Exhaust Systems'),
+(10, 'YumBurger', 68.00, 78.00, 99, 'item_68dbfe7e4f9863.95790433.jpg', 1, 'Brakes');
 
 -- --------------------------------------------------------
 
@@ -207,7 +209,8 @@ INSERT INTO `transaction` (`transaction_id`, `transaction_date`, `transaction_se
 (62, '2025-09-29 10:35:12', '[{\"service_id\":\"49\",\"name\":\"change oil\",\"price\":\"100\",\"user_id\":\"1\"}]', '[]', 0.00, 0.00, 100.00, 100.00, 0.00, 1),
 (63, '2025-09-29 10:42:33', '[{\"service_id\":\"50\",\"name\":\"change oil\",\"price\":\"100\",\"user_id\":\"7\"}]', '[{\"item_id\":\"52\",\"prod_id\":\"5\",\"name\":\"product 3\",\"qty\":\"1\",\"subtotal\":\"300\",\"capital\":\"280\"}]', 0.00, 36.00, 436.00, 500.00, 64.00, 1),
 (64, '2025-09-29 10:49:56', '[{\"service_id\":\"51\",\"name\":\"repair\",\"price\":\"150\",\"user_id\":\"7\"}]', '[{\"item_id\":\"53\",\"prod_id\":\"3\",\"name\":\"product 2\",\"qty\":\"10\",\"subtotal\":\"110\",\"capital\":\"5\"}]', 0.00, 13.20, 273.20, 300.00, 26.80, 1),
-(65, '2025-09-29 12:12:08', '[{\"service_id\":\"52\",\"name\":\"car wash\",\"price\":\"100\",\"user_id\":\"7\"}]', '[{\"item_id\":\"54\",\"prod_id\":\"5\",\"name\":\"product 3\",\"qty\":\"1\",\"subtotal\":\"300\",\"capital\":\"280\"}]', 0.00, 36.00, 436.00, 500.00, 64.00, 1);
+(65, '2025-09-29 12:12:08', '[{\"service_id\":\"52\",\"name\":\"car wash\",\"price\":\"100\",\"user_id\":\"7\"}]', '[{\"item_id\":\"54\",\"prod_id\":\"5\",\"name\":\"product 3\",\"qty\":\"1\",\"subtotal\":\"300\",\"capital\":\"280\"}]', 0.00, 36.00, 436.00, 500.00, 64.00, 1),
+(66, '2025-09-30 16:01:26', '[]', '[{\"item_id\":\"58\",\"prod_id\":\"9\",\"name\":\"NSCJRIC\",\"qty\":\"1\",\"subtotal\":\"93\",\"capital\":\"83\"},{\"item_id\":\"57\",\"prod_id\":\"10\",\"name\":\"YumBurger\",\"qty\":\"1\",\"subtotal\":\"78\",\"capital\":\"68\"}]', 0.00, 18.32, 171.00, 200.00, 29.00, 1);
 
 -- --------------------------------------------------------
 
@@ -339,13 +342,13 @@ ALTER TABLE `deduction`
 -- AUTO_INCREMENT for table `item_cart`
 --
 ALTER TABLE `item_cart`
-  MODIFY `item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=55;
+  MODIFY `item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=59;
 
 --
 -- AUTO_INCREMENT for table `product`
 --
 ALTER TABLE `product`
-  MODIFY `prod_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `prod_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `returns`
@@ -357,13 +360,13 @@ ALTER TABLE `returns`
 -- AUTO_INCREMENT for table `service_cart`
 --
 ALTER TABLE `service_cart`
-  MODIFY `service_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=53;
+  MODIFY `service_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=54;
 
 --
 -- AUTO_INCREMENT for table `transaction`
 --
 ALTER TABLE `transaction`
-  MODIFY `transaction_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=66;
+  MODIFY `transaction_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=67;
 
 --
 -- AUTO_INCREMENT for table `user`
