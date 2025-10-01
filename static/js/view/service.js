@@ -35,32 +35,55 @@ $("#addServiceBtn").click(function (e) {
     const serviceNameInput = $('.serviceNameInput').val();
     $("#serviceName").val(serviceNameInput);
 
-    // FETCH All employee
+        // FETCH All employee
     $.ajax({
-        url: "../controller/end-points/controller.php",
-        method: "GET",
-        data: { requestType: "fetch_all_employee" },
-        dataType: "json",
-        success: function (res) {
-            if (res.status === 200) {
-                $('#employee').empty();
+    url: "../controller/end-points/controller.php",
+    method: "GET",
+    data: { requestType: "fetch_all_employee" },
+    dataType: "json",
+    success: function (res) {
+        if (res.status === 200) {
+            const defaultId = res.default_user_id; 
+            const position = res.position; 
 
-                $('#employee').append(`<option value="" disabled selected>Select Employee</option>`);
+            $('#employee').empty();
 
-                if (res.data.length > 0) {
+            // placeholder option
+            $('#employee').append(`<option value="" disabled>Select Employee</option>`);
+
+            if (res.data.length > 0) {
+                if (position === "admin") {
+                    // ADMIN → show all employees
                     res.data.forEach(emp => {
                         $('#employee').append(`
-                            <option value="${emp.user_id }">
+                            <option value="${emp.user_id}">
                                 ${emp.firstname} ${emp.lastname}
                             </option>
                         `);
                     });
+
+                    if (defaultId) {
+                        $('#employee').val(defaultId); // select logged-in user by default
+                    }
                 } else {
-                    $('#employee').append(`<option disabled>No employees found</option>`);
+                    // EMPLOYEE → show only his/her own record
+                    const emp = res.data.find(e => e.user_id == defaultId);
+                    if (emp) {
+                        $('#employee').append(`
+                            <option value="${emp.user_id}" selected>
+                                ${emp.firstname} ${emp.lastname}
+                            </option>
+                        `);
+                    }
                 }
+            } else {
+                $('#employee').append(`<option disabled>No employees found</option>`);
             }
         }
-    });
+    }
+});
+
+
 
     $("#addServiceModal").fadeIn();
 });

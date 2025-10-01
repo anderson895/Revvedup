@@ -18,7 +18,7 @@ include "../src/components/view/header.php";
     placeholder="Add Service"
     class="serviceNameInput flex-1 min-w-[150px] border rounded px-3 py-2 text-sm focus:outline-none focus:ring focus:border-red-400"
   >
-    <button id="addServiceBtn" class="bg-red-800 text-white px-3 py-2 rounded hover:bg-red-900 transition flex items-center justify-center"
+    <button id="addServiceBtn" class="cursor-pointer bg-red-800 text-white px-3 py-2 rounded hover:bg-red-900 transition flex items-center justify-center"
     >
       <span class="material-icons text-white text-base">add</span>
     </button>
@@ -157,7 +157,7 @@ include "../src/components/view/header.php";
       <div class="col-span-1 sm:col-span-3 flex justify-end mt-6">
         <button 
           type="submit" 
-          class="bg-red-900 text-white px-6 py-2 rounded-lg shadow hover:bg-red-700 transition"
+          class="bg-red-900 cursor-pointer text-white px-6 py-2 rounded-lg shadow hover:bg-red-700 transition"
         >
           Add Service
         </button>

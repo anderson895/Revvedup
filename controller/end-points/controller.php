@@ -532,7 +532,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 
             $On_Session = $db->check_account($_SESSION['user_id']);
-            $position = $On_Session['position'] ?? "guest";
+            $position = $On_Session['position'] ?? "employee";
 
             $result = $db->fetch_all_product();
             echo json_encode([
@@ -566,10 +566,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 
         }else if ($_GET['requestType'] == 'fetch_all_employee') {
+
+            $On_Session = $db->check_account($_SESSION['user_id']);
+            $position = $On_Session['position'] ?? "employee";
+
             $result = $db->fetch_all_employee();
             echo json_encode([
                 'status' => 200,
-                'data' => $result
+                'data' => $result,
+                'position' => $position,
+                'default_user_id' => $_SESSION['user_id']
+                
             ]);
         }else if ($_GET['requestType'] == 'fetch_all_service_cart') {
             $user_id=$_SESSION['user_id'];
@@ -629,7 +636,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 
                 $On_Session = $db->check_account($_SESSION['user_id']);
-                $position = $On_Session['position'] ?? "guest";
+                $position = $On_Session['position'] ?? "employee";
 
 
                 $month = isset($_GET['month']) ? intval($_GET['month']) : null;
