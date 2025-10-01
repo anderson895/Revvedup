@@ -82,7 +82,7 @@ const getDashboardAnalytics = () => {
             // -----------------------
             // Employee Services Pie Chart
             // -----------------------
-            const employeeLabels = EmployeeServices.map(e => e.employee_name);
+            const employeeLabels = EmployeeServices.map(e => `${e.employee_name} (${e.position})`);
             const employeeSeries = EmployeeServices.map(e => e.service_count);
 
             if(!employeeChart) {
@@ -98,6 +98,7 @@ const getDashboardAnalytics = () => {
                 employeeChart.updateOptions({ labels: employeeLabels });
                 employeeChart.updateSeries(employeeSeries);
             }
+
 
             // -----------------------
             // Popular Items Pie Chart

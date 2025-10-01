@@ -1684,23 +1684,32 @@ public function EditDeduction($empId, $deductionDate, $deductionAmount) {
     }
 
     // Map user IDs to names
-    $employeeServices = [];
+   $employeeServices = [];
     if(!empty($employeeServiceCounts)) {
         $ids = implode(',', array_keys($employeeServiceCounts));
-        $sql = "SELECT user_id, CONCAT(firstname,' ',lastname) AS employee_name FROM user WHERE user_id IN ($ids)";
+        $sql = "SELECT user_id, CONCAT(firstname,' ',lastname) AS employee_name, position 
+                FROM user 
+                WHERE user_id IN ($ids)";
         $res = $this->conn->query($sql);
         $names = [];
         while($r = $res->fetch_assoc()) {
-            $names[$r['user_id']] = $r['employee_name'];
+            $names[$r['user_id']] = [
+                'employee_name' => $r['employee_name'],
+                'position'      => $r['position']
+            ];
         }
+
         foreach($employeeServiceCounts as $uid => $count) {
             $employeeServices[] = [
-                'employee_name' => $names[$uid] ?? 'Unknown',
+                'employee_name' => $names[$uid]['employee_name'] ?? 'Unknown',
+                'position'      => $names[$uid]['position'] ?? 'N/A',
                 'service_count' => $count
             ];
         }
     }
+
     $data['EmployeeServices'] = $employeeServices;
+
 
     // -----------------------------
     // Popular Items (Products Sold)
