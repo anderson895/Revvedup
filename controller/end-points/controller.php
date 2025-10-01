@@ -634,43 +634,45 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
         }else if ($_GET['requestType'] === 'fetch_all_employee_record') {
 
-
-
-            //   echo "<pre>";
-            // print_r($_GET);
-            // echo "</pre>";
-
-           // Set timezone
-                date_default_timezone_set("Asia/Manila");
-
+                                
                 $today = new DateTime("now", new DateTimeZone("Asia/Manila"));
 
-                // Current date defaults
+                // Defaults
                 $currentYear  = (int)$today->format("Y");
                 $currentMonth = (int)$today->format("m");
                 $currentWeek  = (int)$today->format("W");
 
-                // Use GET if available, otherwise fallback to current
+                // Get from GET request or default
                 $year  = isset($_GET['year'])  && $_GET['year']  !== '' ? intval($_GET['year'])  : $currentYear;
                 $month = isset($_GET['month']) && $_GET['month'] !== '' ? intval($_GET['month']) : $currentMonth;
                 $week  = isset($_GET['week'])  && $_GET['week']  !== '' ? intval($_GET['week'])  : $currentWeek;
 
+                // Range validation
+                $month = max(1, min(12, $month));
+                $week  = max(1, min(53, $week));
 
+                // Require login
+                if (!isset($_SESSION['user_id'])) {
+                    echo json_encode([
+                        'status' => 401,
+                        'message' => 'Unauthorized'
+                    ]);
+                    exit;
+                }
 
+                // Get user role
                 $On_Session = $db->check_account($_SESSION['user_id']);
                 $position = $On_Session['position'] ?? "employee";
 
-
-                
+                // Fetch data
                 if ($position === "admin") {
-                    // Admin fetches all
                     $result = $db->fetch_all_employee_record($month, $year, $week);
                 } else {
-                    // Non-admin fetches only their own
                     $result = $db->fetch_employee_record_by_id($_SESSION['user_id'], $month, $year, $week);
                 }
 
-               if ($result) {
+                // Return JSON
+                if ($result) {
                     echo json_encode([
                         'status' => 200,
                         'data' => $result,
@@ -684,7 +686,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 } else {
                     echo json_encode([
                         'status' => 404,
-                        'message' => 'Item not found',
+                        'message' => 'No records found',
                         'date' => [
                             'month' => $month,
                             'year'  => $year,
@@ -692,7 +694,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         ]
                     ]);
                 }
-
 
         }else if ($_GET['requestType'] === 'fetch_transaction_record') {
 

@@ -1234,26 +1234,25 @@ public function CheckOutOrder($services, $items, $discount, $vat, $grandTotal, $
     $params = [];
     $types  = "";
 
-    // Filter by year
-    if ($filterYear) {
+    // --- Year filter (only if no week given) ---
+    if ($filterYear && !$filterWeek) {
         $conds[] = "YEAR(transaction_date) = ?";
         $params[] = $filterYear;
         $types   .= "i";
     }
 
-    // Filter by month
-    if ($filterMonth) {
+    // --- Month filter (only if no week given) ---
+    if ($filterMonth && !$filterWeek) {
         $conds[] = "MONTH(transaction_date) = ?";
         $params[] = $filterMonth;
         $types   .= "i";
     }
 
-    // Filter by week (ensure YEAR+WEEK matches PHP)
+    // --- Week filter (takes priority, ignores month) ---
     if ($filterWeek && $filterYear) {
-        // MySQL YEARWEEK: mode=1 (week starts Monday)
         $conds[] = "YEARWEEK(transaction_date, 1) = ?";
         $params[] = intval($filterYear . str_pad($filterWeek, 2, '0', STR_PAD_LEFT));
-        $types .= "i";
+        $types   .= "i";
     }
 
     if ($conds) {
@@ -1273,82 +1272,72 @@ public function CheckOutOrder($services, $items, $discount, $vat, $grandTotal, $
     while ($row = $result->fetch_assoc()) {
         $date       = new DateTime($row['transaction_date']);
         $dayOfWeek  = (int)$date->format('N'); // 1=Mon ... 7=Sun
-        $monthNum   = (int)$date->format('m');
         $monthName  = $date->format('F');
         $yearNum    = (int)$date->format('Y');
         $weekOfYear = (int)$date->format('W');
 
-        // --- Process services ---
+        // --- Services ---
         $services = json_decode($row['transaction_service'], true);
-        if (!empty($services) && is_array($services)) {
+        if (!empty($services)) {
             foreach ($services as $svc) {
-                $empId = isset($svc['user_id']) ? (int)$svc['user_id'] : 0;
-                $price = isset($svc['price']) ? floatval($svc['price']) : 0;
-
-                if ($empId > 0) {
-                    $empIds[] = $empId;
-                    if (!isset($employees[$empId])) {
-                        $employees[$empId] = [
-                            "user_id"    => $empId,
-                            "name"       => "Unknown",
-                            "days"       => array_fill(1, 7, 0),
-                            "commission" => 0,
-                            "deductions" => 0,
-                            "months"     => []
-                        ];
-                    }
-
-                    $employees[$empId]["days"][$dayOfWeek] += $price;
-                    $employees[$empId]["commission"] += $price;
-                    $employees[$empId]["months"][$monthName] = ($employees[$empId]["months"][$monthName] ?? 0) + $price;
-                    $employees[$empId]["_deduction_filters"] = [
-                        "year" => $yearNum,
-                        "month" => $monthNum,
-                        "week" => $weekOfYear
-                    ];
-                }
+                $this->addEmployeeData($employees, $empIds, $svc, $dayOfWeek, $monthName, $yearNum, $weekOfYear);
             }
         }
 
-        // --- Process items ---
+        // --- Items ---
         $items = json_decode($row['transaction_item'], true);
-        if (!empty($items) && is_array($items)) {
+        if (!empty($items)) {
             foreach ($items as $item) {
-                // Use user_id if exists, else assign to default (e.g., 1)
-                $empId = isset($item['user_id']) ? (int)$item['user_id'] : 1;
-                $subtotal = isset($item['subtotal']) ? floatval($item['subtotal']) : 0;
-
-                if ($empId > 0) {
-                    $empIds[] = $empId;
-                    if (!isset($employees[$empId])) {
-                        $employees[$empId] = [
-                            "user_id"    => $empId,
-                            "name"       => "Unknown",
-                            "days"       => array_fill(1, 7, 0),
-                            "commission" => 0,
-                            "deductions" => 0,
-                            "months"     => []
-                        ];
-                    }
-                    $employees[$empId]["days"][$dayOfWeek] += $subtotal;
-                    $employees[$empId]["commission"] += $subtotal;
-                    $employees[$empId]["months"][$monthName] = ($employees[$empId]["months"][$monthName] ?? 0) + $subtotal;
-                    $employees[$empId]["_deduction_filters"] = [
-                        "year" => $yearNum,
-                        "month" => $monthNum,
-                        "week" => $weekOfYear
-                    ];
-                }
+                $this->addEmployeeData($employees, $empIds, $item, $dayOfWeek, $monthName, $yearNum, $weekOfYear, true);
             }
         }
     }
     $stmt->close();
 
     // --- Fetch employee names ---
+    $this->populateEmployeeNames($employees, $empIds);
+
+    // --- Fetch deductions ---
+    $this->populateDeductions($employees);
+
+    return array_values($employees);
+}
+
+private function addEmployeeData(&$employees, &$empIds, $data, $dayOfWeek, $monthName, $yearNum, $weekOfYear, $isItem=false) {
+    $empId = isset($data['user_id']) ? (int)$data['user_id'] : 0;
+    if ($isItem && $empId == 0) $empId = 1; // fallback
+
+    $amount = $isItem ? ($data['subtotal'] ?? 0) : ($data['price'] ?? 0);
+
+    if ($empId > 0) {
+        $empIds[] = $empId;
+        if (!isset($employees[$empId])) {
+            $employees[$empId] = [
+                "user_id"    => $empId,
+                "name"       => "Unknown",
+                "days"       => array_fill(1, 7, 0),
+                "commission" => 0,
+                "deductions" => 0,
+                "months"     => []
+            ];
+        }
+
+        $employees[$empId]["days"][$dayOfWeek] += $amount;
+        $employees[$empId]["commission"] += $amount;
+        $employees[$empId]["months"][$monthName] = ($employees[$empId]["months"][$monthName] ?? 0) + $amount;
+        $employees[$empId]["_deduction_filters"] = [
+            "year" => $yearNum,
+            "week" => $weekOfYear
+        ];
+    }
+}
+
+private function populateEmployeeNames(&$employees, $empIds) {
     $empIds = array_unique(array_filter($empIds));
     if (!empty($empIds)) {
         $in  = str_repeat('?,', count($empIds) - 1) . '?';
-        $sql = "SELECT user_id, CONCAT(firstname,' ',lastname) AS fullname FROM user WHERE user_id IN ($in)";
+        $sql = "SELECT user_id, CONCAT(firstname,' ',lastname) AS fullname 
+                FROM user WHERE user_id IN ($in)";
         $stmtEmp = $this->conn->prepare($sql);
         $stmtEmp->bind_param(str_repeat("i", count($empIds)), ...$empIds);
         $stmtEmp->execute();
@@ -1360,19 +1349,19 @@ public function CheckOutOrder($services, $items, $discount, $vat, $grandTotal, $
         }
         $stmtEmp->close();
     }
+}
 
-    // --- Fetch deductions per employee ---
+private function populateDeductions(&$employees) {
     foreach ($employees as $empId => &$empData) {
         if ($empId > 0 && isset($empData["_deduction_filters"])) {
             $dedFilters = $empData["_deduction_filters"];
             $dedQuery = "SELECT SUM(deduction_amount) as total_deduction
                          FROM deduction 
                          WHERE deduction_user_id = ?
-                         AND YEAR(deduction_date) = ?
-                         AND MONTH(deduction_date) = ?
-                         AND WEEK(deduction_date, 1) = ?";
+                         AND YEARWEEK(deduction_date, 1) = ?";
             $stmtDed = $this->conn->prepare($dedQuery);
-            $stmtDed->bind_param("iiii", $empId, $dedFilters["year"], $dedFilters["month"], $dedFilters["week"]);
+            $yearWeek = intval($dedFilters["year"] . str_pad($dedFilters["week"], 2, '0', STR_PAD_LEFT));
+            $stmtDed->bind_param("ii", $empId, $yearWeek);
             $stmtDed->execute();
             $stmtDed->bind_result($totalDeduction);
             if ($stmtDed->fetch()) {
@@ -1382,9 +1371,8 @@ public function CheckOutOrder($services, $items, $discount, $vat, $grandTotal, $
             unset($empData["_deduction_filters"]);
         }
     }
-
-    return array_values($employees);
 }
+
 
 
 

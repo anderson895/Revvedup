@@ -7,7 +7,6 @@
 
     // START CODE FOR FETCHING EMPLOYEE RECORD
 $(document).ready(function () {
-
   const monthNames = [
     "January","February","March","April","May","June",
     "July","August","September","October","November","December"
@@ -18,46 +17,44 @@ $(document).ready(function () {
   let userPosition = "";
   let currentWeek = null;
 
-  // --- Align a date to Monday ---
+  // --- Align date to Monday ---
   function alignToMonday(date) {
-    const day = date.getDay(); // 0=Sun .. 6=Sat
-    const diff = (day === 0 ? -6 : 1 - day); // move Sunday to previous Monday
+    const day = date.getDay(); // 0=Sun..6=Sat
+    const diff = (day === 0 ? -6 : 1 - day);
     const monday = new Date(date);
     monday.setDate(date.getDate() + diff);
     return monday;
   }
 
-  // --- Get ISO week number from a date ---
+  // --- Get ISO week number ---
   function getISOWeek(date) {
     const target = new Date(date.valueOf());
-    const dayNumber = (date.getDay() + 6) % 7; // Monday=0, Sunday=6
-    target.setDate(target.getDate() - dayNumber + 3); // Thursday of current week
+    const dayNumber = (date.getDay() + 6) % 7;
+    target.setDate(target.getDate() - dayNumber + 3);
     const firstThursday = new Date(target.getFullYear(), 0, 4);
     const weekNumber = 1 + Math.round((target - firstThursday) / (7 * 24 * 60 * 60 * 1000));
     return weekNumber;
   }
 
-  // --- Convert ISO week number to Monday date ---
+  // --- Get Monday of ISO week ---
   function getDateOfISOWeek(week, year) {
     const simple = new Date(year, 0, 1 + (week - 1) * 7);
-    const dayOfWeek = simple.getDay(); // 0=Sun .. 6=Sat
-    const diff = (dayOfWeek <= 4 ? 1 - dayOfWeek : 8 - dayOfWeek); // ISO Monday
+    const dayOfWeek = simple.getDay();
+    const diff = (dayOfWeek <= 4 ? 1 - dayOfWeek : 8 - dayOfWeek);
     simple.setDate(simple.getDate() + diff);
     return simple;
   }
 
- // --- Update month/week labels ---
-function updateLabels() {
-    const today = new Date(); // always use current date
-    const month = monthNames[today.getMonth()];
-    const year = today.getFullYear();
-
+  // --- Update labels ---
+  function updateLabels() {
+    if (!currentDate) return;
+    const month = monthNames[currentDate.getMonth()];
+    const year = currentDate.getFullYear();
     $("#monthLabel").text(`${month} ${year}`);
     $("#weekLabel").text(`( Week ${currentWeek} )`);
-}
+  }
 
-
-  // --- Prev / Next Week buttons ---
+  // --- Prev / Next Week ---
   $("#prevWeek").click(function () {
     if (!currentDate) return;
     currentDate.setDate(currentDate.getDate() - 7);
@@ -74,24 +71,38 @@ function updateLabels() {
     currentWeek = getISOWeek(currentDate);
     updateLabels();
     fetchEmployees();
+  });
 
-    
+  // --- Prev / Next Month ---
+  $("#prevMonth").click(function () {
+    if (!currentDate) return;
+    currentDate.setMonth(currentDate.getMonth() - 1);
+    currentDate = alignToMonday(currentDate);
+    currentWeek = getISOWeek(currentDate);
+    updateLabels();
+    fetchEmployees();
+  });
+
+  $("#nextMonth").click(function () {
+    if (!currentDate) return;
+    currentDate.setMonth(currentDate.getMonth() + 1);
+    currentDate = alignToMonday(currentDate);
+    currentWeek = getISOWeek(currentDate);
+    updateLabels();
+    fetchEmployees();
   });
 
   // --- Fetch employees from API ---
   function fetchEmployees() {
-  
-      const today = new Date();
-      currentDate = today; // Use today for month display
-      const monday = alignToMonday(today);
-      currentWeek = getISOWeek(monday);
+    if (!currentDate) {
+      currentDate = new Date();
+      currentDate = alignToMonday(currentDate);
+      currentWeek = getISOWeek(currentDate);
+    }
 
     let month = currentDate.getMonth() + 1;
     let year = currentDate.getFullYear();
     let week = currentWeek;
-
-    console.log(month);
-
 
     $.ajax({
       url: "../controller/end-points/controller.php",
@@ -107,11 +118,6 @@ function updateLabels() {
         if (res.status === 200) {
           userPosition = res.position || userPosition;
 
-
-          console.log(month);
-
-          
-          // Set date and week from API if provided
           if (res.date) {
             currentWeek = res.date.week;
             currentDate = getDateOfISOWeek(currentWeek, res.date.year);

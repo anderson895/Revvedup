@@ -12,17 +12,32 @@ include "../src/components/view/header.php";
     <h1 class="text-lg font-semibold">Employee Management</h1>
   </header>
 
-  <!-- Month + Week Selector -->
-  <div class="flex items-center bg-white px-4 py-2">
-    <button class="material-icons text-gray-600 hover:text-gray-800 cursor-pointer" id="prevWeek">
-      chevron_left
-    </button>
-    <span class="mx-2 font-medium text-gray-700" id="monthLabel"></span>
-    <span class="ml-2 text-sm text-gray-500" id="weekLabel"></span>
-    <button class="material-icons text-gray-600 hover:text-gray-800 cursor-pointer" id="nextWeek">
-      chevron_right
-    </button>
-  </div>
+<!-- Month + Week Selector -->
+<div class="flex items-center bg-white px-4 py-2 space-x-2">
+  <!-- Prev Month -->
+  <button class="material-icons text-gray-600 hover:text-gray-800 cursor-pointer" id="prevMonth">
+    keyboard_double_arrow_left
+  </button>
+
+  <!-- Prev Week -->
+  <button class="material-icons text-gray-600 hover:text-gray-800 cursor-pointer" id="prevWeek">
+    chevron_left
+  </button>
+
+  <span class="mx-2 font-medium text-gray-700" id="monthLabel"></span>
+  <span class="ml-2 text-sm text-gray-500" id="weekLabel"></span>
+
+  <!-- Next Week -->
+  <button class="material-icons text-gray-600 hover:text-gray-800 cursor-pointer" id="nextWeek">
+    chevron_right
+  </button>
+
+  <!-- Next Month -->
+  <button class="material-icons text-gray-600 hover:text-gray-800 cursor-pointer" id="nextMonth">
+    keyboard_double_arrow_right
+  </button>
+</div>
+
 
 
 
