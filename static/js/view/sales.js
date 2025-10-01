@@ -59,7 +59,7 @@ function renderTable(data) {
                 <td class="p-3 text-left font-semibold">${item.transaction_id}</td>
                 <td class="p-3 text-left font-semibold">₱ ${parseFloat(item.transaction_total).toFixed(2)}</td>
                 <td class="p-3 text-center">
-                    <button class="bg-red-800 hover:bg-red-700 text-white font-semibold py-1 px-3 rounded view-btn" data-id="${item.transaction_id}">
+                    <button class="cursor-pointer bg-red-800 hover:bg-red-700 text-white font-semibold py-1 px-3 rounded view-btn" data-id="${item.transaction_id}">
                         View
                     </button>
                 </td>

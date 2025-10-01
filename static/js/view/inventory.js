@@ -146,7 +146,7 @@ $.ajax({
                     let actionButtons = '';
                     if (isAdmin) {
                         actionButtons = `
-                            <button class="updateBtn text-gray-700 hover:text-blue-600"
+                            <button class="updateBtn cursor-pointer text-gray-700 hover:text-blue-600"
                                 data-prod_id ='${data.prod_id}'
                                 data-prod_name='${data.prod_name}'
                                 data-prod_capital='${data.prod_capital}'
@@ -156,7 +156,7 @@ $.ajax({
                             >
                                 <span class="material-icons text-sm">edit</span>
                             </button>
-                            <button class="removeBtn text-gray-700 hover:text-red-600"
+                            <button class="removeBtn cursor-pointer text-gray-700 hover:text-red-600"
                                 data-prod_id='${data.prod_id}'
                                 data-prod_name='${data.prod_name}'
                             >

@@ -35,7 +35,7 @@ include "../src/components/view/header.php";
       <div class="flex justify-between items-center  px-4 py-3">
         <h2 class="text-gray-700 font-semibold">Inventory List</h2>
 
-        <button class="p-2 rounded-md hover:bg-gray-100" id="addProductBtn" <?= $authorize ?>>
+        <button class="p-2 cursor-pointer rounded-md hover:bg-gray-100" id="addProductBtn" <?= $authorize ?>>
         <span class="material-icons text-green-600">add_box</span>
         </button>
 
@@ -242,7 +242,7 @@ include "../src/components/view/header.php";
       <button 
         type="submit" 
         form="frmAddProduct"
-        class="bg-red-900 text-white px-6 py-2 rounded shadow hover:bg-red-700"
+        class="bg-red-900 text-white cursor-pointer px-6 py-2 rounded shadow hover:bg-red-700"
       >
         Add Item
       </button>
@@ -411,13 +411,13 @@ include "../src/components/view/header.php";
         <button 
           id="closeUpdateProductModal"
           type="button"
-          class="bg-gray-300 text-gray-700 px-6 py-2 rounded shadow hover:bg-gray-400"
+          class="bg-gray-300 cursor-pointer text-gray-700 px-6 py-2 rounded shadow hover:bg-gray-400"
         >
           Cancel
         </button>
         <button 
           type="submit" 
-          class="bg-red-900 text-white px-6 py-2 rounded shadow hover:bg-red-700"
+          class="bg-red-900 cursor-pointer text-white px-6 py-2 rounded shadow hover:bg-red-700"
         >
           Update
         </button>
