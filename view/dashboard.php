@@ -18,7 +18,7 @@ include "../src/components/view/header.php";
     <!-- Pending Appointments -->
     <div class="bg-white shadow rounded-lg p-4">
       <div class="text-gray-500 text-sm">Pending Appointments</div>
-      <div class="text-2xl font-bold PendingAppointmentCount">0</div>
+      <div class="text-2xl font-bold PendingAppointmentCountDashboard">0</div>
     </div>
     <!-- Total Sales -->
     <div class="bg-white shadow rounded-lg p-4">

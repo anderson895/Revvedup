@@ -28,7 +28,7 @@ const getDashboardAnalytics = () => {
             // -----------------------
             $('.CustomerCount').text(CustomerCount || 0);
             $('.EmployeeCount').text(EmployeeCount || 0);
-            $('.PendingAppointmentCount').text(PendingAppointmentCount || 0);
+            $('.PendingAppointmentCountDashboard').text(PendingAppointmentCount || 0);
             $('.TotalSales').text(`₱${parseFloat(TotalSales || 0).toFixed(2)}`);
 
             // -----------------------
