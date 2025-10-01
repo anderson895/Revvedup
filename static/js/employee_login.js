@@ -27,8 +27,8 @@ $("#frmLogin").submit(function (e) {
 
             setTimeout(function () {
             const routes = {
-                admin: "view/dashboard",
-                employee: "view/sales"
+                admin: "view/item",
+                employee: "view/item"
             };
 
             if (routes[position]) {
