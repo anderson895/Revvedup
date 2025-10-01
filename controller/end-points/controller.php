@@ -673,7 +673,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 } else {
                     $result = $db->fetch_employee_record_by_id($_SESSION['user_id'], $month, $year, $week);
                 }
-
                 // Return response
                 if (!empty($result)) {
                     echo json_encode([

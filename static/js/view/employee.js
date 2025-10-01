@@ -184,8 +184,6 @@ $(document).ready(function () {
   // initial load
   fetchEmployees();
 });
-
-
 // END CODE FOR FETCHING EMPLOYEE RECORD
 
 
