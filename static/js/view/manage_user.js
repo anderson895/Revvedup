@@ -2,6 +2,7 @@ $(document).ready(function(){
 
   // Open modals
   $("#addUserBtn").click(()=> $("#addUserModal").fadeIn());
+  $("#closeAddUserModal").click(()=> $("#addUserModal").fadeOut());
   $(document).on("click", function(e){
     if ($(e.target).is("#addUserModal")) $("#addUserModal").fadeOut();
     if ($(e.target).is("#updateUserModal")) $("#updateUserModal").fadeOut();

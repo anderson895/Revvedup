@@ -4,7 +4,7 @@ include "../src/components/view/header.php";
 
 <main class="flex-1 flex flex-col bg-gray-100 min-h-screen">
   <header class="bg-red-900 text-white flex items-center space-x-3 px-6 py-6">
-    <h1 class="text-lg font-semibold">EMPLOYEE MANAGEMENT</h1>
+    <h1 class="text-lg font-semibold">EMPLOYEE LIST</h1>
   </header>
 
   <div class="px-6 py-4 flex justify-center sm:justify-start">
@@ -15,8 +15,7 @@ include "../src/components/view/header.php";
 
   <section class="p-6 flex-1">
     <div class="bg-white rounded-xl shadow overflow-hidden">
-      <div class="flex justify-between items-center px-4 py-3">
-        <h2 class="text-gray-700 font-semibold">Employee List</h2>
+      <div class="flex justify-end items-center px-4 py-3">
         <button 
           id="addUserBtn"
           class="cursor-pointer flex items-center gap-2 px-4 py-2 rounded-lg bg-green-600 text-white 
@@ -46,7 +45,7 @@ include "../src/components/view/header.php";
   </section>
 
   <footer class="flex justify-center items-center bg-white px-4 py-4">
-    <span class="text-sm text-gray-500">User Management System</span>
+    <span class="text-sm text-gray-500">Employee Management System</span>
   </footer>
 </main>
 
@@ -57,7 +56,7 @@ include "../src/components/view/header.php";
 <!-- ADD USER MODAL -->
 <div id="addUserModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm" style="display:none;">
   <div class="bg-white rounded-md shadow-lg w-full max-w-xl p-8 relative">
-    <h2 class="text-2xl italic text-center mb-8">Add New User</h2>
+    <h2 class="text-2xl italic text-center mb-8">Add New Employee</h2>
     <form id="frmAddUser" class="grid grid-cols-2 gap-4">
 
       <!-- First Name -->
@@ -130,8 +129,11 @@ include "../src/components/view/header.php";
     </form>
 
     <div class="flex justify-end mt-6">
+
+      <button type="button" id="closeAddUserModal"class="bg-gray-300 mr-3 cursor-pointer text-gray-700 px-6 py-2 rounded shadow hover:bg-gray-400">Cancel</button>
+
       <button type="submit" form="frmAddUser" 
-        class="bg-red-900 text-white px-6 py-2 rounded shadow hover:bg-red-700">Add User</button>
+         class="bg-red-900 cursor-pointer text-white px-6 py-2 rounded shadow hover:bg-red-700">Add Employee</button>
     </div>
   </div>
 </div>
@@ -140,7 +142,7 @@ include "../src/components/view/header.php";
 <!-- UPDATE USER MODAL -->
 <div id="updateUserModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm" style="display:none;">
   <div class="bg-white rounded-md shadow-lg w-full max-w-xl p-8 relative">
-    <h2 class="text-2xl italic text-center mb-8">Update User</h2>
+    <h2 class="text-2xl italic text-center mb-8">Update Employee</h2>
     <form id="frmUpdateUser" class="grid grid-cols-2 gap-4">
       <input type="hidden" id="userId" name="userId">
 
@@ -217,9 +219,9 @@ include "../src/components/view/header.php";
 
     <div class="flex justify-end mt-6 space-x-3">
       <button type="button" id="closeUpdateUserModal"
-        class="bg-gray-300 text-gray-700 px-6 py-2 rounded shadow hover:bg-gray-400">Cancel</button>
+        class="bg-gray-300 cursor-pointer text-gray-700 px-6 py-2 rounded shadow hover:bg-gray-400">Cancel</button>
       <button type="submit" form="frmUpdateUser"
-        class="bg-red-900 text-white px-6 py-2 rounded shadow hover:bg-red-700">Update</button>
+        class="bg-red-900 cursor-pointer text-white px-6 py-2 rounded shadow hover:bg-red-700">Update</button>
     </div>
   </div>
 </div>
