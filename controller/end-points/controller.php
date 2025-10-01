@@ -635,31 +635,70 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }else if ($_GET['requestType'] === 'fetch_all_employee_record') {
 
 
+                        // Set timezone
+                date_default_timezone_set("Asia/Manila");
+
+                // Get the latest transaction date to determine default month/year/week
+                $latestTransaction = $db->conn->query("
+                    SELECT MAX(transaction_date) AS latest_date 
+                    FROM transaction 
+                    WHERE transaction_status = 1
+                ")->fetch_assoc();
+
+                if ($latestTransaction['latest_date']) {
+                    $latestDate = new DateTime($latestTransaction['latest_date'], new DateTimeZone("Asia/Manila"));
+                    $currentYear  = (int)$latestDate->format("Y");
+                    $currentMonth = (int)$latestDate->format("m");
+                    $currentWeek  = (int)$latestDate->format("W");
+                } else {
+                    // fallback to today if no transaction exists
+                    $today = new DateTime("now", new DateTimeZone("Asia/Manila"));
+                    $currentYear  = (int)$today->format("Y");
+                    $currentMonth = (int)$today->format("m");
+                    $currentWeek  = (int)$today->format("W");
+                }
+
+                // Use GET if available
+                $year  = isset($_GET['year'])  && $_GET['year'] !== '' ? intval($_GET['year']) : $currentYear;
+                $month = isset($_GET['month']) && $_GET['month'] !== '' ? intval($_GET['month']) : $currentMonth;
+                $week  = isset($_GET['week'])  && $_GET['week'] !== '' ? intval($_GET['week']) : $currentWeek;
+
+                // Get user session
                 $On_Session = $db->check_account($_SESSION['user_id']);
-                $position = $On_Session['position'] ?? "employee";
+                $position   = $On_Session['position'] ?? "employee";
 
-
-                $month = isset($_GET['month']) ? intval($_GET['month']) : null;
-                $year  = isset($_GET['year']) ? intval($_GET['year']) : null;
-                $week  = isset($_GET['week']) ? intval($_GET['week']) : null;
-
+                // Fetch data
                 if ($position === "admin") {
-                    // Admin fetches all
                     $result = $db->fetch_all_employee_record($month, $year, $week);
                 } else {
-                    // Non-admin fetches only their own
                     $result = $db->fetch_employee_record_by_id($_SESSION['user_id'], $month, $year, $week);
                 }
 
-                if ($result) {
+                // Return response
+                if (!empty($result)) {
                     echo json_encode([
-                    'status'=>200,
-                    'data'=>$result,
-                    'position'=>$position,
-                ]);
+                        'status' => 200,
+                        'data' => $result,
+                        'position' => $position,
+                        'default' => [
+                            'month' => $month,
+                            'year'  => $year,
+                            'week'  => $week
+                        ]
+                    ]);
                 } else {
-                    echo json_encode(['status'=>404,'message'=>'Item not found']);
+                    echo json_encode([
+                        'status' => 404,
+                        'message' => 'Item not found',
+                        'default' => [
+                            'month' => $month,
+                            'year'  => $year,
+                            'week'  => $week
+                        ]
+                    ]);
                 }
+
+
 
         }else if ($_GET['requestType'] === 'fetch_transaction_record') {
 

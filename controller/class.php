@@ -1225,7 +1225,7 @@ public function CheckOutOrder($services, $items, $discount, $vat, $grandTotal, $
     //     return array_values($employees); // return as indexed array
     // }
 
-    public function fetch_all_employee_record($filterMonth = null, $filterYear = null, $filterWeek = null) {
+  public function fetch_all_employee_record($filterMonth = null, $filterYear = null, $filterWeek = null) {
     $query = $this->conn->prepare("
         SELECT transaction_id, transaction_date, transaction_service 
         FROM transaction 
@@ -1238,31 +1238,27 @@ public function CheckOutOrder($services, $items, $discount, $vat, $grandTotal, $
 
     while ($row = $result->fetch_assoc()) {
         $date = new DateTime($row['transaction_date']);
-        $dayOfWeek = $date->format('N'); // 1=Mon ... 7=Sun
-        $monthNum = intval($date->format('m'));
-        $monthName = $date->format('F'); // September, October...
-        $year = intval($date->format('Y'));
+        $dayOfWeek = (int)$date->format('N'); // 1=Mon ... 7=Sun
+        $monthNum = (int)$date->format('m');
+        $monthName = $date->format('F');
+        $yearNum = (int)$date->format('Y');
+        $weekOfYear = (int)$date->format('W'); // sequential week
 
-        // Calculate week of the month
-        $dayOfMonth = intval($date->format('j'));
-        $weekOfMonth = ceil($dayOfMonth / 7);
-
-        // Apply filters
+        // Filters (week filter is optional)
         if ($filterMonth && $filterMonth != $monthNum) continue;
-        if ($filterYear && $filterYear != $year) continue;
-        if ($filterWeek && $filterWeek != $weekOfMonth) continue;
+        if ($filterYear && $filterYear != $yearNum) continue;
+        if ($filterWeek !== null && $filterWeek != $weekOfYear) continue;
 
         $services = json_decode($row['transaction_service'], true);
-
         if (!empty($services)) {
             foreach ($services as $svc) {
-                $empId = isset($svc['user_id']) ? intval($svc['user_id']) : 0;
+                $empId = isset($svc['user_id']) ? (int)$svc['user_id'] : 0;
                 $price = isset($svc['price']) ? floatval($svc['price']) : 0;
 
-                // Fetch user name
+                // Fetch employee name
                 $empName = "Unknown";
                 if ($empId > 0) {
-                    $stmtEmp = $this->conn->prepare("SELECT CONCAT(firstname, ' ', lastname) AS fullname FROM user WHERE user_id = ?");
+                    $stmtEmp = $this->conn->prepare("SELECT CONCAT(firstname,' ',lastname) AS fullname FROM user WHERE user_id=?");
                     $stmtEmp->bind_param("i", $empId);
                     $stmtEmp->execute();
                     $stmtEmp->bind_result($fullname);
@@ -1270,12 +1266,12 @@ public function CheckOutOrder($services, $items, $discount, $vat, $grandTotal, $
                     $stmtEmp->close();
                 }
 
-                // Initialize user record if not exists
+                // Initialize record
                 if (!isset($employees[$empId])) {
                     $employees[$empId] = [
                         "user_id" => $empId,
                         "name" => $empName,
-                        "days" => array_fill(1, 7, 0),
+                        "days" => array_fill(1,7,0),
                         "commission" => 0,
                         "deductions" => 0,
                         "months" => []
@@ -1283,46 +1279,34 @@ public function CheckOutOrder($services, $items, $discount, $vat, $grandTotal, $
                 }
 
                 // Add commission & day
-                $employees[$empId]["days"][$dayOfWeek] += $price;
-                $employees[$empId]["commission"] += $price;
+                $employees[$empId]['days'][$dayOfWeek] += $price;
+                $employees[$empId]['commission'] += $price;
 
                 // Group by month
-                if (!isset($employees[$empId]["months"][$monthName])) {
-                    $employees[$empId]["months"][$monthName] = 0;
+                if (!isset($employees[$empId]['months'][$monthName])) {
+                    $employees[$empId]['months'][$monthName] = 0;
                 }
-                $employees[$empId]["months"][$monthName] += $price;
+                $employees[$empId]['months'][$monthName] += $price;
 
-                // ---------------------------
-                // Fetch deduction for this user & week
-                // ---------------------------
+                // Fetch deductions for this week
                 if ($empId > 0) {
-                    $dedQuery = "SELECT SUM(deduction_amount) as total_deduction
-                                 FROM deduction 
-                                 WHERE deduction_user_id = ?";
-
-                    $params = [$empId];
+                    $dedQuery = "SELECT SUM(deduction_amount) AS total_deduction
+                                 FROM deduction
+                                 WHERE deduction_user_id=?";
                     $types = "i";
+                    $params = [$empId];
 
-                    // Build string filter matching Month Year Week
-                    $filterParts = [];
-                    if ($filterMonth) $filterParts[] = date('F', mktime(0, 0, 0, $filterMonth, 1));
-                    else $filterParts[] = $monthName; // use transaction month
-                    if ($filterYear) $filterParts[] = $filterYear;
-                    else $filterParts[] = $year; // use transaction year
-                    if ($filterWeek) $filterParts[] = "Week $filterWeek";
-                    else $filterParts[] = "Week $weekOfMonth"; // use transaction week
-
-                    $filterStr = implode(' ', $filterParts); // e.g., "September 2025 Week 5"
+                    $dedStr = "$monthName $yearNum Week $weekOfYear";
                     $dedQuery .= " AND TRIM(deduction_date) LIKE ?";
                     $types .= "s";
-                    $params[] = "%$filterStr%";
+                    $params[] = "%$dedStr%";
 
                     $stmtDed = $this->conn->prepare($dedQuery);
                     $stmtDed->bind_param($types, ...$params);
                     $stmtDed->execute();
                     $stmtDed->bind_result($totalDeduction);
                     if ($stmtDed->fetch()) {
-                        $employees[$empId]["deductions"] = floatval($totalDeduction);
+                        $employees[$empId]['deductions'] = floatval($totalDeduction);
                     }
                     $stmtDed->close();
                 }
@@ -1340,9 +1324,31 @@ public function CheckOutOrder($services, $items, $discount, $vat, $grandTotal, $
 
 
 
+
+
 public function fetch_employee_record_by_id($empId, $filterMonth = null, $filterYear = null, $filterWeek = null) {
     if (!$empId) return [];
 
+    // Get employee name
+    $empName = "Unknown";
+    $stmtEmp = $this->conn->prepare("SELECT CONCAT(firstname, ' ', lastname) AS fullname FROM user WHERE user_id = ?");
+    $stmtEmp->bind_param("i", $empId);
+    $stmtEmp->execute();
+    $stmtEmp->bind_result($fullname);
+    if ($stmtEmp->fetch()) $empName = $fullname;
+    $stmtEmp->close();
+
+    // Base structure
+    $employee = [
+        "user_id"    => $empId,
+        "name"       => $empName,
+        "days"       => array_fill(1, 7, 0),
+        "commission" => 0,
+        "deductions" => 0,
+        "months"     => []
+    ];
+
+    // Fetch transactions
     $query = $this->conn->prepare("
         SELECT transaction_id, transaction_date, transaction_service 
         FROM transaction 
@@ -1351,92 +1357,76 @@ public function fetch_employee_record_by_id($empId, $filterMonth = null, $filter
     $query->execute();
     $result = $query->get_result();
 
-    $employee = null;
-
     while ($row = $result->fetch_assoc()) {
         $date = new DateTime($row['transaction_date']);
-        $dayOfWeek = $date->format('N');
+        $dayOfWeek = intval($date->format('N')); // 1=Mon ... 7=Sun
         $monthNum  = intval($date->format('m'));
         $monthName = $date->format('F');
         $year      = intval($date->format('Y'));
+        $weekOfYear = intval($date->format('W')); // sequential week of year
 
-        $dayOfMonth = intval($date->format('j'));
-        $weekOfMonth = ceil($dayOfMonth / 7);
-
+        // Apply filters
         if ($filterMonth && $filterMonth != $monthNum) continue;
         if ($filterYear && $filterYear != $year) continue;
-        if ($filterWeek && $filterWeek != $weekOfMonth) continue;
+        if ($filterWeek && $filterWeek != $weekOfYear) continue;
 
         $services = json_decode($row['transaction_service'], true);
+        if (!$services) continue;
 
-        if (!empty($services)) {
-            foreach ($services as $svc) {
-                if (!isset($svc['user_id']) || intval($svc['user_id']) !== $empId) continue;
+        foreach ($services as $svc) {
+            if (!isset($svc['user_id']) || intval($svc['user_id']) !== $empId) continue;
 
-                $price = isset($svc['price']) ? floatval($svc['price']) : 0;
+            $price = isset($svc['price']) ? floatval($svc['price']) : 0;
 
-                // Fetch user name
-                $empName = "Unknown";
-                $stmtEmp = $this->conn->prepare("SELECT CONCAT(firstname, ' ', lastname) AS fullname FROM user WHERE user_id = ?");
-                $stmtEmp->bind_param("i", $empId);
-                $stmtEmp->execute();
-                $stmtEmp->bind_result($fullname);
-                if ($stmtEmp->fetch()) $empName = $fullname;
-                $stmtEmp->close();
+            // Add commission & days
+            $employee["days"][$dayOfWeek] += $price;
+            $employee["commission"] += $price;
 
-                // Init if null
-                if ($employee === null) {
-                    $employee = [
-                        "user_id" => $empId,
-                        "name" => $empName,
-                        "days" => array_fill(1, 7, 0),
-                        "commission" => 0,
-                        "deductions" => 0,
-                        "months" => []
-                    ];
-                }
-
-                // Add commission & day
-                $employee["days"][$dayOfWeek] += $price;
-                $employee["commission"] += $price;
-
-                // Group by month
-                if (!isset($employee["months"][$monthName])) {
-                    $employee["months"][$monthName] = 0;
-                }
-                $employee["months"][$monthName] += $price;
-
-                // Deduction
-                $dedQuery = "SELECT SUM(deduction_amount) as total_deduction
-                             FROM deduction 
-                             WHERE deduction_user_id = ?";
-                $params = [$empId];
-                $types = "i";
-
-                $filterParts = [];
-                $filterParts[] = $filterMonth ? date('F', mktime(0, 0, 0, $filterMonth, 1)) : $monthName;
-                $filterParts[] = $filterYear ? $filterYear : $year;
-                $filterParts[] = $filterWeek ? "Week $filterWeek" : "Week $weekOfMonth";
-
-                $filterStr = implode(' ', $filterParts);
-                $dedQuery .= " AND TRIM(deduction_date) LIKE ?";
-                $types .= "s";
-                $params[] = "%$filterStr%";
-
-                $stmtDed = $this->conn->prepare($dedQuery);
-                $stmtDed->bind_param($types, ...$params);
-                $stmtDed->execute();
-                $stmtDed->bind_result($totalDeduction);
-                if ($stmtDed->fetch()) {
-                    $employee["deductions"] = floatval($totalDeduction);
-                }
-                $stmtDed->close();
+            // Group by month
+            if (!isset($employee["months"][$monthName])) {
+                $employee["months"][$monthName] = 0;
             }
+            $employee["months"][$monthName] += $price;
         }
     }
 
-    return $employee ? [$employee] : [];
+    // Fetch total deductions using sequential week
+    $dedQuery = "
+        SELECT SUM(deduction_amount) 
+        FROM deduction 
+        WHERE deduction_user_id = ? 
+    ";
+    $params = [$empId];
+    $types = "i";
+
+    if ($filterMonth) {
+        $dedQuery .= " AND MONTH(deduction_date) = ?";
+        $types .= "i";
+        $params[] = $filterMonth;
+    }
+    if ($filterYear) {
+        $dedQuery .= " AND YEAR(deduction_date) = ?";
+        $types .= "i";
+        $params[] = $filterYear;
+    }
+    if ($filterWeek) {
+        $dedQuery .= " AND WEEK(deduction_date, 1) = ?"; // Mode 1: Monday start
+        $types .= "i";
+        $params[] = $filterWeek;
+    }
+
+    $stmtDed = $this->conn->prepare($dedQuery);
+    $stmtDed->bind_param($types, ...$params);
+    $stmtDed->execute();
+    $stmtDed->bind_result($totalDeduction);
+    if ($stmtDed->fetch()) {
+        $employee["deductions"] = floatval($totalDeduction);
+    }
+    $stmtDed->close();
+
+    return [$employee];
 }
+
 
 
 

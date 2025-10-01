@@ -181,9 +181,9 @@ $('#frmAddService').submit(function(e) {
                             <td class="p-3 text-center font-semibold">${data.service_price}</td>
                             <td class="p-3 text-center font-semibold">${data.firstname} ${data.lastname}</td>
                             <td class="p-3 text-center">
-                                <button class="EditBtn bg-yellow-400 hover:bg-yellow-500 text-black px-3 py-1 rounded text-xs font-semibold transition"
+                                <button class="EditBtn cursor-pointer bg-yellow-400 hover:bg-yellow-500 text-black px-3 py-1 rounded text-xs font-semibold transition"
                                 data-service_id='${data.service_id}'>Edit</button>
-                                <button class="removeBtn bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-xs font-semibold transition"
+                                <button class="removeBtn cursor-pointer bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-xs font-semibold transition"
                                 data-service_id='${data.service_id}'
                                 data-service_name='${data.service_name}'
                                 >Remove</button>

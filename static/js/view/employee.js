@@ -12,8 +12,9 @@ $(document).ready(function () {
     "July","August","September","October","November","December"
   ];
 
-  let currentDate = new Date();
-  alignToMonday(currentDate);
+  let currentDate = null; // no default date
+  let employees = [];
+  let userPosition = "";
 
   function alignToMonday(date) {
     let day = date.getDay(); // 0=Sun ... 6=Sat
@@ -22,149 +23,165 @@ $(document).ready(function () {
   }
 
   function updateLabels() {
+    if (!currentDate) {
+      $("#monthLabel").text("No month selected");
+      $("#weekLabel").text("");
+      return;
+    }
+
     let monday = new Date(currentDate);
     let month = monthNames[monday.getMonth()];
     let year = monday.getFullYear();
 
-    let firstDayOfMonth = new Date(year, monday.getMonth(), 1);
-    let startOffset = (firstDayOfMonth.getDay() + 6) % 7;
-    let weekNumber = Math.ceil((monday.getDate() + startOffset) / 7);
+    // Calculate sequential week of year
+    let firstDayOfYear = new Date(year, 0, 1);
+    let dayDiff = Math.floor((monday - firstDayOfYear) / (1000 * 60 * 60 * 24));
+    let weekNumber = Math.ceil((dayDiff + firstDayOfYear.getDay() + 1) / 7);
 
     $("#monthLabel").text(`${month} ${year}`);
     $("#weekLabel").text(`( Week ${weekNumber} )`);
   }
 
   $("#prevWeek").click(function () {
+    if (!currentDate) return;
     currentDate.setDate(currentDate.getDate() - 7);
+    alignToMonday(currentDate);
     updateLabels();
     fetchEmployees();
   });
 
   $("#nextWeek").click(function () {
+    if (!currentDate) return;
     currentDate.setDate(currentDate.getDate() + 7);
+    alignToMonday(currentDate);
     updateLabels();
     fetchEmployees();
   });
 
-  updateLabels();
+  function fetchEmployees() {
+    let month = currentDate ? currentDate.getMonth() + 1 : null;
+    let year  = currentDate ? currentDate.getFullYear() : null;
 
-  let employees = [];
-let userPosition = ""; // global para ma-access sa renderTable()
+    let weekNumber = null;
+    if (currentDate) {
+      let firstDayOfYear = new Date(currentDate.getFullYear(), 0, 1);
+      let dayDiff = Math.floor((currentDate - firstDayOfYear) / (1000 * 60 * 60 * 24));
+      weekNumber = Math.ceil((dayDiff + firstDayOfYear.getDay() + 1) / 7);
+    }
 
-function fetchEmployees() {
-  let monday = new Date(currentDate);
-  let month = monday.getMonth() + 1;
-  let year = monday.getFullYear();
+    $.ajax({
+      url: "../controller/end-points/controller.php",
+      method: "GET",
+      data: { 
+        requestType: "fetch_all_employee_record",
+        month,
+        year,
+        week: weekNumber
+      },
+      dataType: "json",
+      success: function (res) {
+        if (res.status === 200) {
+          userPosition = res.position;
 
-  let firstDayOfMonth = new Date(year, month - 1, 1);
-  let startOffset = (firstDayOfMonth.getDay() + 6) % 7;
-  let weekNumber = Math.ceil((monday.getDate() + startOffset) / 7);
+          // set default from controller
+          if (!currentDate && res.default) {
+            let def = res.default;
+            currentDate = new Date(def.year, def.month - 1, 1);
 
-  $.ajax({
-    url: "../controller/end-points/controller.php",
-    method: "GET",
-    data: { 
-      requestType: "fetch_all_employee_record",
-      month,
-      year,
-      week: weekNumber
-    },
-    dataType: "json",
-    success: function (res) {
-      if (res.status === 200 && res.data.length > 0) {
-        // <-- dito kinukuha ang position ng naka-login na user
-        userPosition = res.position;
+            // calculate date for the Monday of the default week
+            let firstDayOfYear = new Date(def.year, 0, 1);
+            let daysFromJan1 = (def.week - 1) * 7;
+            currentDate = new Date(firstDayOfYear.getTime() + daysFromJan1 * 24 * 60 * 60 * 1000);
+            alignToMonday(currentDate);
+          }
 
-        employees = res.data.map(emp => {
-          let dayArr = [];
-          for (let i = 1; i <= 7; i++) dayArr.push(emp.days[i] ?? 0);
-          return {
-            emp_id: emp.user_id, // sa response mo user_id
-            name: emp.name,
-            days: dayArr,
-            commission: parseFloat(emp.commission),
-            deductions: parseFloat(emp.deductions),
-            months: emp.months
-          };
-        });
+          employees = res.data.map(emp => {
+            let dayArr = [];
+            for (let i = 1; i <= 7; i++) dayArr.push(emp.days[i] ?? 0);
+            return {
+              emp_id: emp.user_id,
+              name: emp.name,
+              days: dayArr,
+              commission: parseFloat(emp.commission),
+              deductions: parseFloat(emp.deductions),
+              months: emp.months
+            };
+          });
 
-        renderTable();
-        $("#tableFooter").show();
-      } else {
-        employees = [];
+          renderTable();
+          updateLabels();
+          $("#tableFooter").show();
+        } else {
+          employees = [];
+          $("#employeeTableBody").html(
+            `<tr><td colspan="12" class="text-center p-4 text-gray-500">No records available</td></tr>`
+          );
+          $("#tableFooter").hide();
+        }
+      },
+      error: function (err) {
+        console.error("AJAX Error:", err);
         $("#employeeTableBody").html(
-          `<tr><td colspan="12" class="text-center p-4 text-gray-500">No records available</td></tr>`
+          `<tr><td colspan="12" class="text-center p-4 text-gray-500">Error loading data</td></tr>`
         );
         $("#tableFooter").hide();
       }
-    },
-    error: function (err) {
-      console.error("AJAX Error:", err);
-      $("#employeeTableBody").html(
-        `<tr><td colspan="12" class="text-center p-4 text-gray-500">Error loading data</td></tr>`
-      );
-      $("#tableFooter").hide();
-    }
-  });
-}
+    });
+  }
 
-function renderTable() {
-  let tbody = $("#employeeTableBody");
-  tbody.empty();
+  function renderTable() {
+    let tbody = $("#employeeTableBody");
+    tbody.empty();
 
-  let colTotals = Array(7).fill(0);
-  let totalCommission = 0;
-  let totalDeductions = 0;
-  let totalOverall = 0;
+    let colTotals = Array(7).fill(0);
+    let totalCommission = 0;
+    let totalDeductions = 0;
+    let totalOverall = 0;
 
-  employees.forEach(emp => {
-    let row = `<tr class="hover:bg-gray-50">
-      <td class="p-2 border-r font-medium capitalize">${emp.name}</td>`;
+    employees.forEach(emp => {
+      let row = `<tr class="hover:bg-gray-50">
+        <td class="p-2 border-r font-medium capitalize">${emp.name}</td>`;
 
-    emp.days.forEach((val, i) => {
-      row += `<td class="p-2 border-r text-center">${val}</td>`;
-      colTotals[i] += val;
+      emp.days.forEach((val, i) => {
+        row += `<td class="p-2 border-r text-center">${val}</td>`;
+        colTotals[i] += val;
+      });
+
+      row += `<td class="p-2 border-r text-center">${emp.commission.toLocaleString()}</td>`;
+      row += `<td class="p-2 border-r text-center">${emp.deductions.toLocaleString()}</td>`;
+      row += `<td class="p-2 border-r text-center font-bold">${(emp.commission - emp.deductions).toLocaleString()}</td>`;
+
+      row += `<td class="p-2 text-center flex items-center justify-center space-x-1">`;
+      if (userPosition === "admin") {
+        row += `<button class="btnUpdateEmpRecord cursor-pointer text-gray-600 hover:text-blue-600 material-icons text-sm"
+                    data-emp_id="${emp.emp_id}"
+                    data-deductions="${emp.deductions}"
+                    data-emp_name="${emp.name}">
+                    edit
+                </button>`;
+      }
+      row += `</td></tr>`;
+
+      tbody.append(row);
+
+      totalCommission += emp.commission;
+      totalDeductions += emp.deductions;
+      totalOverall += emp.commission - emp.deductions;
     });
 
-    row += `<td class="p-2 border-r text-center">${emp.commission.toLocaleString()}</td>`;
-    row += `<td class="p-2 border-r text-center">${emp.deductions.toLocaleString()}</td>`;
-    row += `<td class="p-2 border-r text-center font-bold">${(emp.commission - emp.deductions).toLocaleString()}</td>`;
+    $("#colMon").text(colTotals[0]);
+    $("#colTue").text(colTotals[1]);
+    $("#colWed").text(colTotals[2]);
+    $("#colThu").text(colTotals[3]);
+    $("#colFri").text(colTotals[4]);
+    $("#colSat").text(colTotals[5]);
+    $("#colSun").text(colTotals[6]);
+    $("#colCommission").text(totalCommission.toLocaleString());
+    $("#colDeductions").text(totalDeductions.toLocaleString());
+    $("#colOverall").text(totalOverall.toLocaleString());
+  }
 
-    // Hide button if user is not admin
-    row += `<td class="p-2 text-center flex items-center justify-center space-x-1">`;
-
-    if (userPosition === "admin") {
-      row += `<button class="btnUpdateEmpRecord cursor-pointer text-gray-600 hover:text-blue-600 material-icons text-sm"
-                  data-emp_id="${emp.emp_id}"
-                  data-deductions="${emp.deductions}"
-                  data-emp_name="${emp.name}">
-                  edit
-              </button>`;
-    }
-
-    row += `</td>
-    </tr>`;
-
-    tbody.append(row);
-
-    totalCommission += emp.commission;
-    totalDeductions += emp.deductions;
-    totalOverall += emp.commission - emp.deductions;
-  });
-
-  $("#colMon").text(colTotals[0]);
-  $("#colTue").text(colTotals[1]);
-  $("#colWed").text(colTotals[2]);
-  $("#colThu").text(colTotals[3]);
-  $("#colFri").text(colTotals[4]);
-  $("#colSat").text(colTotals[5]);
-  $("#colSun").text(colTotals[6]);
-  $("#colCommission").text(totalCommission.toLocaleString());
-  $("#colDeductions").text(totalDeductions.toLocaleString());
-  $("#colOverall").text(totalOverall.toLocaleString());
-}
-
-
+  // initial load
   fetchEmployees();
 });
 
