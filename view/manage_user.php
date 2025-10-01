@@ -9,7 +9,7 @@ include "../src/components/view/header.php";
 
   <div class="px-6 py-4 flex justify-center sm:justify-start">
     <div class="relative w-full sm:max-w-xs">
-      <input type="text" id="searchInput" class="w-full pl-4 pr-4 py-2 rounded-md border border-gray-700 placeholder-gray-500 focus:outline-none" placeholder="Search users..."/>
+      <input type="text" id="searchInput" class="w-full pl-4 pr-4 py-2 rounded-md border border-gray-700 placeholder-gray-500 focus:outline-none" placeholder="Search ..."/>
     </div>
   </div>
 
