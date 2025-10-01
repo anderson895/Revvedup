@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 30, 2025 at 06:05 PM
+-- Generation Time: Oct 01, 2025 at 05:37 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -104,6 +104,13 @@ CREATE TABLE `deduction` (
   `deduction_amount` decimal(10,2) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `deduction`
+--
+
+INSERT INTO `deduction` (`deduction_id`, `deduction_date`, `deduction_user_id`, `deduction_amount`) VALUES
+(7, 'September 2025 Week 5 ', 1, 10.00);
+
 -- --------------------------------------------------------
 
 --
@@ -166,7 +173,9 @@ CREATE TABLE `returns` (
 --
 
 INSERT INTO `returns` (`return_id`, `return_transaction_item`, `return_qty`, `return_transaction_id`) VALUES
-(15, '[{\"name\":\"product 2\",\"qty\":1,\"type\":\"refund\"}]', 1, 64);
+(15, '[{\"name\":\"product 2\",\"qty\":1,\"type\":\"refund\"}]', 1, 64),
+(16, '[{\"name\":\"NSCJRIC\",\"qty\":1,\"type\":\"refund\"}]', 1, 66),
+(17, '[{\"name\":\"YumBurger\",\"qty\":1,\"type\":\"refund\"}]', 1, 66);
 
 -- --------------------------------------------------------
 
@@ -210,7 +219,9 @@ INSERT INTO `transaction` (`transaction_id`, `transaction_date`, `transaction_se
 (63, '2025-09-29 10:42:33', '[{\"service_id\":\"50\",\"name\":\"change oil\",\"price\":\"100\",\"user_id\":\"7\"}]', '[{\"item_id\":\"52\",\"prod_id\":\"5\",\"name\":\"product 3\",\"qty\":\"1\",\"subtotal\":\"300\",\"capital\":\"280\"}]', 0.00, 36.00, 436.00, 500.00, 64.00, 1),
 (64, '2025-09-29 10:49:56', '[{\"service_id\":\"51\",\"name\":\"repair\",\"price\":\"150\",\"user_id\":\"7\"}]', '[{\"item_id\":\"53\",\"prod_id\":\"3\",\"name\":\"product 2\",\"qty\":\"10\",\"subtotal\":\"110\",\"capital\":\"5\"}]', 0.00, 13.20, 273.20, 300.00, 26.80, 1),
 (65, '2025-09-29 12:12:08', '[{\"service_id\":\"52\",\"name\":\"car wash\",\"price\":\"100\",\"user_id\":\"7\"}]', '[{\"item_id\":\"54\",\"prod_id\":\"5\",\"name\":\"product 3\",\"qty\":\"1\",\"subtotal\":\"300\",\"capital\":\"280\"}]', 0.00, 36.00, 436.00, 500.00, 64.00, 1),
-(66, '2025-09-30 16:01:26', '[]', '[{\"item_id\":\"58\",\"prod_id\":\"9\",\"name\":\"NSCJRIC\",\"qty\":\"1\",\"subtotal\":\"93\",\"capital\":\"83\"},{\"item_id\":\"57\",\"prod_id\":\"10\",\"name\":\"YumBurger\",\"qty\":\"1\",\"subtotal\":\"78\",\"capital\":\"68\"}]', 0.00, 18.32, 171.00, 200.00, 29.00, 1);
+(66, '2025-09-30 16:01:26', '[]', '[{\"item_id\":\"58\",\"prod_id\":\"9\",\"name\":\"NSCJRIC\",\"qty\":\"1\",\"subtotal\":\"93\",\"capital\":\"83\"},{\"item_id\":\"57\",\"prod_id\":\"10\",\"name\":\"YumBurger\",\"qty\":\"1\",\"subtotal\":\"78\",\"capital\":\"68\"}]', 0.00, 18.32, 171.00, 200.00, 29.00, 1),
+(67, '2025-10-08 01:14:33', '[{\"service_id\":\"54\",\"name\":\"change oil\",\"price\":\"100\",\"user_id\":\"7\"}]', '[]', 0.00, 10.71, 100.00, 100.00, 0.00, 1),
+(68, '2025-10-08 01:14:33', '[{\"service_id\":\"55\",\"name\":\"change oil\",\"price\":\"100\",\"user_id\":\"9\"}]', '[]', 0.00, 10.71, 100.00, 100.00, 0.00, 1);
 
 -- --------------------------------------------------------
 
@@ -238,7 +249,7 @@ INSERT INTO `user` (`user_id`, `firstname`, `lastname`, `email`, `username`, `pa
 (1, 'juan', 'dela cruz', 'admin@gmail.com', 'admin', '$2a$12$jsAMWl2OcxUyo8OP7mLH4uTRYd5ln04QTtjU5O3qS1Q5N1o6f6yzm', NULL, 'admin', 1),
 (7, 'joshua', 'padilla', 'joshua@gmail.com', 'masterparj', NULL, '12345', 'employee', 1),
 (8, 'john', 'doe', 'johndoe123@gmail.com', 'johndoe', NULL, '000000', 'employee', 1),
-(9, 'johnloyd', 'cruz', 'johnloyd@gmail.com', 'jhonload123', NULL, '3409834', 'employee', 1);
+(9, 'johnloyd', 'richard', 'johnloyd@gmail.com', 'jhonload123', NULL, '3409834', 'employee', 1);
 
 --
 -- Indexes for dumped tables
@@ -336,7 +347,7 @@ ALTER TABLE `customer`
 -- AUTO_INCREMENT for table `deduction`
 --
 ALTER TABLE `deduction`
-  MODIFY `deduction_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `deduction_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `item_cart`
@@ -354,19 +365,19 @@ ALTER TABLE `product`
 -- AUTO_INCREMENT for table `returns`
 --
 ALTER TABLE `returns`
-  MODIFY `return_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `return_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT for table `service_cart`
 --
 ALTER TABLE `service_cart`
-  MODIFY `service_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=54;
+  MODIFY `service_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=56;
 
 --
 -- AUTO_INCREMENT for table `transaction`
 --
 ALTER TABLE `transaction`
-  MODIFY `transaction_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=67;
+  MODIFY `transaction_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=69;
 
 --
 -- AUTO_INCREMENT for table `user`
