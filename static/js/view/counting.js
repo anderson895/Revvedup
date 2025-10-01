@@ -25,4 +25,4 @@ const getDataAnalytics = () => {
 getDataAnalytics();
 
 // Refresh every 1 second
-setInterval(getDataAnalytics, 1000);
+// setInterval(getDataAnalytics, 1000);

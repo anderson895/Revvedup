@@ -7,45 +7,62 @@
 
     // START CODE FOR FETCHING EMPLOYEE RECORD
 $(document).ready(function () {
+
   const monthNames = [
     "January","February","March","April","May","June",
     "July","August","September","October","November","December"
   ];
 
-  let currentDate = null; // no default date
+  let currentDate = null;
   let employees = [];
   let userPosition = "";
+  let currentWeek = null;
 
+  // --- Align a date to Monday ---
   function alignToMonday(date) {
-    let day = date.getDay(); // 0=Sun ... 6=Sat
-    let diff = (day === 0 ? -6 : 1 - day);
-    date.setDate(date.getDate() + diff);
+    const day = date.getDay(); // 0=Sun .. 6=Sat
+    const diff = (day === 0 ? -6 : 1 - day); // move Sunday to previous Monday
+    const monday = new Date(date);
+    monday.setDate(date.getDate() + diff);
+    return monday;
   }
 
-  function updateLabels() {
-    if (!currentDate) {
-      $("#monthLabel").text("No month selected");
-      $("#weekLabel").text("");
-      return;
-    }
+  // --- Get ISO week number from a date ---
+  function getISOWeek(date) {
+    const target = new Date(date.valueOf());
+    const dayNumber = (date.getDay() + 6) % 7; // Monday=0, Sunday=6
+    target.setDate(target.getDate() - dayNumber + 3); // Thursday of current week
+    const firstThursday = new Date(target.getFullYear(), 0, 4);
+    const weekNumber = 1 + Math.round((target - firstThursday) / (7 * 24 * 60 * 60 * 1000));
+    return weekNumber;
+  }
 
-    let monday = new Date(currentDate);
-    let month = monthNames[monday.getMonth()];
-    let year = monday.getFullYear();
+  // --- Convert ISO week number to Monday date ---
+  function getDateOfISOWeek(week, year) {
+    const simple = new Date(year, 0, 1 + (week - 1) * 7);
+    const dayOfWeek = simple.getDay(); // 0=Sun .. 6=Sat
+    const diff = (dayOfWeek <= 4 ? 1 - dayOfWeek : 8 - dayOfWeek); // ISO Monday
+    simple.setDate(simple.getDate() + diff);
+    return simple;
+  }
 
-    // Calculate sequential week of year
-    let firstDayOfYear = new Date(year, 0, 1);
-    let dayDiff = Math.floor((monday - firstDayOfYear) / (1000 * 60 * 60 * 24));
-    let weekNumber = Math.ceil((dayDiff + firstDayOfYear.getDay() + 1) / 7);
+ // --- Update month/week labels ---
+function updateLabels() {
+    const today = new Date(); // always use current date
+    const month = monthNames[today.getMonth()];
+    const year = today.getFullYear();
 
     $("#monthLabel").text(`${month} ${year}`);
-    $("#weekLabel").text(`( Week ${weekNumber} )`);
-  }
+    $("#weekLabel").text(`( Week ${currentWeek} )`);
+}
 
+
+  // --- Prev / Next Week buttons ---
   $("#prevWeek").click(function () {
     if (!currentDate) return;
     currentDate.setDate(currentDate.getDate() - 7);
-    alignToMonday(currentDate);
+    currentDate = alignToMonday(currentDate);
+    currentWeek = getISOWeek(currentDate);
     updateLabels();
     fetchEmployees();
   });
@@ -53,21 +70,28 @@ $(document).ready(function () {
   $("#nextWeek").click(function () {
     if (!currentDate) return;
     currentDate.setDate(currentDate.getDate() + 7);
-    alignToMonday(currentDate);
+    currentDate = alignToMonday(currentDate);
+    currentWeek = getISOWeek(currentDate);
     updateLabels();
     fetchEmployees();
+
+    
   });
 
+  // --- Fetch employees from API ---
   function fetchEmployees() {
-    let month = currentDate ? currentDate.getMonth() + 1 : null;
-    let year  = currentDate ? currentDate.getFullYear() : null;
+  
+      const today = new Date();
+      currentDate = today; // Use today for month display
+      const monday = alignToMonday(today);
+      currentWeek = getISOWeek(monday);
 
-    let weekNumber = null;
-    if (currentDate) {
-      let firstDayOfYear = new Date(currentDate.getFullYear(), 0, 1);
-      let dayDiff = Math.floor((currentDate - firstDayOfYear) / (1000 * 60 * 60 * 24));
-      weekNumber = Math.ceil((dayDiff + firstDayOfYear.getDay() + 1) / 7);
-    }
+    let month = currentDate.getMonth() + 1;
+    let year = currentDate.getFullYear();
+    let week = currentWeek;
+
+    console.log(month);
+
 
     $.ajax({
       url: "../controller/end-points/controller.php",
@@ -76,23 +100,21 @@ $(document).ready(function () {
         requestType: "fetch_all_employee_record",
         month,
         year,
-        week: weekNumber
+        week
       },
       dataType: "json",
       success: function (res) {
         if (res.status === 200) {
-          userPosition = res.position;
+          userPosition = res.position || userPosition;
 
-          // set default from controller
-          if (!currentDate && res.default) {
-            let def = res.default;
-            currentDate = new Date(def.year, def.month - 1, 1);
 
-            // calculate date for the Monday of the default week
-            let firstDayOfYear = new Date(def.year, 0, 1);
-            let daysFromJan1 = (def.week - 1) * 7;
-            currentDate = new Date(firstDayOfYear.getTime() + daysFromJan1 * 24 * 60 * 60 * 1000);
-            alignToMonday(currentDate);
+          console.log(month);
+
+          
+          // Set date and week from API if provided
+          if (res.date) {
+            currentWeek = res.date.week;
+            currentDate = getDateOfISOWeek(currentWeek, res.date.year);
           }
 
           employees = res.data.map(emp => {
@@ -129,6 +151,7 @@ $(document).ready(function () {
     });
   }
 
+  // --- Render employee table ---
   function renderTable() {
     let tbody = $("#employeeTableBody");
     tbody.empty();
@@ -181,9 +204,13 @@ $(document).ready(function () {
     $("#colOverall").text(totalOverall.toLocaleString());
   }
 
-  // initial load
+  // --- Initial load ---
   fetchEmployees();
 });
+
+
+
+
 // END CODE FOR FETCHING EMPLOYEE RECORD
 
 
@@ -196,7 +223,7 @@ $(document).on("click", ".btnUpdateEmpRecord", function () {
     const deductions = $(this).data('deductions');
 
 
-    console.log(deductions);
+   
     // Set employee ID
     $('#empId').val(emp_id);
     $('#deduction').val(deductions);
