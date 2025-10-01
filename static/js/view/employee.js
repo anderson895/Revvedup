@@ -17,16 +17,15 @@ $(document).ready(function () {
   let userPosition = "";
   let currentWeek = null;
 
-  // --- Align date to Monday ---
   function alignToMonday(date) {
     const day = date.getDay(); // 0=Sun..6=Sat
     const diff = (day === 0 ? -6 : 1 - day);
     const monday = new Date(date);
     monday.setDate(date.getDate() + diff);
+    monday.setHours(0,0,0,0);
     return monday;
   }
 
-  // --- Get ISO week number ---
   function getISOWeek(date) {
     const target = new Date(date.valueOf());
     const dayNumber = (date.getDay() + 6) % 7;
@@ -36,25 +35,25 @@ $(document).ready(function () {
     return weekNumber;
   }
 
-  // --- Get Monday of ISO week ---
   function getDateOfISOWeek(week, year) {
     const simple = new Date(year, 0, 1 + (week - 1) * 7);
     const dayOfWeek = simple.getDay();
     const diff = (dayOfWeek <= 4 ? 1 - dayOfWeek : 8 - dayOfWeek);
     simple.setDate(simple.getDate() + diff);
+    simple.setHours(0,0,0,0);
     return simple;
   }
 
-  // --- Update labels ---
   function updateLabels() {
     if (!currentDate) return;
-    const month = monthNames[currentDate.getMonth()];
-    const year = currentDate.getFullYear();
+    const rep = new Date(currentDate); // choose Thursday (middle of week) for month display
+    rep.setDate(currentDate.getDate() + 3);
+    const month = monthNames[rep.getMonth()];
+    const year = rep.getFullYear();
     $("#monthLabel").text(`${month} ${year}`);
     $("#weekLabel").text(`( Week ${currentWeek} )`);
   }
 
-  // --- Prev / Next Week ---
   $("#prevWeek").click(function () {
     if (!currentDate) return;
     currentDate.setDate(currentDate.getDate() - 7);
@@ -73,11 +72,11 @@ $(document).ready(function () {
     fetchEmployees();
   });
 
-  // --- Prev / Next Month ---
   $("#prevMonth").click(function () {
     if (!currentDate) return;
-    currentDate.setMonth(currentDate.getMonth() - 1);
-    currentDate = alignToMonday(currentDate);
+    const d = new Date(currentDate);
+    d.setMonth(d.getMonth() - 1);
+    currentDate = alignToMonday(d);
     currentWeek = getISOWeek(currentDate);
     updateLabels();
     fetchEmployees();
@@ -85,18 +84,17 @@ $(document).ready(function () {
 
   $("#nextMonth").click(function () {
     if (!currentDate) return;
-    currentDate.setMonth(currentDate.getMonth() + 1);
-    currentDate = alignToMonday(currentDate);
+    const d = new Date(currentDate);
+    d.setMonth(d.getMonth() + 1);
+    currentDate = alignToMonday(d);
     currentWeek = getISOWeek(currentDate);
     updateLabels();
     fetchEmployees();
   });
 
-  // --- Fetch employees from API ---
   function fetchEmployees() {
     if (!currentDate) {
-      currentDate = new Date();
-      currentDate = alignToMonday(currentDate);
+      currentDate = alignToMonday(new Date());
       currentWeek = getISOWeek(currentDate);
     }
 
@@ -157,7 +155,6 @@ $(document).ready(function () {
     });
   }
 
-  // --- Render employee table ---
   function renderTable() {
     let tbody = $("#employeeTableBody");
     tbody.empty();
@@ -210,9 +207,9 @@ $(document).ready(function () {
     $("#colOverall").text(totalOverall.toLocaleString());
   }
 
-  // --- Initial load ---
   fetchEmployees();
 });
+
 
 
 
