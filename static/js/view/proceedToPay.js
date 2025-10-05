@@ -170,6 +170,7 @@ $(document).on("input", "input[name=InputedDiscount], #paymentInput", function()
 
 
 // --- SUBMIT TRANSACTION ---
+// --- SUBMIT TRANSACTION ---
 $('#BtnSubmit').click(function (e) { 
     e.preventDefault();
 
@@ -208,7 +209,6 @@ $('#BtnSubmit').click(function (e) {
         });
     });
 
-
     // ✅ Check if cart is empty
     if (servicesArray.length === 0 && itemsArray.length === 0) {
         Swal.fire({
@@ -226,6 +226,17 @@ $('#BtnSubmit').click(function (e) {
     let vat = parseFloat($("#vatAmount").text().replace('₱','')) || 0;
     let grandTotal = parseFloat($("#grandTotal").text().replace('₱','')) || 0;
     let change = parseFloat($("#change").text().replace('₱','')) || 0;
+
+    // ✅ NEW VALIDATION: Prevent submitting if payment is less than total
+    if (payment < grandTotal) {
+        Swal.fire({
+            icon: "warning",
+            title: "Insufficient Payment",
+            text: "Payment amount must be equal to or greater than the total amount.",
+            confirmButtonText: "OK"
+        });
+        return; // stop execution
+    }
 
     // Build POST data
     let postData = {
