@@ -530,16 +530,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     {
         if ($_GET['requestType'] == 'fetch_all_product') {
 
+            if(isset($_SESSION['customer_id'])){
 
-            $On_Session = $db->check_account($_SESSION['user_id']);
-            $position = $On_Session['position'] ?? "employee";
+                $result = $db->fetch_all_product();
+                echo json_encode([
+                    'status' => 200,
+                    'data' => $result
+                ]);
 
-            $result = $db->fetch_all_product();
-            echo json_encode([
-                'status' => 200,
-                'data' => $result,
-                "position" => $position
-            ]);
+            }else if(isset($_SESSION['user_id'])){
+
+                $On_Session = $db->check_account($_SESSION['user_id']);
+                $position = $On_Session['position'] ?? "employee";
+
+                $result = $db->fetch_all_product();
+                echo json_encode([
+                    'status' => 200,
+                    'data' => $result,
+                    "position" => $position
+                ]);
+
+            }
+
+
+           
             
         }else if ($_GET['requestType'] == 'fetch_all_users') {
             $result = $db->fetch_all_users();
