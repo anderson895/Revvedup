@@ -52,7 +52,7 @@ class global_class extends db_connect
 
     public function update_pin($user_id, $pin) {
         // Check kung may existing na gumagamit ng same PIN maliban sa kasalukuyang user
-        $stmt = $this->conn->prepare("SELECT user_idFROM user WHERE pin=? AND user_id!=?");
+        $stmt = $this->conn->prepare("SELECT user_id FROM user WHERE pin=? AND user_id!=?");
         $stmt->bind_param("si", $pin, $user_id);
         $stmt->execute();
         $stmt->store_result();
