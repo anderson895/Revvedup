@@ -38,7 +38,6 @@ POS & INVENTORY
 	✔1.Change Email
 	✔2.Change Password
 
-
 ✔notification (ADMIN)
 	✔1. received booking details
 	✔2. view booking details
