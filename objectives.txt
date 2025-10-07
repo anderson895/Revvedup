@@ -45,7 +45,6 @@ POS & INVENTORY
 	(pwedeng tumawag si admin sa number ni 	customer dun nila paguusapan labas sa system)
 
 
-
 BOOKING SYSTEM
 	✔1.registration
 	✔2.login
