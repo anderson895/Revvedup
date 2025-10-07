@@ -2,7 +2,6 @@ let salesChart = null;
 let appointmentChart = null;
 let employeeChart = null;
 let productChart = null;
-
 const getDashboardAnalytics = () => {
     $.ajax({
         url: "../controller/end-points/controller.php?requestType=getDashboardAnalytics",
