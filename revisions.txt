@@ -1,0 +1,24 @@
+WEBSITE:
+
+⦁	Appointment Time - change 8 am to 6 pm only
+⦁	Homepage - products can browse without registering/logging in.
+⦁	Search Item - hide on booking summary
+⦁	Display name of user/customer registered. Not John Doe
+⦁	Book and Repair - Add Select City (Antipolo, Angono, taytay, Cainta), Full Address. 
+⦁	Products - Clickable products, leave space for the Description - allow on POS add item to add description.
+
+POS and INVENTORY:
+
+⦁(Employee) Employee Acct - Remove Username
+		      - add Refund | Exchange function and booking notification/icon
+
+⦁(Admin)  Inventory - change to archieve icon and add archieve tab. (to view archieved items and can unarchieve it)
+		  - Footer, stays (Instock, LowStock, OutofStock)
+		  - Filter Sales speed, category, status.
+
+⦁(Admin & Employee) Sales Item - Void Transaction - remove all items in the cart.
+⦁(Admin & Employee) Sales Refund Exchange - add record if refunded or exchanged
+			      		 - When an item is exchanged, the inventory should automatically update to reflect the reduced stock.
+
+⦁(Admin & Employee) Basic Info, Settings - Don't accept number as Name.
+⦁(Admin & Employee) Receipt print - add the name of who did the transaction. Remove the name of laborer

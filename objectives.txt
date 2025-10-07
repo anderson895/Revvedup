@@ -39,9 +39,9 @@ POS & INVENTORY
 	✔2.Change Password
 
 
-notification (ADMIN)
-	1. received booking details
-	2. view booking details
+✔notification (ADMIN)
+	✔1. received booking details
+	✔2. view booking details
 	(pwedeng tumawag si admin sa number ni 	customer dun nila paguusapan labas sa system)
 
 
