@@ -70,7 +70,7 @@ include "../src/components/view/header.php";
 
       <!-- Submit Button -->
       <div class="flex justify-center">
-        <button type="submit" id="addToCartBtn" class="bg-red-800 text-white px-6 py-2 rounded-lg hover:bg-red-900 transition">Add to Cart</button>
+        <button type="submit" id="addToCartBtn" class="cursor-pointer bg-red-800 text-white px-6 py-2 rounded-lg hover:bg-red-900 transition">Add to Cart</button>
       </div>
     </form>
   </div>
@@ -229,7 +229,7 @@ include "../src/components/view/header.php";
         Complete Transaction
       </button>
 
-      <button type="button" 
+      <button type="button" id="BtnVoidCart"
               class="flex-1 bg-gray-200 text-gray-700 py-2 rounded-xl hover:bg-gray-300 transition">
         Void Transaction
       </button>
