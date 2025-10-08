@@ -10,28 +10,56 @@ $(document).ready(function(){
   $("#closeUpdateUserModal").click(()=> $("#updateUserModal").fadeOut());
 
   // Add user
-  $("#frmAddUser").submit(function(e){
+ $("#frmAddUser").submit(function(e){
     e.preventDefault();
+
+    var firstname = $('#firstnameAdd').val().trim();
+    var lastname = $('#lastnameAdd').val().trim();
+    var email = $('#emailAdd').val().trim();
+    var pin = $('#pinAdd').val().trim();
+
+    // Validation
+    var nameRegex = /^[A-Za-z\s]+$/; // only letters and spaces
+    var pinRegex = /^\d+$/;           // numbers only
+
+    if (!nameRegex.test(firstname)) {
+        Swal.fire('Invalid Input', 'First name should not contain numbers or special characters.', 'warning');
+        return;
+    }
+
+    if (!nameRegex.test(lastname)) {
+        Swal.fire('Invalid Input', 'Last name should not contain numbers or special characters.', 'warning');
+        return;
+    }
+
+    if (!pinRegex.test(pin)) {
+        Swal.fire('Invalid Input', 'PIN should contain numbers only.', 'warning');
+        return;
+    }
+
+    // If validation passes, continue with AJAX
     var formData = new FormData();
-    formData.append('firstname', $('#firstnameAdd').val().trim());
-    formData.append('lastname', $('#lastnameAdd').val().trim());
-    formData.append('email', $('#emailAdd').val().trim());
-    formData.append('pin', $('#pinAdd').val().trim());
+    formData.append('firstname', firstname);
+    formData.append('lastname', lastname);
+    formData.append('email', email);
+    formData.append('pin', pin);
     formData.append('requestType', 'AddUser');
 
     $.ajax({
-      url: "../controller/end-points/controller.php",
-      type: "POST",
-      data: formData,
-      contentType: false,
-      processData: false,
-      dataType: "json",
-      success: function(res){
-        if(res.status===200) Swal.fire('Success!', res.message, 'success').then(()=> location.reload());
-        else Swal.fire('Error!', res.message || "Something went wrong.", 'error');
-      }
+        url: "../controller/end-points/controller.php",
+        type: "POST",
+        data: formData,
+        contentType: false,
+        processData: false,
+        dataType: "json",
+        success: function(res){
+            if(res.status===200) 
+                Swal.fire('Success!', res.message, 'success').then(()=> location.reload());
+            else 
+                Swal.fire('Error!', res.message || "Something went wrong.", 'error');
+        }
     });
-  });
+});
 
   // Fetch users
   function fetchUsers(){
@@ -108,24 +136,55 @@ $(document).ready(function(){
     $('#updateUserModal').fadeIn();
   });
 
+
+
   // Update user
-  $("#frmUpdateUser").submit(function(e){
+$("#frmUpdateUser").submit(function(e){
     e.preventDefault();
+
+    var firstname = $('#firstnameUpdate').val().trim();
+    var lastname = $('#lastnameUpdate').val().trim();
+    var pin = $('#pinUpdate').val().trim();
+
+    // Validation
+    var nameRegex = /^[A-Za-z\s]+$/; // only letters and spaces
+    var pinRegex = /^\d+$/;           // numbers only
+
+    if (!nameRegex.test(firstname)) {
+        Swal.fire('Invalid Input', 'First name should not contain numbers or special characters.', 'warning');
+        return;
+    }
+
+    if (!nameRegex.test(lastname)) {
+        Swal.fire('Invalid Input', 'Last name should not contain numbers or special characters.', 'warning');
+        return;
+    }
+
+    if (!pinRegex.test(pin)) {
+        Swal.fire('Invalid Input', 'PIN should contain numbers only.', 'warning');
+        return;
+    }
+
+    // If validation passes, continue with AJAX
     var formData = new FormData(this);
     formData.append('requestType','UpdateUser');
+
     $.ajax({
-      url: "../controller/end-points/controller.php",
-      type: "POST",
-      data: formData,
-      processData: false,
-      contentType: false,
-      dataType: "json",
-      success: function(res){
-        if(res.status===200) Swal.fire('Success!', res.message, 'success').then(()=> fetchUsers());
-        else Swal.fire('Error!', res.message || "Error updating.", 'error');
-      }
+        url: "../controller/end-points/controller.php",
+        type: "POST",
+        data: formData,
+        processData: false,
+        contentType: false,
+        dataType: "json",
+        success: function(res){
+            if(res.status===200) 
+                Swal.fire('Success!', res.message, 'success').then(()=> fetchUsers());
+            else 
+                Swal.fire('Error!', res.message || "Error updating.", 'error');
+        }
     });
-  });
+});
+
 
   // Activate / Deactivate toggle
   $(document).on('click', '.statusBtn', function(){

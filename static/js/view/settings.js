@@ -44,6 +44,9 @@ $(document).ready(function(){
     console.log(res);
   }
 
+
+
+
   // --- Business Info Form Submit ---
   $("#frmUpdateBusinessInfo").on("submit", function(e){
     e.preventDefault();
@@ -61,22 +64,41 @@ $(document).ready(function(){
     });
   });
 
+
+
   // --- Basic Info Form Submit ---
-  $("#frmUpdateBasicInfo").on("submit", function(e){
+$("#frmUpdateBasicInfo").on("submit", function(e){
     e.preventDefault();
-    localStorage.setItem("activeTab", "basic"); // tandaan kung saan tab galing
+    localStorage.setItem("activeTab", "basic"); // remember active tab
+
+    const firstname = $("#firstname").val().trim();
+    const lastname = $("#lastname").val().trim();
+    const nameRegex = /^[A-Za-z\s]+$/; // letters & spaces only
+
+    // Validation
+    if (!nameRegex.test(firstname)) {
+        Swal.fire('Invalid Input', 'First name should not contain numbers or special characters.', 'warning');
+        return;
+    }
+    if (!nameRegex.test(lastname)) {
+        Swal.fire('Invalid Input', 'Last name should not contain numbers or special characters.', 'warning');
+        return;
+    }
+
+    // submit AJAX if validation passes
     $.ajax({
-      url: "../controller/end-points/controller.php",
-      type: "POST",
-      data: $(this).serialize() + "&requestType=update_basic",
-      success: function(res){
-        handleResponse(res, "Basic info updated!", "Failed to update basic info.");
-      },
-      error: function(){
-        alertify.error("Request failed.");
-      }
+        url: "../controller/end-points/controller.php",
+        type: "POST",
+        data: $(this).serialize() + "&requestType=update_basic",
+        success: function(res){
+            handleResponse(res, "Basic info updated!", "Failed to update basic info.");
+        },
+        error: function(){
+            alertify.error("Request failed.");
+        }
     });
-  });
+});
+
 
   // --- Security Form Submit ---
   $("#frmUpdateSecurity").on("submit", function(e){

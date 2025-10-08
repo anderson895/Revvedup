@@ -11,9 +11,9 @@ include "../src/components/view/header.php";
 
     <!-- Tabs -->
     <nav class="flex space-x-6 text-sm font-medium border-b border-red-800">
-      <button class="tab-btn py-2 border-b-2 border-transparent text-gray-300 hover:text-white" data-tab="business" <?= $authorize ?>>Business</button>
-      <button class="tab-btn py-2 border-b-2 border-white text-white focus:outline-none" data-tab="basic">Basic Info</button>
-      <button class="tab-btn py-2 border-b-2 border-transparent text-gray-300 hover:text-white" data-tab="security" >Security</button>
+      <button class="cursor-pointer tab-btn py-2 border-b-2 border-transparent text-gray-300 hover:text-white" data-tab="business" <?= $authorize ?>>Business</button>
+      <button class="cursor-pointer tab-btn py-2 border-b-2 border-white text-white focus:outline-none" data-tab="basic">Basic Info</button>
+      <button class="cursor-pointer tab-btn py-2 border-b-2 border-transparent text-gray-300 hover:text-white" data-tab="security" >Security</button>
     </nav>
   </header>
 
@@ -53,7 +53,7 @@ include "../src/components/view/header.php";
 
                 <!-- Save Button -->
                 <button type="submit" 
-                        class="w-full bg-red-900 text-white py-2 rounded-lg hover:bg-red-800">
+                        class="cursor-pointer w-full bg-red-900 text-white py-2 rounded-lg hover:bg-red-800">
                     Save Business
                 </button>
             </form>
@@ -93,7 +93,7 @@ include "../src/components/view/header.php";
                          class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none">
               </div>
 
-              <button type="submit" class="w-full bg-red-900 text-white py-2 rounded-lg hover:bg-red-800">
+              <button type="submit" class="cursor-pointer w-full bg-red-900 text-white py-2 rounded-lg hover:bg-red-800">
                   Save Basic Info
               </button>
           </form>
@@ -137,7 +137,7 @@ include "../src/components/view/header.php";
             <?php endif; ?>
 
             <button type="submit"
-                    class="w-full bg-red-900 text-white py-2 rounded-lg hover:bg-red-800">
+                    class="cursor-pointer w-full bg-red-900 text-white py-2 rounded-lg hover:bg-red-800">
                 Save Security
             </button>
         </form>
