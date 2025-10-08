@@ -1,0 +1,57 @@
+<div id="chart"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+<script>
+  // Example data: replace with your actual low stock items
+  const lowStocks = [
+    { item: 'Product 1', qty: 15 },
+    { item: 'Item B', qty: 5 },
+    { item: 'Item C', qty: 1 },
+    { item: 'Item D', qty: 4 },
+    { item: 'Item E', qty: 3 },
+    { item: 'Item F', qty: 6 },
+    { item: 'Item G', qty: 2 },
+    { item: 'Item H', qty: 7 },
+    { item: 'Item I', qty: 3 },
+    { item: 'Item J', qty: 1 }
+  ];
+
+  // Sort ascending by quantity
+  lowStocks.sort((a, b) => a.qty - b.qty);
+
+  const options = {
+    chart: {
+      type: 'bar',
+      height: 450
+    },
+    plotOptions: {
+      bar: {
+        horizontal: true,
+        distributed: true
+      }
+    },
+    dataLabels: {
+      enabled: true,
+      formatter: function(val) {
+        return val;
+      }
+    },
+    series: [{
+      data: lowStocks.map(item => item.qty)
+    }],
+    xaxis: {
+      categories: lowStocks.map(item => item.item),
+      title: {
+        text: 'Quantity Remaining'
+      }
+    },
+    colors: lowStocks.map(item => item.qty <= 3 ? '#FF4560' : '#00E396'), // Red if low, green if safe
+    title: {
+      text: 'Top 10 Low Stocks',
+      align: 'center'
+    }
+  };
+
+  const chart = new ApexCharts(document.querySelector("#chart"), options);
+  chart.render();
+</script>

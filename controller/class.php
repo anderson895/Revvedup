@@ -1997,43 +1997,51 @@ public function EditDeduction($empId, $deductionDate, $deductionAmount) {
     $data['EmployeeServices'] = $employeeServices;
 
 
-    // -----------------------------
-    // Popular Items (Products Sold)
-    // -----------------------------
-    $sql = "SELECT transaction_item FROM transaction WHERE transaction_status=1";
-    $result = $this->conn->query($sql);
-    $productCounts = [];
+   // -----------------------------
+// Popular Items (Products Sold) - Top 10
+// -----------------------------
+$sql = "SELECT transaction_item FROM transaction WHERE transaction_status=1";
+$result = $this->conn->query($sql);
+$productCounts = [];
 
-    while($row = $result->fetch_assoc()) {
-        $items = json_decode($row['transaction_item'], true);
-        if(is_array($items)) {
-            foreach($items as $i) {
-                $pid = $i['prod_id'];
-                $qty = intval($i['qty']);
-                if(!isset($productCounts[$pid])) $productCounts[$pid] = 0;
-                $productCounts[$pid] += $qty;
-            }
+while($row = $result->fetch_assoc()) {
+    $items = json_decode($row['transaction_item'], true);
+    if(is_array($items)) {
+        foreach($items as $i) {
+            $pid = $i['prod_id'];
+            $qty = intval($i['qty']);
+            if(!isset($productCounts[$pid])) $productCounts[$pid] = 0;
+            $productCounts[$pid] += $qty;
         }
     }
+}
 
-    // Map product IDs to names
-    $popularItems = [];
-    if(!empty($productCounts)) {
-        $ids = implode(',', array_keys($productCounts));
-        $sql = "SELECT prod_id, prod_name FROM product WHERE prod_id IN ($ids)";
-        $res = $this->conn->query($sql);
-        $names = [];
-        while($r = $res->fetch_assoc()) {
-            $names[$r['prod_id']] = $r['prod_name'];
-        }
-        foreach($productCounts as $pid => $count) {
-            $popularItems[] = [
-                'name' => $names[$pid] ?? 'Unknown',
-                'total_sold' => $count
-            ];
-        }
+// Sort products by total sold descending
+arsort($productCounts);
+
+// Take only top 10 products
+$productCounts = array_slice($productCounts, 0, 10, true);
+
+// Map product IDs to names
+$popularItems = [];
+if(!empty($productCounts)) {
+    $ids = implode(',', array_keys($productCounts));
+    $sql = "SELECT prod_id, prod_name FROM product WHERE prod_id IN ($ids)";
+    $res = $this->conn->query($sql);
+    $names = [];
+    while($r = $res->fetch_assoc()) {
+        $names[$r['prod_id']] = $r['prod_name'];
     }
-    $data['PopularItems'] = $popularItems;
+    foreach($productCounts as $pid => $count) {
+        $popularItems[] = [
+            'name' => $names[$pid] ?? 'Unknown',
+            'total_sold' => $count
+        ];
+    }
+}
+
+$data['PopularItems'] = $popularItems;
+
 
     // -----------------------------
     // Additional Useful Analytics
