@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 08, 2025 at 08:07 AM
+-- Generation Time: Oct 08, 2025 at 09:28 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -52,7 +52,8 @@ CREATE TABLE `appointments` (
 INSERT INTO `appointments` (`appointment_id`, `reference_number`, `service`, `employee_id`, `appointment_customer_id`, `fullname`, `contact`, `city`, `street`, `appointmentDate`, `appointmentTime`, `emergency`, `status`, `seen`, `created_at`) VALUES
 (17, 561535, 'Brake Service', 8, 1, 'john doe', '09454454744', '', '', '2025-09-30', '14:45:00', 1, 'approved', 1, '2025-09-30 06:46:02'),
 (18, 635986, 'Engine Repair', 9, 1, 'john doe', '09454454744', '', '', '2025-10-08', '09:12:00', 1, 'approved', 1, '2025-10-08 02:12:39'),
-(19, 755112, 'Engine Repair', 9, 1, 'joshua san padilla', '09454454741', 'Angono', 'sta.rosa 2 marilao', '2025-10-08', '10:40:00', 0, 'pending', 1, '2025-10-08 02:40:09');
+(19, 755112, 'Engine Repair', 9, 1, 'joshua san padilla', '09454454741', 'Angono', 'sta.rosa 2 marilao', '2025-10-08', '10:40:00', 0, 'pending', 1, '2025-10-08 02:40:09'),
+(20, 247723, 'Engine Repair', 10, 1, 'Joshua Anderson Padilla', '09454454741', 'Antipolo', 'acacia123', '2025-10-09', '08:00:00', 0, 'approved', 1, '2025-10-08 06:17:48');
 
 -- --------------------------------------------------------
 
@@ -94,7 +95,8 @@ CREATE TABLE `customer` (
 
 INSERT INTO `customer` (`customer_id`, `customer_fullname`, `customer_email`, `customer_password`, `customer_status`) VALUES
 (1, 'joshua', 'joshua@gmail.com', '$2y$10$q4ZHWGUQ4NHj8ySLgBzTXOmP2SGMDlfYrDxv8j89sDTaX5A/YPqV2', 1),
-(2, 'andy anderson', 'andersonandy046@gmail.com', '$2y$10$EbOfPhVjI/d9oOoAbIhpJ.qwJmiw8LP9SyZilCQq2FQaBvYMDRyUC', 1);
+(2, 'andy anderson', 'andersonandy046@gmail.com', '$2y$10$EbOfPhVjI/d9oOoAbIhpJ.qwJmiw8LP9SyZilCQq2FQaBvYMDRyUC', 1),
+(3, 'honey jane', 'honey@gmail.com', '$2y$10$61znkLaYwPKvI6yhyg6ToeCZLXejP6kE4FhJkNPzXlPO1hi1wxTlu', 1);
 
 -- --------------------------------------------------------
 
@@ -157,7 +159,7 @@ INSERT INTO `product` (`prod_id`, `prod_name`, `prod_capital`, `prod_price`, `pr
 (5, 'product 3', 280.00, 300.00, 45, 'item_68d643420bba08.70461903.jpg', 1, 'Wheels & Tires', ''),
 (6, 'product 6', 50.00, 55.00, 44, 'item_68d77ad7dc2db3.03460954.avif', 1, 'Exhaust Systems', ''),
 (7, 'test', 500.00, 600.00, 1, 'item_68d776d7db06b6.21276657.jpg', 1, 'Brakes', ''),
-(8, 'test 2', 50.00, 60.00, 0, 'item_68d9f9e9b27152.72092957.jpg', 1, 'Engine & Transmission', ''),
+(8, 'test 2', 50.00, 60.00, 90, 'item_68d9f9e9b27152.72092957.jpg', 1, 'Engine & Transmission', ''),
 (9, 'NSCJRIC', 83.00, 93.00, 99, 'item_68dbfe90131176.75854224.jpg', 1, 'Exhaust Systems', ''),
 (10, 'YumBurger', 68.00, 78.00, 98, 'item_68dbfe7e4f9863.95790433.jpg', 1, 'Brakes', ''),
 (11, 'product 7', 50.00, 60.00, 100, 'item_68e5ca3b3f18f8.74338685.png', 1, 'Exhaust Systems', ''),
@@ -165,7 +167,8 @@ INSERT INTO `product` (`prod_id`, `prod_name`, `prod_capital`, `prod_price`, `pr
 (13, 'prod 9', 50.00, 60.00, 84, 'item_68e5ca6640d9e9.53380142.jpg', 1, 'Brakes', ''),
 (14, 'prod 11', 80.00, 100.00, 98, 'item_68e5cb005dd2f4.49248458.jpg', 1, 'Brakes', ''),
 (15, 'product 12', 80.00, 90.00, 88, 'item_68e5cb19de9963.71942622.webp', 1, 'Brakes', 'test'),
-(16, 'prod 25', 50.00, 70.00, 94, 'item_68e5d3e68a1168.69512322.jpg', 1, 'Brakes', 'esfsefefs');
+(16, 'prod 25', 50.00, 70.00, 94, 'item_68e5d3e68a1168.69512322.jpg', 0, 'Brakes', 'esfsefefs'),
+(17, 'product999', 50.00, 70.00, 0, 'item_68e6035ea67784.36488944.jpg', 1, 'Engine & Transmission', 'loremloremloremloremloremloremloremloremloremlorem');
 
 -- --------------------------------------------------------
 
@@ -179,6 +182,16 @@ CREATE TABLE `returns` (
   `return_qty` int(11) NOT NULL,
   `return_transaction_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `returns`
+--
+
+INSERT INTO `returns` (`return_id`, `return_transaction_item`, `return_qty`, `return_transaction_id`) VALUES
+(25, '[{\"prod_id\":14,\"name\":\"prod 11\",\"qty\":2,\"type\":\"refund\"}]', 2, 85),
+(26, '[{\"prod_id\":15,\"name\":\"product 12\",\"qty\":10,\"type\":\"refund\"}]', 10, 85),
+(27, '[{\"prod_id\":13,\"name\":\"prod 9\",\"qty\":10,\"type\":\"refund\"}]', 10, 85),
+(28, '[{\"prod_id\":16,\"name\":\"prod 25\",\"qty\":1,\"type\":\"refund\"}]', 1, 84);
 
 -- --------------------------------------------------------
 
@@ -222,7 +235,8 @@ INSERT INTO `transaction` (`transaction_id`, `transaction_date`, `transaction_se
 (83, '2025-10-08 05:50:16', '[]', '[{\"prod_id\":\"13\",\"name\":\"prod 9\",\"qty\":\"1\",\"subtotal\":\"60\",\"capital\":\"50\"},{\"prod_id\":\"16\",\"name\":\"prod 25\",\"qty\":\"1\",\"subtotal\":\"70\",\"capital\":\"50\"}]', 0.00, 13.93, 130.00, 140.00, 10.00, 1, 1),
 (84, '2025-10-08 05:56:04', '[]', '[{\"prod_id\":\"13\",\"name\":\"prod 9\",\"qty\":\"1\",\"subtotal\":\"60\",\"capital\":\"50\"},{\"prod_id\":\"16\",\"name\":\"prod 25\",\"qty\":\"1\",\"subtotal\":\"70\",\"capital\":\"50\"}]', 0.00, 13.93, 130.00, 140.00, 10.00, 1, 1),
 (85, '2025-10-08 05:57:44', '[]', '[{\"prod_id\":\"14\",\"name\":\"prod 11\",\"qty\":\"2\",\"subtotal\":\"200\",\"capital\":\"80\"},{\"prod_id\":\"15\",\"name\":\"product 12\",\"qty\":\"10\",\"subtotal\":\"900\",\"capital\":\"80\"},{\"prod_id\":\"13\",\"name\":\"prod 9\",\"qty\":\"10\",\"subtotal\":\"600\",\"capital\":\"50\"}]', 0.00, 182.14, 1700.00, 2000.00, 300.00, 1, 1),
-(86, '2025-10-08 06:05:34', '[{\"service_id\":\"63\",\"name\":\"change oil\",\"price\":\"100\",\"user_id\":\"1\"}]', '[]', 0.00, 10.71, 100.00, 100.00, 0.00, 1, 1);
+(86, '2025-10-08 06:05:34', '[{\"service_id\":\"63\",\"name\":\"change oil\",\"price\":\"100\",\"user_id\":\"1\"}]', '[]', 0.00, 10.71, 100.00, 100.00, 0.00, 1, 1),
+(88, '2025-10-08 06:38:14', '[]', '[{\"prod_id\":\"17\",\"name\":\"product999\",\"qty\":\"1\",\"subtotal\":\"70\",\"capital\":\"50\"},{\"prod_id\":\"8\",\"name\":\"test 2\",\"qty\":\"10\",\"subtotal\":\"600\",\"capital\":\"50\"}]', 0.00, 71.79, 670.00, 700.00, 30.00, 11, 1);
 
 -- --------------------------------------------------------
 
@@ -251,7 +265,8 @@ INSERT INTO `user` (`user_id`, `firstname`, `lastname`, `email`, `username`, `pa
 (7, 'joshua', 'padilla', 'joshua@gmail.com', 'masterparj', NULL, '54321', 'employee', 1),
 (8, 'john', 'doe', 'johndoe123@gmail.com', 'johndoe', NULL, '000000', 'employee', 1),
 (9, 'johnloyd', 'richard', 'johnloyd@gmail.com', 'jhonload123', NULL, '3409834', 'employee', 1),
-(10, 'Daniel', 'Padilla', 'djpadilla@gmail.com', NULL, NULL, '87000', 'employee', 1);
+(10, 'Daniel', 'Padilla', 'djpadilla@gmail.com', NULL, NULL, '87000', 'employee', 1),
+(11, 'samantha', 'conception', 'sam@gmail.com', '', NULL, '88888', 'employee', 1);
 
 --
 -- Indexes for dumped tables
@@ -331,7 +346,7 @@ ALTER TABLE `user`
 -- AUTO_INCREMENT for table `appointments`
 --
 ALTER TABLE `appointments`
-  MODIFY `appointment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `appointment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT for table `business_details`
@@ -343,7 +358,7 @@ ALTER TABLE `business_details`
 -- AUTO_INCREMENT for table `customer`
 --
 ALTER TABLE `customer`
-  MODIFY `customer_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `customer_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `deduction`
@@ -355,19 +370,19 @@ ALTER TABLE `deduction`
 -- AUTO_INCREMENT for table `item_cart`
 --
 ALTER TABLE `item_cart`
-  MODIFY `item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=74;
+  MODIFY `item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=79;
 
 --
 -- AUTO_INCREMENT for table `product`
 --
 ALTER TABLE `product`
-  MODIFY `prod_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `prod_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT for table `returns`
 --
 ALTER TABLE `returns`
-  MODIFY `return_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
+  MODIFY `return_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
 
 --
 -- AUTO_INCREMENT for table `service_cart`
@@ -379,13 +394,13 @@ ALTER TABLE `service_cart`
 -- AUTO_INCREMENT for table `transaction`
 --
 ALTER TABLE `transaction`
-  MODIFY `transaction_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=87;
+  MODIFY `transaction_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=89;
 
 --
 -- AUTO_INCREMENT for table `user`
 --
 ALTER TABLE `user`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- Constraints for dumped tables
