@@ -1288,12 +1288,12 @@ public function CheckOutOrder($services, $items, $discount, $vat, $grandTotal, $
         }
 
         // --- Items ---
-        $items = json_decode($row['transaction_item'], true);
-        if (!empty($items)) {
-            foreach ($items as $item) {
-                $this->addEmployeeData($employees, $empIds, $item, $dayOfWeek, $monthName, $yearNum, $weekOfYear, true);
-            }
-        }
+        // $items = json_decode($row['transaction_item'], true);
+        // if (!empty($items)) {
+        //     foreach ($items as $item) {
+        //         $this->addEmployeeData($employees, $empIds, $item, $dayOfWeek, $monthName, $yearNum, $weekOfYear, true);
+        //     }
+        // }
     }
     $stmt->close();
 

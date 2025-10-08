@@ -60,9 +60,17 @@ $business = $db->get_business_details();
   <div>
     <!-- Logo Top -->
     <div class="bg-black flex justify-center items-center py-4">
-      <a href="dashboard" class="flex justify-center">
+
+    <?php if (($On_Session['position']) === "admin"): ?>
+    <a href="dashboard" class="flex justify-center">
         <img src="../static/images/login_logo.png" alt="Logo" class="h-11 w-auto object-contain">
-      </a>
+    </a>
+    <?php else: ?>
+        <div class="flex justify-center">
+            <img src="../static/images/login_logo.png" alt="Logo" class="h-11 w-auto object-contain">
+        </div>
+    <?php endif; ?>
+
     </div>
 
     <!-- Menu Items -->
