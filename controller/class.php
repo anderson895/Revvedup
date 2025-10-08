@@ -954,6 +954,25 @@ public function removeProduct($prod_id) {
 
 
 
+    public function VoidCart($user_id) {
+       
+        $deleteQuery = "DELETE FROM `item_cart` WHERE item_user_id  = ?";
+        $stmt = $this->conn->prepare($deleteQuery);
+        if (!$stmt) {
+            return 'Prepare failed (update): ' . $this->conn->error;
+        }
+
+        $stmt->bind_param("i", $user_id);
+        $result = $stmt->execute();
+        $stmt->close();
+
+        return $result ? 'success' : 'Error updating menu';
+    }
+
+
+
+
+
     
     public function fetch_all_employee() {
         $query = $this->conn->prepare("SELECT * FROM user

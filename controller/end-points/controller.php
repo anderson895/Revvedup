@@ -276,6 +276,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         'message' => 'No changes made or error updating data.'
                     ]);
             }
+        }else if ($_POST['requestType'] == 'VoidCart') {
+
+            $user_id=$_SESSION['user_id'];
+            $result = $db->VoidCart($user_id);
+            if ($result) {
+                    echo json_encode([
+                        'status' => 200,
+                        'message' => 'Void successfully.'
+                    ]);
+            } else {
+                    echo json_encode([
+                        'status' => 500,
+                        'message' => 'No changes made or error updating data.'
+                    ]);
+            }
         }else if ($_POST['requestType'] == 'deleteCart') {
 
             $id=$_POST['id'];

@@ -250,3 +250,4 @@ include "modal_refund.php";
 <script src="../static/js/view/item.js"></script>
 <script src="../static/js/view/fetchGrandTotal.js"></script>
 <script src="../static/js/view/proceedToPay.js"></script>
+<script src="../static/js/view/voidCart.js"></script>

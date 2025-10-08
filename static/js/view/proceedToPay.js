@@ -170,7 +170,6 @@ $(document).on("input", "input[name=InputedDiscount], #paymentInput", function()
 
 
 // --- SUBMIT TRANSACTION ---
-// --- SUBMIT TRANSACTION ---
 $('#BtnSubmit').click(function (e) { 
     e.preventDefault();
 
