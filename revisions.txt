@@ -21,4 +21,4 @@ POS and INVENTORY:
 			      		 - When an item is exchanged, the inventory should automatically update to reflect the reduced stock.
 
 ✔⦁(Admin & Employee) Basic Info, Settings - Don't accept number as Name.
-⦁(Admin & Employee) Receipt print - add the name of who did the transaction. Remove the name of laborer
+✔⦁(Admin & Employee) Receipt print - add the name of who did the transaction. Remove the name of laborer
