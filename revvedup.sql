@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 08, 2025 at 05:47 AM
+-- Generation Time: Oct 08, 2025 at 08:07 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -129,13 +129,6 @@ CREATE TABLE `item_cart` (
   `item_qty` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Dumping data for table `item_cart`
---
-
-INSERT INTO `item_cart` (`item_id`, `item_user_id`, `item_prod_id`, `item_qty`) VALUES
-(61, 7, 5, 1);
-
 -- --------------------------------------------------------
 
 --
@@ -169,10 +162,10 @@ INSERT INTO `product` (`prod_id`, `prod_name`, `prod_capital`, `prod_price`, `pr
 (10, 'YumBurger', 68.00, 78.00, 98, 'item_68dbfe7e4f9863.95790433.jpg', 1, 'Brakes', ''),
 (11, 'product 7', 50.00, 60.00, 100, 'item_68e5ca3b3f18f8.74338685.png', 1, 'Exhaust Systems', ''),
 (12, 'prod 8', 50.00, 60.00, 100, 'item_68e5ca4dc15d48.64074690.png', 1, 'Brakes', ''),
-(13, 'prod 9', 50.00, 60.00, 100, 'item_68e5ca6640d9e9.53380142.jpg', 1, 'Brakes', ''),
-(14, 'prod 11', 80.00, 100.00, 100, 'item_68e5cb005dd2f4.49248458.jpg', 1, 'Brakes', ''),
-(15, 'product 12', 80.00, 90.00, 99, 'item_68e5cb19de9963.71942622.webp', 1, 'Brakes', 'test'),
-(16, 'prod 25', 50.00, 70.00, 99, 'item_68e5d3e68a1168.69512322.jpg', 1, 'Brakes', 'esfsefefs');
+(13, 'prod 9', 50.00, 60.00, 84, 'item_68e5ca6640d9e9.53380142.jpg', 1, 'Brakes', ''),
+(14, 'prod 11', 80.00, 100.00, 98, 'item_68e5cb005dd2f4.49248458.jpg', 1, 'Brakes', ''),
+(15, 'product 12', 80.00, 90.00, 88, 'item_68e5cb19de9963.71942622.webp', 1, 'Brakes', 'test'),
+(16, 'prod 25', 50.00, 70.00, 94, 'item_68e5d3e68a1168.69512322.jpg', 1, 'Brakes', 'esfsefefs');
 
 -- --------------------------------------------------------
 
@@ -217,6 +210,7 @@ CREATE TABLE `transaction` (
   `transaction_total` decimal(10,2) NOT NULL,
   `transaction_payment` decimal(10,2) NOT NULL,
   `transaction_change` decimal(10,2) NOT NULL,
+  `transaction_by` int(11) NOT NULL,
   `transaction_status` int(11) NOT NULL COMMENT '0=archived,1=active'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -224,14 +218,11 @@ CREATE TABLE `transaction` (
 -- Dumping data for table `transaction`
 --
 
-INSERT INTO `transaction` (`transaction_id`, `transaction_date`, `transaction_service`, `transaction_item`, `transaction_discount`, `transaction_vat`, `transaction_total`, `transaction_payment`, `transaction_change`, `transaction_status`) VALUES
-(70, '2025-10-01 04:30:34', '[{\"service_id\":\"57\",\"name\":\"change oil\",\"price\":\"100\",\"user_id\":\"1\"}]', '[]', 0.00, 10.71, 100.00, 100.00, 0.00, 1),
-(71, '2025-10-01 04:32:12', '[{\"service_id\":\"58\",\"name\":\"cvt cleaning\",\"price\":\"300\",\"user_id\":\"9\"}]', '[]', 0.00, 32.14, 300.00, 500.00, 200.00, 1),
-(72, '2025-10-01 04:33:14', '[{\"service_id\":\"59\",\"name\":\"change\",\"price\":\"100\",\"user_id\":\"8\"}]', '[]', 0.00, 10.71, 100.00, 100.00, 0.00, 1),
-(73, '2025-11-05 04:34:22', '[{\"service_id\":\"60\",\"name\":\"gear oil\",\"price\":\"60\",\"user_id\":\"7\"}]', '[]', 0.00, 6.43, 60.00, 60.00, 0.00, 1),
-(74, '2025-10-01 06:37:11', '[]', '[{\"item_id\":\"59\",\"prod_id\":\"10\",\"name\":\"YumBurger\",\"qty\":\"1\",\"subtotal\":\"78\",\"capital\":\"68\"}]', 0.00, 8.36, 78.00, 80.00, 2.00, 1),
-(76, '2025-10-08 03:34:40', '[]', '[{\"item_id\":\"63\",\"prod_id\":\"16\",\"name\":\"prod 25\",\"qty\":\"1\",\"subtotal\":\"70\",\"capital\":\"50\"}]', 0.00, 7.50, 70.00, 70.00, 0.00, 1),
-(78, '2025-10-08 03:46:47', '[{\"service_id\":\"62\",\"name\":\"cvt cleaning\",\"price\":\"300\",\"user_id\":\"10\"}]', '[]', 0.00, 32.14, 300.00, 500.00, 200.00, 1);
+INSERT INTO `transaction` (`transaction_id`, `transaction_date`, `transaction_service`, `transaction_item`, `transaction_discount`, `transaction_vat`, `transaction_total`, `transaction_payment`, `transaction_change`, `transaction_by`, `transaction_status`) VALUES
+(83, '2025-10-08 05:50:16', '[]', '[{\"prod_id\":\"13\",\"name\":\"prod 9\",\"qty\":\"1\",\"subtotal\":\"60\",\"capital\":\"50\"},{\"prod_id\":\"16\",\"name\":\"prod 25\",\"qty\":\"1\",\"subtotal\":\"70\",\"capital\":\"50\"}]', 0.00, 13.93, 130.00, 140.00, 10.00, 1, 1),
+(84, '2025-10-08 05:56:04', '[]', '[{\"prod_id\":\"13\",\"name\":\"prod 9\",\"qty\":\"1\",\"subtotal\":\"60\",\"capital\":\"50\"},{\"prod_id\":\"16\",\"name\":\"prod 25\",\"qty\":\"1\",\"subtotal\":\"70\",\"capital\":\"50\"}]', 0.00, 13.93, 130.00, 140.00, 10.00, 1, 1),
+(85, '2025-10-08 05:57:44', '[]', '[{\"prod_id\":\"14\",\"name\":\"prod 11\",\"qty\":\"2\",\"subtotal\":\"200\",\"capital\":\"80\"},{\"prod_id\":\"15\",\"name\":\"product 12\",\"qty\":\"10\",\"subtotal\":\"900\",\"capital\":\"80\"},{\"prod_id\":\"13\",\"name\":\"prod 9\",\"qty\":\"10\",\"subtotal\":\"600\",\"capital\":\"50\"}]', 0.00, 182.14, 1700.00, 2000.00, 300.00, 1, 1),
+(86, '2025-10-08 06:05:34', '[{\"service_id\":\"63\",\"name\":\"change oil\",\"price\":\"100\",\"user_id\":\"1\"}]', '[]', 0.00, 10.71, 100.00, 100.00, 0.00, 1, 1);
 
 -- --------------------------------------------------------
 
@@ -364,7 +355,7 @@ ALTER TABLE `deduction`
 -- AUTO_INCREMENT for table `item_cart`
 --
 ALTER TABLE `item_cart`
-  MODIFY `item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=64;
+  MODIFY `item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=74;
 
 --
 -- AUTO_INCREMENT for table `product`
@@ -376,19 +367,19 @@ ALTER TABLE `product`
 -- AUTO_INCREMENT for table `returns`
 --
 ALTER TABLE `returns`
-  MODIFY `return_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `return_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
 
 --
 -- AUTO_INCREMENT for table `service_cart`
 --
 ALTER TABLE `service_cart`
-  MODIFY `service_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=63;
+  MODIFY `service_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=64;
 
 --
 -- AUTO_INCREMENT for table `transaction`
 --
 ALTER TABLE `transaction`
-  MODIFY `transaction_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=79;
+  MODIFY `transaction_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=87;
 
 --
 -- AUTO_INCREMENT for table `user`
