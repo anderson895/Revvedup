@@ -51,7 +51,9 @@ $business = $db->get_business_details();
 </head>
 <body class="bg-gray-50 min-h-screen flex">
 
-  <!-- Sidebar (hidden on small screens, visible on md+) -->
+  
+
+<!-- Sidebar (hidden on small screens, visible on md+) -->
 <aside class="hidden md:flex w-20 bg-gray-100 border-r flex-col justify-between">
 
   <!-- Top Section (Logo + Menu) -->

@@ -45,6 +45,7 @@ function fetchAppointments() {
                         <tr class="border-b hover:bg-gray-50 transition-colors">
                             <td class="px-4 py-2 font-medium text-gray-700">${data.reference_number}</td>
                             <td class="px-4 py-2 text-gray-600">${data.appointmentDate} ${data.appointmentTime}</td>
+                            <td class="px-4 py-2 text-gray-600">${data.city} ${data.street}</td>
                             <td class="px-4 py-2">
                                 <span class="capitalize px-2 py-1 rounded-full text-white text-xs ${statusColor}">
                                     ${data.status}
@@ -60,6 +61,8 @@ function fetchAppointments() {
                                     data-date='${data.appointmentDate}'
                                     data-time='${data.appointmentTime}'
                                     data-emergency='${data.emergency}'
+                                    data-city='${data.city}'
+                                    data-street='${data.street}'
                                     data-status='${data.status}'>
                                     <span class="material-icons text-sm align-middle">visibility</span> See Details
                                 </button>
@@ -144,6 +147,7 @@ function markAsSeen(ids) {
             <p><strong>Date & Time:</strong> ${btn.data('date')} ${btn.data('time')}</p>
             <p><strong>Emergency:</strong> ${btn.data('emergency') == "1" ? "Yes" : "No"}</p>
             <p><strong>Status:</strong> ${btn.data('status')}</p>
+            <p><strong>Address:</strong> ${btn.data('city')} ${btn.data('street')}</p>
         `;
         $('#modalContent').html(content);
         $('#detailsModal').removeClass('opacity-0 pointer-events-none');
