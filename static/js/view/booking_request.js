@@ -23,7 +23,8 @@ function fetchAppointments() {
                     if (statusLower === "pending") statusColor = 'bg-yellow-500';
                     else if (statusLower === "completed") statusColor = 'bg-green-600';
                     else if (statusLower === "request canceled") statusColor = 'bg-orange-500';
-                    else if (statusLower === "canceled" || statusLower === "approved") statusColor = 'bg-red-600';
+                    else if (statusLower === "canceled") statusColor = 'bg-red-600';
+                    else if (statusLower === "approved") statusColor = 'bg-blue-600';
                     else statusColor = 'bg-gray-500';
 
                     const buttonsDisabled = !(statusLower === "pending" || statusLower === "request canceled") 
