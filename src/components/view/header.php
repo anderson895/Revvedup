@@ -47,14 +47,6 @@ $business = $db->get_business_details();
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
 
-  <!-- <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>   -->
- 
-   <!-- Select2 CSS -->
-  <!-- <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" /> -->
-
-  <!-- Select2 JS -->
-  <!-- <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script> -->
-
 
 </head>
 <body class="bg-gray-50 min-h-screen flex">

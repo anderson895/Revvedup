@@ -67,24 +67,25 @@ include "../src/components/view/header.php";
     
   </section>
 
-<!-- Footer -->
-<footer class="flex justify-center items-center bg-white  px-4 py-4">
-  <!-- Legend -->
-  <div class="flex space-x-6 text-sm text-gray-600">
-    <div class="flex items-center space-x-1">
+
+  <!-- Fixed Footer Legend -->
+<footer class="fixed bottom-0 left-0 w-full md:left-20 md:w-[calc(100%-5rem)] bg-white py-4 px-6 shadow-t z-20">
+  <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-center items-center space-y-2 md:space-y-0 md:space-x-6 text-sm text-gray-600">
+    <div class="flex items-center space-x-2">
       <span class="w-3 h-3 rounded-full bg-green-600"></span>
       <span>In Stock</span>
     </div>
-    <div class="flex items-center space-x-1">
+    <div class="flex items-center space-x-2">
       <span class="w-3 h-3 rounded-full bg-yellow-500"></span>
       <span>Low Stock</span>
     </div>
-    <div class="flex items-center space-x-1">
+    <div class="flex items-center space-x-2">
       <span class="w-3 h-3 rounded-full bg-red-600"></span>
       <span>Out of Stock</span>
     </div>
   </div>
 </footer>
+
 
 
 

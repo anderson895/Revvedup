@@ -74,11 +74,12 @@ $("#frmAddProduct").submit(function (e) {
         alertify.error("Please upload an item image.");
         return;
     } else {
-        var allowedExtensions = /(\.jpg|\.jpeg|\.png|\.gif)$/i;
+       var allowedExtensions = /(\.jpg|\.jpeg|\.png|\.gif|\.webp)$/i;
         if (!allowedExtensions.exec(itemImage)) {
-            alertify.error("Invalid file type. Only JPG, JPEG, PNG, or GIF allowed.");
+            alertify.error("Invalid file type. Only JPG, JPEG, PNG, GIF, or WEBP allowed.");
             return;
         }
+
     }
 
     // Show spinner and disable button
@@ -326,12 +327,13 @@ $(document).on("submit", "#frmUpdateProduct", function (e) {
 
   // Validate Image Upload (optional sa Update, pero kung may laman dapat valid type)
   if (itemImage) {
-    var allowedExtensions = /(\.jpg|\.jpeg|\.png|\.gif)$/i;
-    if (!allowedExtensions.exec(itemImage)) {
-      alertify.error("Invalid file type. Only JPG, JPEG, PNG, or GIF allowed.");
-      return;
+        var allowedExtensions = /(\.jpg|\.jpeg|\.png|\.gif|\.webp)$/i;
+        if (!allowedExtensions.exec(itemImage)) {
+            alertify.error("Invalid file type. Only JPG, JPEG, PNG, GIF, or WEBP allowed.");
+            return;
+        }
     }
-  }
+
 
   const formData = new FormData(this);
   formData.append("requestType", "UpdateProduct");
