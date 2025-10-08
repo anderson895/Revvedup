@@ -98,6 +98,16 @@ $vatableSale = ($transaction['transaction_total'] - $vatAmount);
     <?php else: ?>
       <p style="font-style:italic; color:gray;">No items</p>
     <?php endif; ?>
+   <hr>
+
+    <!-- Cashier / Transacted By -->
+    <div class="flex" style="margin-bottom:5px;">
+        <span><b>Cashier:</b></span>
+        <span>
+            <?= htmlspecialchars(ucfirst($transaction['firstname']) . ' ' . ucfirst($transaction['lastname'])) ?>
+        </span>
+    </div>
+
     <hr>
 
     <div class="flex"><span>Total Services</span><span>₱ <?= number_format($totalServices,2) ?></span></div>

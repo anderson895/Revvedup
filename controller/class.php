@@ -295,6 +295,8 @@ public function fetch_transaction_by_id($transactionId) {
     $query = $this->conn->prepare("
         SELECT *
         FROM `transaction`
+        LEFT JOIN user
+        ON user.user_id = transaction.transaction_by
         WHERE transaction_id = ? AND transaction_status = '1'
         LIMIT 1
     ");
