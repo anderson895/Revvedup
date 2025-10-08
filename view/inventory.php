@@ -1,8 +1,7 @@
 <?php 
 include "../src/components/view/header.php";
 ?>
-  
-<!-- Main Content -->
+  <!-- Main Content -->
 <main class="flex-1 flex flex-col bg-gray-100 min-h-screen">
 
   <!-- Topbar -->
@@ -10,28 +9,62 @@ include "../src/components/view/header.php";
     <h1 class="text-lg font-semibold">PRODUCT INVENTORY</h1>
   </header>
 
+  <!-- Search Bar + Filters -->
+  <div class="px-6 py-4 flex flex-col sm:flex-row sm:items-center sm:space-x-4 space-y-2 sm:space-y-0">
 
+    <!-- Search -->
+    <div class="relative w-full sm:max-w-xs">
+      <span class="material-icons absolute left-3 top-1/2 -translate-y-1/2">
+        search
+      </span>
+      <input
+        type="text"
+        id="searchInput"
+        class="w-full pl-10 pr-4 py-2 rounded-md border border-gray-700 placeholder-gray-500 focus:outline-none"
+        placeholder="Search inventory..."
+      />
+    </div>
 
-  <!-- Search Bar -->
-<div class="px-6 py-4  flex justify-center sm:justify-start">
-  <div class="relative w-full sm:max-w-xs">
-    <span class="material-icons absolute left-3 top-1/2 -translate-y-1/2">
-      search
-    </span>
-    <input
-      type="text"
-      id="searchInput"
-      class="w-full pl-10 pr-4 py-2 rounded-md  border border-gray-700 
-              placeholder-gray-500 focus:outline-none "
-      placeholder="Search inventory..."
-    />
+    <!-- Sales Speed Filter -->
+    <div>
+      <label for="salesSpeedFilter" class="block text-sm font-medium text-gray-700">Sales Speed</label>
+      <select id="salesSpeedFilter" class="mt-1 block w-full sm:w-auto rounded-md border-gray-300 shadow-sm focus:ring-red-500 focus:border-red-500 sm:text-sm">
+        <option value="">All</option>
+        <option value="Not moving">Not moving</option>
+        <option value="Slow moving">Slow moving</option>
+        <option value="Fast moving">Fast moving</option>
+      </select>
+    </div>
+
+    <!-- Category Filter -->
+    <div>
+      <label for="categoryFilter" class="block text-sm font-medium text-gray-700">Category</label>
+      <select id="categoryFilter" class="mt-1 block w-full sm:w-auto rounded-md border-gray-300 shadow-sm focus:ring-red-500 focus:border-red-500 sm:text-sm">
+        <option value="">All</option>
+        <option value="Engine & Transmission">Engine & Transmission</option>
+        <option value="Brakes">Brakes</option>
+        <option value="Exhaust Systems">Exhaust Systems</option>
+        <option value="Wheels & Tires">Wheels & Tires</option>
+      </select>
+    </div>
+
+    <!-- Status Filter -->
+    <div>
+      <label for="statusFilter" class="block text-sm font-medium text-gray-700">Status</label>
+      <select id="statusFilter" class="mt-1 block w-full sm:w-auto rounded-md border-gray-300 shadow-sm focus:ring-red-500 focus:border-red-500 sm:text-sm">
+        <option value="">All</option>
+        <option value="in-stock">In Stock</option>
+        <option value="low-stock">Low Stock</option>
+        <option value="out-of-stock">Out of Stock</option>
+      </select>
+    </div>
+
   </div>
-</div>
 
   <!-- Content -->
   <section class="p-6 flex-1">
     <div class="bg-white rounded-xl shadow overflow-hidden">
-      
+
       <!-- Tabs Header -->
       <div class="flex justify-between items-center px-4 py-3 border-b">
         <div class="flex space-x-4">
@@ -66,29 +99,25 @@ include "../src/components/view/header.php";
         </table>
       </div>
     </div>
-</section>
-
+  </section>
 
   <!-- Fixed Footer Legend -->
-<footer class="fixed bottom-0 left-0 w-full md:left-20 md:w-[calc(100%-5rem)] bg-white py-4 px-6 shadow-t z-20">
-  <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-center items-center space-y-2 md:space-y-0 md:space-x-6 text-sm text-gray-600">
-    <div class="flex items-center space-x-2">
-      <span class="w-3 h-3 rounded-full bg-green-600"></span>
-      <span>In Stock</span>
+  <footer class="fixed bottom-0 left-0 w-full md:left-20 md:w-[calc(100%-5rem)] bg-white py-4 px-6 shadow-t z-20">
+    <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-center items-center space-y-2 md:space-y-0 md:space-x-6 text-sm text-gray-600">
+      <div class="flex items-center space-x-2">
+        <span class="w-3 h-3 rounded-full bg-green-600"></span>
+        <span>In Stock</span>
+      </div>
+      <div class="flex items-center space-x-2">
+        <span class="w-3 h-3 rounded-full bg-yellow-500"></span>
+        <span>Low Stock</span>
+      </div>
+      <div class="flex items-center space-x-2">
+        <span class="w-3 h-3 rounded-full bg-red-600"></span>
+        <span>Out of Stock</span>
+      </div>
     </div>
-    <div class="flex items-center space-x-2">
-      <span class="w-3 h-3 rounded-full bg-yellow-500"></span>
-      <span>Low Stock</span>
-    </div>
-    <div class="flex items-center space-x-2">
-      <span class="w-3 h-3 rounded-full bg-red-600"></span>
-      <span>Out of Stock</span>
-    </div>
-  </div>
-</footer>
-
-
-
+  </footer>
 
   <br class="block sm:hidden">
   <br class="block sm:hidden">

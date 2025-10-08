@@ -123,127 +123,144 @@ $("#frmAddProduct").submit(function (e) {
 
 
 
+ // Tabs
+    $('#activeTab').on('click', function () {
+        $(this).addClass('bg-gray-200');
+        $('#archiveTab').removeClass('bg-gray-200');
+        fetchProducts('fetch_all_product'); // Active products
+    });
 
-// Tabs
-$('#activeTab').on('click', function () {
-    $(this).addClass('bg-gray-200');
-    $('#archiveTab').removeClass('bg-gray-200');
-    fetchProducts('fetch_all_product'); // Active products
-});
+    $('#archiveTab').on('click', function () {
+        $(this).addClass('bg-gray-200');
+        $('#activeTab').removeClass('bg-gray-200');
+        fetchProducts('fetch_archived_product'); // Archived products
+    });
 
-$('#archiveTab').on('click', function () {
-    $(this).addClass('bg-gray-200');
-    $('#activeTab').removeClass('bg-gray-200');
-    fetchProducts('fetch_archived_product'); // Archived products
-});
+    // Filters & Search
+    const salesSpeedFilter = $('#salesSpeedFilter');
+    const categoryFilter = $('#categoryFilter');
+    const statusFilter = $('#statusFilter');
+    const searchInput = $('#searchInput');
 
-// Reusable fetch function
-function fetchProducts(requestType) {
-    $.ajax({
-        url: "../controller/end-points/controller.php",
-        method: "GET",
-        data: { requestType: requestType },
-        dataType: "json",
-        success: function (res) {
-            $('#productTableBody').empty();
+    function applyFilters() {
+        const speed = salesSpeedFilter.val();
+        const category = categoryFilter.val();
+        const status = statusFilter.val();
+        const term = searchInput.val().toLowerCase();
 
-            if (res.status === 200) {
-                let isAdmin = (res.position === "admin");
+        $('#productTableBody tr').each(function () {
+            const row = $(this);
+            const rowSpeed = row.find('td:eq(5)').text().trim().split(' ')[0] + ' ' + row.find('td:eq(5)').text().trim().split(' ')[1]; // e.g., "Fast moving"
+            const rowCategory = row.find('td:eq(6)').text().trim();
+            const rowStatusColor = row.find('td:eq(7) span').attr('class');
+            let rowStatus = '';
+            if (rowStatusColor.includes('green')) rowStatus = 'in-stock';
+            else if (rowStatusColor.includes('yellow')) rowStatus = 'low-stock';
+            else if (rowStatusColor.includes('red')) rowStatus = 'out-of-stock';
 
-                if (res.data.length > 0) {
-                    res.data.forEach(data => {
-                        let stockColor = '';
-                        if (data.prod_qty > 10) stockColor = 'bg-green-600';
-                        else if (data.prod_qty > 0) stockColor = 'bg-yellow-500';
-                        else stockColor = 'bg-red-600';
+            const matchSpeed = !speed || rowSpeed === speed;
+            const matchCategory = !category || rowCategory === category;
+            const matchStatus = !status || rowStatus === status;
+            const matchSearch = !term || row.text().toLowerCase().includes(term);
 
-                        let actionButtons = '';
+            row.toggle(matchSpeed && matchCategory && matchStatus && matchSearch);
+        });
+    }
 
-                        if (isAdmin) {
-                            if (requestType === 'fetch_all_product') { // Only active products editable
-                                actionButtons = `
-                                    <button class="updateBtn cursor-pointer text-gray-700 hover:text-blue-600"
-                                        data-prod_id ='${data.prod_id}'
-                                        data-prod_name='${data.prod_name}'
-                                        data-prod_capital='${data.prod_capital}'
-                                        data-prod_price='${data.prod_price}'
-                                        data-prod_qty='${data.prod_qty}'
-                                        data-prod_category='${data.prod_category}'
-                                        data-prod_description='${data.prod_description}'
-                                    >
-                                        <span class="material-icons text-sm">edit</span>
-                                    </button>
-                                   <button class="removeBtn cursor-pointer text-gray-700 hover:text-blue-600"
+    salesSpeedFilter.on('change', applyFilters);
+    categoryFilter.on('change', applyFilters);
+    statusFilter.on('change', applyFilters);
+    searchInput.on('input', applyFilters);
+
+    // Fetch products
+    function fetchProducts(requestType) {
+        $.ajax({
+            url: "../controller/end-points/controller.php",
+            method: "GET",
+            data: { requestType: requestType },
+            dataType: "json",
+            success: function (res) {
+                $('#productTableBody').empty();
+
+                if (res.status === 200) {
+                    let isAdmin = (res.position === "admin");
+
+                    if (res.data.length > 0) {
+                        res.data.forEach(data => {
+                            let stockColor = '';
+                            if (data.prod_qty > 10) stockColor = 'bg-green-600';
+                            else if (data.prod_qty > 0) stockColor = 'bg-yellow-500';
+                            else stockColor = 'bg-red-600';
+
+                            let actionButtons = '';
+                            if (isAdmin) {
+                                if (requestType === 'fetch_all_product') {
+                                    actionButtons = `
+                                        <button class="updateBtn cursor-pointer text-gray-700 hover:text-blue-600"
+                                            data-prod_id ='${data.prod_id}'
+                                            data-prod_name='${data.prod_name}'
+                                            data-prod_capital='${data.prod_capital}'
+                                            data-prod_price='${data.prod_price}'
+                                            data-prod_qty='${data.prod_qty}'
+                                            data-prod_category='${data.prod_category}'
+                                            data-prod_description='${data.prod_description}'>
+                                            <span class="material-icons text-sm">edit</span>
+                                        </button>
+                                        <button class="removeBtn cursor-pointer text-gray-700 hover:text-blue-600"
                                             data-prod_id='${data.prod_id}'
                                             data-prod_name='${data.prod_name}'>
-                                        <span class="material-icons text-sm">archive</span>
-                                    </button>
-
-                                `;
-                            } else if (requestType === 'fetch_archived_product') { // Archived products - restore only
-                                actionButtons = `
-                                    <button class="restoreBtn cursor-pointer text-gray-700 hover:text-green-600"
-                                        data-prod_id='${data.prod_id}'
-                                        data-prod_name='${data.prod_name}'
-                                    >
-                                        <span class="material-icons text-sm">restore</span>
-                                    </button>
-                                `;
+                                            <span class="material-icons text-sm">archive</span>
+                                        </button>
+                                    `;
+                                } else if (requestType === 'fetch_archived_product') {
+                                    actionButtons = `
+                                        <button class="restoreBtn cursor-pointer text-gray-700 hover:text-green-600"
+                                            data-prod_id='${data.prod_id}'
+                                            data-prod_name='${data.prod_name}'>
+                                            <span class="material-icons text-sm">restore</span>
+                                        </button>
+                                    `;
+                                }
                             }
-                        }
 
-
+                            $('#productTableBody').append(`
+                                <tr>
+                                    <td class="px-4 py-2">${data.prod_id}</td>
+                                    <td class="px-4 py-2 flex items-center space-x-2">
+                                        <img src="../static/upload/${data.prod_img || '../static/images/default.png'}" 
+                                            alt="${data.prod_img}" 
+                                            class="w-8 h-8 object-cover rounded" />
+                                        <span>${data.prod_name}</span>
+                                    </td>
+                                    <td class="px-4 py-2">₱ ${data.prod_capital}</td>
+                                    <td class="px-4 py-2">₱ ${data.prod_price}</td>
+                                    <td class="px-4 py-2">${data.prod_qty}</td>
+                                    <td class="px-4 py-2 font-semibold">${data.movement} (${data.total_sold_week} pcs per week)</td>
+                                    <td class="px-4 py-2 font-semibold">${data.prod_category}</td>
+                                    <td class="px-4 py-2">
+                                        <span class="inline-block w-3 h-3 rounded-full ${stockColor}"></span>
+                                    </td>
+                                    <td class="px-4 py-2 flex justify-center space-x-2">
+                                        ${actionButtons}
+                                    </td>
+                                </tr>
+                            `);
+                        });
+                        applyFilters(); // Apply filters after table is rendered
+                    } else {
                         $('#productTableBody').append(`
                             <tr>
-                                <td class="px-4 py-2">${data.prod_id}</td>
-                                <td class="px-4 py-2 flex items-center space-x-2">
-                                    <img src="../static/upload/${data.prod_img || '../static/images/default.png'}" 
-                                        alt="${data.prod_img}" 
-                                        class="w-8 h-8 object-cover rounded" />
-                                    <span>${data.prod_name}</span>
-                                </td>
-                                <td class="px-4 py-2">₱ ${data.prod_capital}</td>
-                                <td class="px-4 py-2">₱ ${data.prod_price}</td>
-                                <td class="px-4 py-2">${data.prod_qty}</td>
-                                <td class="px-4 py-2 font-semibold">
-                                    ${data.movement} (${data.total_sold_week} pcs per week)
-                                </td>
-                                <td class="px-4 py-2 font-semibold">${data.prod_category}</td>
-                                <td class="px-4 py-2">
-                                    <span class="inline-block w-3 h-3 rounded-full ${stockColor}"></span>
-                                </td>
-                                <td class="px-4 py-2 flex justify-center space-x-2">
-                                    ${actionButtons}
-                                </td>
+                                <td colspan="9" class="p-4 text-center text-gray-400 italic">No record found</td>
                             </tr>
                         `);
-                    });
-                } else {
-                    $('#productTableBody').append(`
-                        <tr>
-                            <td colspan="9" class="p-4 text-center text-gray-400 italic">
-                                No record found
-                            </td>
-                        </tr>
-                    `);
+                    }
                 }
             }
-        }
-    });
-}
+        });
+    }
 
-// Initialize active products on page load
-fetchProducts('fetch_all_product');
-
-// Search filter
-$('#searchInput').on('input', function () {
-    const term = $(this).val().toLowerCase();
-    $('#productTableBody tr').each(function () {
-        $(this).toggle($(this).text().toLowerCase().includes(term));
-    });
-});
-
-
+    // Initialize active products on page load
+    fetchProducts('fetch_all_product');
 
 
 

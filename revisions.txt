@@ -12,9 +12,9 @@ POS and INVENTORY:
 ✔⦁(Employee) Employee Acct - Remove Username
 		     ✔ - add Refund | Exchange function and booking notification/icon
 
-⦁(Admin)  Inventory - change to archieve icon and add archieve tab. (to view archieved items and can unarchieve it)
-		  - Footer, stays (Instock, LowStock, OutofStock)
-		  - Filter Sales speed, category, status.
+✔⦁(Admin)  Inventory - change to archieve icon and add archieve tab. (to view archieved items and can unarchieve it)
+ ✔		  - Footer, stays (Instock, LowStock, OutofStock)
+	✔	  - Filter Sales speed, category, status.
 
 ⦁(Admin & Employee) Sales Item - Void Transaction - remove all items in the cart.
 ⦁(Admin & Employee) Sales Refund Exchange - add record if refunded or exchanged
