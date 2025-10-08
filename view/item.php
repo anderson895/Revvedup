@@ -84,7 +84,7 @@ include "../src/components/view/header.php";
 
   <!-- Bottom Row (Buttons) -->
   <div class="flex flex-wrap gap-2 justify-end">
-    <a href="#" <?=$authorize?> 
+    <a href="#" 
        class="btnRefundExchange font-bold flex items-center gap-2 bg-red-800 hover:bg-red-700 transition text-white px-4 py-2 rounded text-sm whitespace-nowrap inline-block text-center shadow">
       REFUND | EXCHANGE
     </a>
