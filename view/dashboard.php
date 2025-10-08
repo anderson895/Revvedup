@@ -31,12 +31,12 @@ include "../src/components/view/header.php";
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
     <!-- Sales Chart -->
     <div class="bg-white shadow rounded-lg p-4">
-      <div class="text-gray-700 font-semibold mb-2">Sales (Last 7 Days)</div>
+      <!-- <div class="text-gray-700 font-semibold mb-2"></div> -->
       <div id="salesChart"></div>
     </div>
     <!-- Appointments Chart -->
     <div class="bg-white shadow rounded-lg p-4">
-      <div class="text-gray-700 font-semibold mb-2">Appointments by Status</div>
+   
       <div id="appointmentChart"></div>
     </div>
   </div>
@@ -45,12 +45,11 @@ include "../src/components/view/header.php";
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
     <!-- Employee Services Chart -->
     <div class="bg-white shadow rounded-lg p-4">
-      <div class="text-gray-700 font-semibold mb-2">Services Rendered per Employee</div>
       <div id="employeeChart"></div>
     </div>
     <!-- Popular Products Chart -->
     <div class="bg-white shadow rounded-lg p-4">
-      <div class="text-gray-700 font-semibold mb-2">Most Sold Products</div>
+      
       <div id="productChart"></div>
     </div>
   </div>

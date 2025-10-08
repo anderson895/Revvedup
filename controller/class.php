@@ -1997,6 +1997,36 @@ public function EditDeduction($empId, $deductionDate, $deductionAmount) {
     $data['EmployeeServices'] = $employeeServices;
 
 
+
+
+
+
+
+    // -----------------------------
+// Top 10 Low Stock Products
+// -----------------------------
+$lowStockProducts = [];
+$sql = "SELECT prod_id, prod_name, prod_qty 
+        FROM product 
+        WHERE prod_status=1 
+        ORDER BY prod_qty ASC 
+        LIMIT 10";
+$result = $this->conn->query($sql);
+
+while($row = $result->fetch_assoc()) {
+    $lowStockProducts[] = [
+        'name' => $row['prod_name'],
+        'quantity' => intval($row['prod_qty'])
+    ];
+}
+
+$data['LowStockProducts'] = $lowStockProducts;
+
+
+
+
+
+
    // -----------------------------
 // Popular Items (Products Sold) - Top 10
 // -----------------------------
@@ -2059,6 +2089,9 @@ $data['PopularItems'] = $popularItems;
     $data['TotalProductsSold'] = $this->conn->query($sql)->fetch_assoc()['total_items'] ?? 0;
 
     return $data;
+
+
+    
 }
 
 
