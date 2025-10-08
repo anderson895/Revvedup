@@ -166,6 +166,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
 
         }else if ($_POST['requestType'] == 'CheckOutOrder') {
+
+                $user_id = $_SESSION['user_id'];
+
                 $services = $_POST['services'] ?? [];
                 $items = $_POST['items'] ?? [];
                 $discount = $_POST['discount'] ?? 0;
@@ -175,7 +178,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $change = $_POST['change'] ?? 0;
 
                 $errorMsg = null;
-                $result = $db->CheckOutOrder($services, $items, $discount, $vat, $grandTotal, $payment, $change, $errorMsg);
+                $result = $db->CheckOutOrder($services, $items, $discount, $vat, $grandTotal, $payment, $change, $errorMsg,$user_id);
 
                 if ($result) {
                     echo json_encode([
@@ -204,6 +207,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
             exit;
         }else if($_POST['requestType'] === 'complete_transaction'){
+
+            
 
             $transactionId = $_POST['transactionId'];
             $refund = json_decode($_POST['refund'], true);    

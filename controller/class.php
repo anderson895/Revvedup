@@ -1288,7 +1288,7 @@ public function removeProduct($prod_id) {
 
 
     
-public function CheckOutOrder($services, $items, $discount, $vat, $grandTotal, $payment, $change, &$errorMsg = null) {
+public function CheckOutOrder($services, $items, $discount, $vat, $grandTotal, $payment, $change, &$errorMsg = null,$user_id) {
     $services_json = json_encode($services);
     $items_json = json_encode($items);
 
@@ -1297,12 +1297,12 @@ public function CheckOutOrder($services, $items, $discount, $vat, $grandTotal, $
     try {
         // 1️⃣ Insert transaction
         $sql = "INSERT INTO `transaction` 
-                (transaction_service, transaction_item, transaction_discount, transaction_vat, transaction_total, transaction_payment, transaction_change, transaction_status) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, 1)";
+                (transaction_service, transaction_item, transaction_discount, transaction_vat, transaction_total, transaction_payment, transaction_change, transaction_status,transaction_by) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, 1,?)";
         $stmt = $this->conn->prepare($sql);
         if (!$stmt) throw new Exception("Prepare failed: " . $this->conn->error);
 
-        $stmt->bind_param("ssddddd", $services_json, $items_json, $discount, $vat, $grandTotal, $payment, $change);
+        $stmt->bind_param("ssdddddi", $services_json, $items_json, $discount, $vat, $grandTotal, $payment, $change,$user_id);
         if (!$stmt->execute()) throw new Exception("Execute failed: " . $stmt->error);
 
       // ✅ Get last inserted transaction_id
@@ -1357,18 +1357,24 @@ public function CheckOutOrder($services, $items, $discount, $vat, $grandTotal, $
             }
         }
 
-        // 4️⃣ Delete from item_cart
-        foreach ($items as $i) {
-            if (isset($i['item_id'])) {
-                $del = $this->conn->prepare("DELETE FROM item_cart WHERE item_id = ?");
-                $del->bind_param("i", $i['item_id']);
+        // 4️⃣ Delete from item_cart based on user_id and prod_id
+            foreach ($items as $i) {
+                if (!isset($i['prod_id'])) continue;
+
+                $prod_id = (int)$i['prod_id'];
+
+                $del = $this->conn->prepare(
+                    "DELETE FROM item_cart WHERE item_user_id = ? AND item_prod_id = ?"
+                );
+                $del->bind_param("ii", $user_id, $prod_id);
                 if (!$del->execute()) {
                     $del->close();
-                    throw new Exception("Failed to delete item_cart item ID {$i['item_id']}");
+                    throw new Exception("Failed to delete item_cart for product ID {$prod_id}");
                 }
                 $del->close();
             }
-        }
+
+
 
         // 5️⃣ Commit transaction
         $this->conn->commit();
