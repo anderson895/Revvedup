@@ -4,8 +4,8 @@ WEBSITE:
 ✔⦁	Homepage - products can browse without registering/logging in.
 ✔⦁	Search Item - hide on booking summary
 ✔⦁	Display name of user/customer registered. Not John Doe
-⦁	Book and Repair - Add Select City (Antipolo, Angono, taytay, Cainta), Full Address. 
-⦁	Products - Clickable products, leave space for the Description - allow on POS add item to add description.
+✔⦁	Book and Repair - Add Select City (Antipolo, Angono, taytay, Cainta), Full Address. 
+✔⦁	Products - Clickable products, leave space for the Description - allow on POS add item to add description.
 
 POS and INVENTORY:
 

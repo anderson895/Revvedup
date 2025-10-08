@@ -217,6 +217,24 @@ include "../src/components/view/header.php";
         </label>
       </div>
 
+      <!-- Description -->
+      <div class="relative">
+        <textarea
+          id="description"
+          name="description"
+          placeholder=" "
+          rows="4"
+          class="peer block w-full rounded-lg border border-gray-300 px-2.5 pt-4 pb-2.5 text-sm text-gray-900 bg-transparent focus:border-red-900 focus:ring-0 focus:outline-none resize-none"
+        ></textarea>
+        <label for="description"
+          class="absolute start-2.5 top-2 z-10 origin-[0] -translate-y-4 scale-75 transform bg-white px-1 text-sm text-gray-500 duration-300
+          peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100
+          peer-focus:top-2 peer-focus:-translate-y-4 peer-focus:scale-75 peer-focus:text-red-900">
+          Description
+        </label>
+      </div>
+
+
 
 
       <!-- File Upload -->
@@ -388,6 +406,31 @@ include "../src/components/view/header.php";
           Category
         </label>
       </div>
+
+
+
+
+
+
+            <!-- Description -->
+      <div class="relative col-span-4">
+        <textarea
+          id="descriptionUpdate"
+          name="description"
+          placeholder=" "
+          rows="4"
+          class="peer block w-full rounded-lg border border-gray-300 px-2.5 pt-4 pb-2.5 text-sm text-gray-900 bg-transparent focus:border-red-900 focus:ring-0 focus:outline-none resize-none"
+        ></textarea>
+        <label for="descriptionUpdate"
+          class="absolute start-2.5 top-2 z-10 origin-[0] -translate-y-4 scale-75 transform bg-white px-1 text-sm text-gray-500 duration-300
+          peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100
+          peer-focus:top-2 peer-focus:-translate-y-4 peer-focus:scale-75 peer-focus:text-red-900">
+          Description
+        </label>
+      </div>
+
+
+
 
 
 

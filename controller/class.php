@@ -550,18 +550,20 @@ public function fetch_all_users() {
 
 
 // Add user (firstname, lastname, username, email, pin)
-public function add_user($firstname, $lastname, $username, $email, $pin = null) {
-    $stmt = $this->conn->prepare("INSERT INTO user (firstname, lastname, username, email, pin) VALUES (?, ?, ?, ?, ?)");
-    $stmt->bind_param("sssss", $firstname, $lastname, $username, $email, $pin);
+// Add user without username
+public function add_user($firstname, $lastname, $email, $pin) {
+    $stmt = $this->conn->prepare("INSERT INTO user (firstname, lastname, email, pin) VALUES (?, ?, ?, ?)");
+    $stmt->bind_param("ssss", $firstname, $lastname, $email, $pin);
     return $stmt->execute() ? "User added successfully" : "Error adding user";
 }
 
-// Update user (firstname, lastname, username, email, pin)
-public function update_user($user_id, $firstname, $lastname, $username, $email, $pin = null) {
-    $stmt = $this->conn->prepare("UPDATE user SET firstname=?, lastname=?, username=?, email=?, pin=? WHERE user_id=?");
-    $stmt->bind_param("sssssi", $firstname, $lastname, $username, $email, $pin, $user_id);
+// Update user without username
+public function update_user($user_id, $firstname, $lastname, $email, $pin = null) {
+    $stmt = $this->conn->prepare("UPDATE user SET firstname=?, lastname=?, email=?, pin=? WHERE user_id=?");
+    $stmt->bind_param("ssssi", $firstname, $lastname, $email, $pin, $user_id);
     return $stmt->execute() ? "User updated successfully" : "Error updating user";
 }
+
 
 
 // Deactivate user (unchanged)
@@ -762,7 +764,8 @@ public function UpdateProduct(
     $price,
     $stockQty,
     $category,
-    $uniqueBannerFileName = null
+    $uniqueBannerFileName = null,
+    $description
 ){
     // Delete old image if new one is provided
     if (!empty($uniqueBannerFileName)) {
@@ -783,9 +786,9 @@ public function UpdateProduct(
 
     // Build query
     $query = "UPDATE product 
-              SET prod_name = ?, prod_capital = ?, prod_price = ?, prod_qty = ?, prod_category = ?";
-    $types = "sddis"; // s = string, d = double, i = integer
-    $params = [$itemName, $capital, $price, $stockQty, $category];
+              SET prod_name = ?, prod_capital = ?, prod_price = ?, prod_qty = ?, prod_category = ?,prod_description=?";
+    $types = "sddiss"; // s = string, d = double, i = integer
+    $params = [$itemName, $capital, $price, $stockQty, $category,$description];
 
     if (!empty($uniqueBannerFileName)) {
         $query .= ", prod_img = ?";
@@ -982,15 +985,15 @@ public function removeProduct($prod_id) {
 
 
 
-    public function AddProduct($itemName, $capital, $price, $stockQty, $itemImageFileName, $category) {
+    public function AddProduct($itemName, $capital, $price, $stockQty, $itemImageFileName, $category,$description) {
         $query = "INSERT INTO `product` 
-                (`prod_name`, `prod_capital`, `prod_price`, `prod_qty`, `prod_img`, `prod_category`) 
-                VALUES (?,?,?,?,?,?)";
+                (`prod_name`, `prod_capital`, `prod_price`, `prod_qty`, `prod_img`, `prod_category`,`prod_description`) 
+                VALUES (?,?,?,?,?,?,?)";
 
         $stmt = $this->conn->prepare($query);
 
         // s = string, d = double, i = integer
-        $stmt->bind_param("sddiss", $itemName, $capital, $price, $stockQty, $itemImageFileName, $category);
+        $stmt->bind_param("sddisss", $itemName, $capital, $price, $stockQty, $itemImageFileName, $category,$description);
 
         $result = $stmt->execute();
 

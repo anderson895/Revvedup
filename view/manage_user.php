@@ -31,7 +31,6 @@ include "../src/components/view/header.php";
             <tr>
               <th class="px-4 py-2 text-left text-sm font-medium text-gray-600">First Name</th>
               <th class="px-4 py-2 text-left text-sm font-medium text-gray-600">Last Name</th>
-              <th class="px-4 py-2 text-left text-sm font-medium text-gray-600">Username</th>
               <th class="px-4 py-2 text-left text-sm font-medium text-gray-600">Email</th>
               <th class="px-4 py-2 text-left text-sm font-medium text-gray-600">Pin</th>
               <th class="px-4 py-2 text-left text-sm font-medium text-gray-600">Status</th>
@@ -86,18 +85,7 @@ include "../src/components/view/header.php";
                  peer-focus:text-red-900">Last Name</label>
       </div>
 
-      <!-- Username -->
-      <div class="relative">
-        <input type="text" id="usernameAdd" name="username" placeholder=" "
-          class="peer block w-full rounded-lg border border-gray-300 px-2.5 pb-2.5 pt-4 
-                 text-sm text-gray-900 bg-transparent focus:border-red-900 focus:ring-0 focus:outline-none"/>
-        <label for="usernameAdd" class="absolute start-2.5 top-2 z-10 origin-[0] -translate-y-4 scale-75 transform 
-                 bg-white px-1 text-sm text-gray-500 duration-300 
-                 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 
-                 peer-placeholder-shown:scale-100
-                 peer-focus:top-2 peer-focus:-translate-y-4 peer-focus:scale-75 
-                 peer-focus:text-red-900">Username</label>
-      </div>
+      
 
       <!-- Email -->
       <div class="relative">

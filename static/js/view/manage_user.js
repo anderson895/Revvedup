@@ -15,7 +15,6 @@ $(document).ready(function(){
     var formData = new FormData();
     formData.append('firstname', $('#firstnameAdd').val().trim());
     formData.append('lastname', $('#lastnameAdd').val().trim());
-    formData.append('username', $('#usernameAdd').val().trim());
     formData.append('email', $('#emailAdd').val().trim());
     formData.append('pin', $('#pinAdd').val().trim());
     formData.append('requestType', 'AddUser');
@@ -58,7 +57,6 @@ $(document).ready(function(){
               <tr>
                 <td class="px-4 py-2">${data.firstname || ''}</td>
                 <td class="px-4 py-2">${data.lastname || ''}</td>
-                <td class="px-4 py-2">${data.username || ''}</td>
                 <td class="px-4 py-2">${data.email || ''}</td>
                 <td class="px-4 py-2">${data.pin || ''}</td>
                 <td class="px-4 py-2">${statusText || ''}</td>

@@ -65,11 +65,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }else if ($_POST['requestType'] == 'AddUser') {
                 $firstname = trim($_POST['firstname']);
                 $lastname  = trim($_POST['lastname']);
-                $username  = trim($_POST['username']);
                 $email     = trim($_POST['email']);
-                $pin       = !empty($_POST['pin']) ? $_POST['pin'] : null; // <-- Added PIN
+                $pin       = $_POST['pin']; 
 
-                $result = $db->add_user($firstname, $lastname, $username, $email, $pin);
+                $result = $db->add_user($firstname, $lastname, $email, $pin);
 
                 echo json_encode([
                     "status" => $result === "User added successfully" ? 200 : 500,
@@ -82,24 +81,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 // echo "<pre>";
                 // print_r($_POST);
                 // echo "</pre>";
-                $userId    = $_POST['userId'] ;
+                $userId    = $_POST['userId'];
                 $firstname = trim($_POST['firstname']);
                 $lastname  = trim($_POST['lastname']);
-                $username  = trim($_POST['username']);
                 $email     = trim($_POST['email']);
-                $pin       = $_POST['pin']; 
+                $pin       = $_POST['pin'];
 
                 if (!$userId) {
                     echo json_encode(["status" => 400, "message" => "Missing userId"]);
                     exit;
                 }
 
-                $result = $db->update_user($userId, $firstname, $lastname, $username, $email, $pin);
+                $result = $db->update_user($userId, $firstname, $lastname, $email, $pin);
 
                 echo json_encode([
                     "status" => $result === "User updated successfully" ? 200 : 500,
                     "message" => $result
                 ]);
+
                 exit;
             } else if ($_POST['requestType'] == 'deactivateUser') {
 
@@ -287,7 +286,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $capital = $_POST['capital'];
                     $price = $_POST['price'];
                     $stockQty = $_POST['stockQty'];
-                    $category = $_POST['category']; // ✅ Category
+                    $category = $_POST['category']; 
+                    $description = $_POST['description']; 
 
                     // Handle Banner Image Upload
                     $uniqueBannerFileName = null;
@@ -306,8 +306,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $capital,
                         $price,
                         $stockQty,
-                        $category,             // ✅ Added category here
-                        $uniqueBannerFileName 
+                        $category,           
+                        $uniqueBannerFileName,
+                        $description
                     );
 
                     if ($result['status']) {
@@ -330,7 +331,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             $capital   = $_POST['capital'];
                             $price     = $_POST['price'];
                             $stockQty  = $_POST['stockQty'];
-                            $category  = $_POST['category']; // ✅ Category
+                            $category  = $_POST['category']; 
+                            $description  = $_POST['description']; 
 
                             // FILES
                             $itemImage = $_FILES['itemImage'];
@@ -367,7 +369,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 $price,
                                 $stockQty,
                                 $itemImageFileName,
-                                $category
+                                $category,
+                                $description
                             );
 
                             if ($result) {

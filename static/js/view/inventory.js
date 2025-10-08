@@ -154,6 +154,7 @@ $.ajax({
                                 data-prod_price='${data.prod_price}'
                                 data-prod_qty='${data.prod_qty}'
                                 data-prod_category='${data.prod_category}'
+                                data-prod_description='${data.prod_description}'
                             >
                                 <span class="material-icons text-sm">edit</span>
                             </button>
@@ -241,7 +242,8 @@ $(document).on("click", ".updateBtn", function () {
   const prod_capital = $(this).data("prod_capital");
   const prod_price = $(this).data("prod_price");
   const prod_qty = $(this).data("prod_qty");
-  const prod_category = $(this).data("prod_category"); // ✅ dagdag
+  const prod_category = $(this).data("prod_category"); 
+  const prod_description = $(this).data("prod_description"); 
 
   // Populate modal fields
   $("#productId").val(prod_id);
@@ -250,8 +252,8 @@ $(document).on("click", ".updateBtn", function () {
   $("#priceUpdate").val(prod_price);
   $("#stockQtyUpdate").val(prod_qty);
 
-  // ✅ set selected category (assume select input with id="categoryUpdate")
   $("#categoryUpdate").val(prod_category);
+  $("#descriptionUpdate").val(prod_description);
 
   // Show modal
   $('#updateProductModal').fadeIn();
