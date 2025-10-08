@@ -44,6 +44,7 @@ include "../src/components/view/header.php";
           <th class="px-4 py-2 text-left font-semibold border-b">Date</th>
           <th class="px-4 py-2 text-left font-semibold border-b">Transaction ID</th>
           <th class="px-4 py-2 text-left font-semibold border-b">Amount</th>
+          <th class="px-4 py-2 text-left font-semibold border-b">Refundable Status</th>
           <th class="px-4 py-2 text-center font-semibold border-b">Action</th>
         </tr>
       </thead>

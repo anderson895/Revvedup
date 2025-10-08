@@ -43,6 +43,7 @@ function fetchTransactions(page = 1, limit = rowsPerPage, filter = "") {
 }
 
 // Render table rows
+// Render table rows
 function renderTable(data) {
     let html = "";
     data.forEach((item) => {
@@ -53,11 +54,20 @@ function renderTable(data) {
             day: 'numeric' 
         });
 
+        // Show refundable message if available
+        let refundableText = "";
+        if (item.refundable === false) {
+            refundableText = `<span class="text-red-600 font-semibold">${item.message}</span>`;
+        } else if (item.refundable === true) {
+            refundableText = `<span class="text-green-600 font-semibold">${item.message}</span>`;
+        }
+
         html += `
             <tr class="hover:bg-gray-200 transition-colors">
                 <td class="p-3 text-left font-mono">${formattedDate}</td>
                 <td class="p-3 text-left font-semibold">${item.transaction_id}</td>
                 <td class="p-3 text-left font-semibold">₱ ${parseFloat(item.transaction_total).toFixed(2)}</td>
+                <td class="p-3 text-left font-semibold">${refundableText}</td>
                 <td class="p-3 text-center">
                     <button class="cursor-pointer bg-red-800 hover:bg-red-700 text-white font-semibold py-1 px-3 rounded view-btn" data-id="${item.transaction_id}">
                         View
@@ -74,6 +84,7 @@ function renderTable(data) {
         window.open(`receipt?transaction_id=${transactionId}`, "_blank");
     });
 }
+
 
 // Render pagination buttons
 function renderPagination(totalRows) {

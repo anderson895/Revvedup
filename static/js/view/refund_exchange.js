@@ -27,6 +27,7 @@ function enforceMaxCombinedQty($row) {
         }
     }
 }
+
 $.ajax({
     url: "../controller/end-points/controller.php",
     method: "GET",
@@ -39,8 +40,8 @@ $.ajax({
         if (res.status === 200) {
             const transaction = res.data;
 
-            // ✅ Always display transaction info
-            $('.transaction-info').show(); // wrapper for Transaction No. & Date
+            // Show transaction info
+            $('.transaction-info').show();
             $('span:contains("Transaction No.") strong').text(transaction.transaction_id);
             $('span:contains("Date:") strong').text(new Date(transaction.transaction_date).toLocaleDateString());
 
@@ -50,8 +51,9 @@ $.ajax({
                         ? (item.subtotal / item.qty).toFixed(2) 
                         : "0.00";
 
+                    // Add data-prod-id to <tr>
                     const row = `
-                    <tr class="hover:bg-gray-50 transition">
+                    <tr class="hover:bg-gray-50 transition" data-prod-id="${item.prod_id}">
                         <td class="px-4 py-2 border-b">${item.name}</td>
                         <td class="px-4 py-2 border-b">${item.qty}</td>
                         <td class="px-4 py-2 border-b">${parseFloat(unitPrice).toLocaleString()}</td>
@@ -78,9 +80,7 @@ $.ajax({
                 tbody.append(`<tr><td colspan="5" class="text-center py-4 text-gray-500 font-medium">No items in this transaction</td></tr>`);
             }
 
-            // =========================
-            // 📌 INPUT HANDLERS
-            // =========================
+            // Input handlers
             $(document).on('input', '.refund-qty, .exchange-qty', function() {
                 let val = $(this).val();
                 if (val === null || val === "" || isNaN(val)) val = 0;
@@ -99,7 +99,7 @@ $.ajax({
                 }
             });
 
-            // 📌 REFUND ALL BUTTON
+            // Refund All button
             $('button:contains("Refund All")').off().click(function() {
                 $('table tbody tr').each(function() {
                     const maxQty = parseInt($(this).find('td:nth-child(2)').text());
@@ -108,7 +108,7 @@ $.ajax({
                 });
             });
 
-            // 📌 EXCHANGE ALL BUTTON
+            // Exchange All button
             $('button:contains("Exchange All")').off().click(function() {
                 $('table tbody tr').each(function() {
                     const maxQty = parseInt($(this).find('td:nth-child(2)').text());
@@ -117,14 +117,15 @@ $.ajax({
                 });
             });
 
-            // 📌 COMPLETE TRANSACTION BUTTON
-            $('button:contains("Complete Transaction")').off().click(function() {
+            // Complete Transaction button
+            $('#btnComplete_transaction').off().click(function() {
                 const refundData = [];
                 const exchangeData = [];
                 let valid = true;
 
                 $('table tbody tr').each(function() {
                     const itemName = $(this).find('td:first').text();
+                    const prodId = $(this).data('prod-id');
                     let refundQty = parseInt($(this).find('.refund-qty').val()) || 0;
                     let exchangeQty = parseInt($(this).find('.exchange-qty').val()) || 0;
 
@@ -135,8 +136,8 @@ $.ajax({
                         return false;
                     }
 
-                    if (refundQty > 0) refundData.push({name: itemName, qty: refundQty});
-                    if (exchangeQty > 0) exchangeData.push({name: itemName, qty: exchangeQty});
+                    if (refundQty > 0) refundData.push({prod_id: prodId, name: itemName, qty: refundQty});
+                    if (exchangeQty > 0) exchangeData.push({prod_id: prodId, name: itemName, qty: exchangeQty});
                 });
 
                 if (!valid) return;
@@ -163,8 +164,7 @@ $.ajax({
             });
 
         } else if (res.status === 404) {
-            // ✅ TRANSACTION NOT FOUND
-            $('.transaction-info').hide(); // hide Transaction No. & Date wrapper
+            $('.transaction-info').hide();
             tbody.append(`<tr><td colspan="5" class="text-center py-4 text-red-500 font-bold">TRANSACTION ID NOT EXIST</td></tr>`);
         }
     },

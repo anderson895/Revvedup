@@ -134,7 +134,6 @@ class global_class extends db_connect
 
 
 
-
 public function fetch_transaction_record($transactionId) {
     // Fetch transaction
     $sql = "SELECT * FROM `transaction` WHERE transaction_status = 1 AND transaction_id = ?";
@@ -148,7 +147,7 @@ public function fetch_transaction_record($transactionId) {
         $transaction['transaction_service'] = json_decode($transaction['transaction_service'], true);
         $transactionItems = json_decode($transaction['transaction_item'], true);
 
-        // Fetch refunds & exchanges
+        // Fetch returns/exchanges
         $sql2 = "SELECT * FROM `returns` WHERE return_transaction_id = ?";
         $stmt2 = $this->conn->prepare($sql2);
         $stmt2->bind_param("i", $transactionId);
@@ -161,22 +160,42 @@ public function fetch_transaction_record($transactionId) {
             $item[0]['qty'] = intval($row['return_qty']);
             $returns[] = $item[0];
 
-            // Subtract returned/exchanged qty from original transaction items
+            // Subtract returned/exchanged qty from transaction items
             foreach ($transactionItems as &$tItem) {
-                if ($tItem['name'] == $item[0]['name']) {
+                if ($tItem['prod_id'] == $item[0]['prod_id']) {
                     $tItem['qty'] = max(0, intval($tItem['qty']) - $item[0]['qty']);
                 }
             }
         }
 
-        $transaction['transaction_item'] = $transactionItems; 
-        $transaction['returns'] = $returns; 
+        // Filter out items with qty 0
+        $transactionItems = array_filter($transactionItems, fn($i) => intval($i['qty']) > 0);
+        $transaction['transaction_item'] = array_values($transactionItems); // reindex
+
+        // Check refundable: within 7 days and items remain
+        $transactionDate = new DateTime($transaction['transaction_date']);
+        $today = new DateTime();
+        $interval = $today->diff($transactionDate)->days;
+
+        if (empty($transactionItems)) {
+            $transaction['refundable'] = false;
+            $transaction['message'] = "No refundable items.";
+        } elseif ($interval > 7) {
+            $transaction['refundable'] = false;
+            $transaction['message'] = "Transaction is beyond refundable period.";
+        } else {
+            $transaction['refundable'] = true;
+            $transaction['message'] = "Items are refundable.";
+        }
+
+        $transaction['returns'] = $returns;
 
         return $transaction;
     } else {
         return null;
     }
 }
+
 
 
 
@@ -720,7 +739,6 @@ public function fetch_archived_product() {
 
 
 
-
 public function fetch_all_transaction($limit = 10, $offset = 0, $filter = "") {
     $sql = "
         SELECT *
@@ -735,7 +753,6 @@ public function fetch_all_transaction($limit = 10, $offset = 0, $filter = "") {
     }
 
     $sql .= " ORDER BY transaction_id DESC";
-    
     $query = $this->conn->prepare($sql);
 
     if($query->execute($params)) {
@@ -744,14 +761,55 @@ public function fetch_all_transaction($limit = 10, $offset = 0, $filter = "") {
         $empIds = [];
 
         while($row = $result->fetch_assoc()) {
+            // Decode services and collect user_ids
             $services = json_decode($row['transaction_service'], true) ?? [];
             foreach($services as $s) {
                 if(!empty($s['user_id'])) $empIds[] = (int)$s['user_id'];
             }
+
+            // Decode transaction items
+            $transactionItems = json_decode($row['transaction_item'], true) ?? [];
+
+            // Fetch returns for this transaction
+            $returnsQuery = $this->conn->prepare("SELECT * FROM `returns` WHERE return_transaction_id = ?");
+            $returnsQuery->bind_param("i", $row['transaction_id']);
+            $returnsQuery->execute();
+            $returnsRes = $returnsQuery->get_result();
+            while ($ret = $returnsRes->fetch_assoc()) {
+                $returnItems = json_decode($ret['return_transaction_item'], true) ?? [];
+                foreach ($returnItems as $rItem) {
+                    foreach ($transactionItems as &$tItem) {
+                        if ($tItem['prod_id'] == $rItem['prod_id']) {
+                            $tItem['qty'] = max(0, intval($tItem['qty']) - intval($ret['return_qty']));
+                        }
+                    }
+                }
+            }
+
+            // Filter out items with qty 0
+            $transactionItems = array_filter($transactionItems, fn($i) => intval($i['qty']) > 0);
+            $row['transaction_item'] = json_encode(array_values($transactionItems));
+
+            // Check refundable: within 7 days and items remain
+            $transactionDate = new DateTime($row['transaction_date']);
+            $today = new DateTime();
+            $intervalDays = $today->diff($transactionDate)->days;
+
+            if (empty($transactionItems)) {
+                $row['refundable'] = false;
+                $row['message'] = "No refundable items.";
+            } elseif ($intervalDays > 7) {
+                $row['refundable'] = false;
+                $row['message'] = "Transaction is beyond refundable period.";
+            } else {
+                $row['refundable'] = true;
+                $row['message'] = "Items are refundable.";
+            }
+
             $allData[] = $row;
         }
 
-        // Fetch user names
+        // Fetch employee names
         $employees = [];
         if(!empty($empIds)) {
             $ids = implode(',', array_unique($empIds));
@@ -763,7 +821,7 @@ public function fetch_all_transaction($limit = 10, $offset = 0, $filter = "") {
             }
         }
 
-        // Merge user names
+        // Merge employee names
         foreach($allData as &$row) {
             $services = json_decode($row['transaction_service'], true) ?? [];
             foreach($services as &$s) {
@@ -781,6 +839,7 @@ public function fetch_all_transaction($limit = 10, $offset = 0, $filter = "") {
 
     return [];
 }
+
 
 
 public function count_transactions($filter = "") {

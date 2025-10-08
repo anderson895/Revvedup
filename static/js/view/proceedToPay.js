@@ -199,7 +199,6 @@ $('#BtnSubmit').click(function (e) {
         let prodCapital = parseFloat($(this).data("prod-capital"));
 
         itemsArray.push({ 
-            item_id: $(this).data("item-id"),
             prod_id: prodId, 
             name: name.trim(), 
             qty: parseInt(qty), 

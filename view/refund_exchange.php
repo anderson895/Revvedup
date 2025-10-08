@@ -64,7 +64,7 @@ $transactionId=$_GET['transactionId'];
   </div>
 
   <div class="flex flex-col sm:flex-row gap-3 items-center">
-    <button class="bg-red-800 cursor-pointer hover:bg-red-700 text-white px-6 py-2 rounded shadow font-medium w-full sm:w-auto">
+    <button id="btnComplete_transaction" class=" bg-red-800 cursor-pointer hover:bg-red-700 text-white px-6 py-2 rounded shadow font-medium w-full sm:w-auto">
       Complete Transaction
     </button>
     <button class="bg-red-800 cursor-pointer hover:bg-red-700 text-white px-4 py-2 rounded shadow font-medium">

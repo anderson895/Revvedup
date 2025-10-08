@@ -16,7 +16,7 @@ POS and INVENTORY:
  ✔		  - Footer, stays (Instock, LowStock, OutofStock)
 	✔	  - Filter Sales speed, category, status.
 
-⦁(Admin & Employee) Sales Item - Void Transaction - remove all items in the cart.
+✔⦁(Admin & Employee) Sales Item - Void Transaction - remove all items in the cart.
 ⦁(Admin & Employee) Sales Refund Exchange - add record if refunded or exchanged
 			      		 - When an item is exchanged, the inventory should automatically update to reflect the reduced stock.
 
