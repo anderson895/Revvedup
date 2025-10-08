@@ -134,6 +134,7 @@ class global_class extends db_connect
 
 
 
+
 public function fetch_transaction_record($transactionId) {
     // Fetch transaction
     $sql = "SELECT * FROM `transaction` WHERE transaction_status = 1 AND transaction_id = ?";
@@ -147,7 +148,7 @@ public function fetch_transaction_record($transactionId) {
         $transaction['transaction_service'] = json_decode($transaction['transaction_service'], true);
         $transactionItems = json_decode($transaction['transaction_item'], true);
 
-        // Fetch returns/exchanges
+        // Fetch refunds & exchanges
         $sql2 = "SELECT * FROM `returns` WHERE return_transaction_id = ?";
         $stmt2 = $this->conn->prepare($sql2);
         $stmt2->bind_param("i", $transactionId);
@@ -160,43 +161,22 @@ public function fetch_transaction_record($transactionId) {
             $item[0]['qty'] = intval($row['return_qty']);
             $returns[] = $item[0];
 
-            // Subtract returned/exchanged qty from transaction items
+            // Subtract returned/exchanged qty from original transaction items
             foreach ($transactionItems as &$tItem) {
-                if ($tItem['prod_id'] == $item[0]['prod_id']) {
+                if ($tItem['name'] == $item[0]['name']) {
                     $tItem['qty'] = max(0, intval($tItem['qty']) - $item[0]['qty']);
                 }
             }
         }
 
-        // Filter out items with qty 0
-        $transactionItems = array_filter($transactionItems, fn($i) => intval($i['qty']) > 0);
-        $transaction['transaction_item'] = array_values($transactionItems); // reindex
-
-        // Check refundable: within 7 days and items remain
-        $transactionDate = new DateTime($transaction['transaction_date']);
-        $today = new DateTime();
-        $interval = $today->diff($transactionDate)->days;
-
-        if (empty($transactionItems)) {
-            $transaction['refundable'] = false;
-            $transaction['message'] = "No refundable items.";
-        } elseif ($interval > 7) {
-            $transaction['refundable'] = false;
-            $transaction['message'] = "Transaction is beyond refundable period.";
-        } else {
-            $transaction['refundable'] = true;
-            $transaction['message'] = "Items are refundable.";
-        }
-
-        $transaction['returns'] = $returns;
+        $transaction['transaction_item'] = $transactionItems; 
+        $transaction['returns'] = $returns; 
 
         return $transaction;
     } else {
         return null;
     }
 }
-
-
 
 
 public function fetch_analytics($scope = "weekly") {
@@ -216,8 +196,9 @@ public function fetch_analytics($scope = "weekly") {
         $transactionId = intval($row['transaction_id']);
         $date = strtotime($row['transaction_date']);
 
+        // Determine label based on scope
         if ($scope === "weekly") {
-            $year = date("o", $date); // ISO-8601 year
+            $year = date("o", $date);
             $week = date("W", $date);
             $label = "Week {$week}, {$year}";
         } elseif ($scope === "monthly") {
@@ -238,7 +219,6 @@ public function fetch_analytics($scope = "weekly") {
         $refundMap = [];
         while ($ret = mysqli_fetch_assoc($resReturns)) {
             $retItem = json_decode($ret['return_transaction_item'], true);
-            // Only include items of type 'refund'
             if (isset($retItem[0]['name']) && isset($retItem[0]['type']) && $retItem[0]['type'] === 'refund') {
                 $refundMap[$retItem[0]['name']] = intval($ret['return_qty']);
             }
@@ -246,17 +226,21 @@ public function fetch_analytics($scope = "weekly") {
 
         foreach ($items as $it) {
             $name = $it['name'];
-            $qty = intval($it['qty']);
+            $originalQty = intval($it['qty']);
+            $qty = $originalQty;
 
-            // Subtract only refund qty
+            // Subtract refund qty
             if (isset($refundMap[$name])) {
                 $qty = max(0, $qty - $refundMap[$name]);
             }
 
             $subtotal = (float)$it['subtotal'];
             $capital = (float)$it['capital'];
+
+            // Pro-rate subtotal based on net quantity
+            $netSubtotal = $subtotal * ($qty / max(1, $originalQty));
             $capitalTotal = $capital * $qty;
-            $revenue = $subtotal - $capitalTotal;
+            $revenue = $netSubtotal - $capitalTotal;
 
             if (!isset($analytics[$label])) {
                 $analytics[$label] = [
@@ -267,8 +251,7 @@ public function fetch_analytics($scope = "weekly") {
                 ];
             }
 
-            // Pro-rate subtotal based on net quantity after refund
-            $analytics[$label]['total_sales'] += $subtotal * ($qty / max(1, intval($it['qty'])));
+            $analytics[$label]['total_sales'] += $netSubtotal;
             $analytics[$label]['capital_total'] += $capitalTotal;
             $analytics[$label]['revenue'] += $revenue;
         }
@@ -276,6 +259,7 @@ public function fetch_analytics($scope = "weekly") {
 
     return array_values($analytics);
 }
+
 
 
 
@@ -739,7 +723,76 @@ public function fetch_archived_product() {
 
 
 
+
 public function fetch_all_transaction($limit = 10, $offset = 0, $filter = "") {
+    $sql = "
+        SELECT *
+        FROM `transaction`
+        WHERE transaction_status='1'
+    ";
+
+    $params = [];
+    if(!empty($filter)) {
+        $sql .= " AND transaction_id LIKE ?";
+        $params[] = "%$filter%";
+    }
+
+    $sql .= " ORDER BY transaction_id DESC";
+    
+    $query = $this->conn->prepare($sql);
+
+    if($query->execute($params)) {
+        $result = $query->get_result();
+        $allData = [];
+        $empIds = [];
+
+        while($row = $result->fetch_assoc()) {
+            $services = json_decode($row['transaction_service'], true) ?? [];
+            foreach($services as $s) {
+                if(!empty($s['user_id'])) $empIds[] = (int)$s['user_id'];
+            }
+            $allData[] = $row;
+        }
+
+        // Fetch user names
+        $employees = [];
+        if(!empty($empIds)) {
+            $ids = implode(',', array_unique($empIds));
+            $empQuery = $this->conn->prepare("SELECT user_id, firstname, lastname FROM user WHERE user_id IN ($ids)");
+            $empQuery->execute();
+            $empRes = $empQuery->get_result();
+            while($emp = $empRes->fetch_assoc()) {
+                $employees[$emp['user_id']] = $emp['firstname'].' '.$emp['lastname'];
+            }
+        }
+
+        // Merge user names
+        foreach($allData as &$row) {
+            $services = json_decode($row['transaction_service'], true) ?? [];
+            foreach($services as &$s) {
+                $id = (int)$s['user_id'];
+                $s['employee_name'] = $employees[$id] ?? "Unknown user #$id";
+            }
+            $row['transaction_service'] = json_encode($services);
+        }
+
+        // Apply pagination AFTER merging employees
+        $paginatedData = array_slice($allData, $offset, $limit);
+
+        return $paginatedData;
+    }
+
+    return [];
+}
+
+
+
+
+
+
+
+
+public function fetch_all_transaction_with_return($limit = 10, $offset = 0, $filter = "") {
     $sql = "
         SELECT *
         FROM `transaction`
@@ -839,6 +892,10 @@ public function fetch_all_transaction($limit = 10, $offset = 0, $filter = "") {
 
     return [];
 }
+
+
+
+
 
 
 

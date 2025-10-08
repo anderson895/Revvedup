@@ -10,7 +10,7 @@ function fetchTransactions(page = 1, limit = rowsPerPage, filter = "") {
         url: "../controller/end-points/controller.php",
         method: "GET",
         data: { 
-            requestType: "fetch_all_transaction",
+            requestType: "fetch_all_transaction_with_return",
             page: page,
             limit: limit,
             filter: filter

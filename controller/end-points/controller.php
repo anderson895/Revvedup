@@ -607,8 +607,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $filter = isset($_GET['filter']) ? $_GET['filter'] : "";
             $offset = ($page - 1) * $limit;
 
-            // Fetch transactions (with refundable logic already applied inside the method)
             $transactions = $db->fetch_all_transaction($limit, $offset, $filter);
+            $totalRows = $db->count_transactions($filter);
+
+            echo json_encode([
+                'status' => 200,
+                'data' => [
+                    'transactions' => $transactions,
+                    'totalRows' => $totalRows
+                ]
+            ]);
+
+
+        }else if ($_GET['requestType'] == 'fetch_all_transaction_with_return') {
+            $page  = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+            $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 10;
+            $filter = isset($_GET['filter']) ? $_GET['filter'] : "";
+            $offset = ($page - 1) * $limit;
+
+            // Fetch transactions (with refundable logic already applied inside the method)
+            $transactions = $db->fetch_all_transaction_with_return($limit, $offset, $filter);
             $totalRows = $db->count_transactions($filter);
 
             // Return JSON response
