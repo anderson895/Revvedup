@@ -80,7 +80,7 @@ include "../src/components/view/header.php";
               </div>
 
               <!-- Username -->
-              <div>
+              <div hidden>
                   <label for="username" class="block text-gray-700 mb-1 text-sm">Username</label>
                   <input type="text" id="username" name="username" value="<?=$On_Session['username']?>" 
                          class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none">

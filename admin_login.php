@@ -32,7 +32,7 @@ include "src/components/header.php";
         <input type="text" placeholder="username" name="username" class="px-4 py-2 rounded bg-white text-black placeholder-gray-500 focus:outline-none">
         <input type="password" placeholder="password" name="password" class="px-4 py-2 rounded bg-white text-black placeholder-gray-500 focus:outline-none">
         <button type="submit" id="btnLogin" class="bg-white cursor-pointer text-black font-semibold py-2 rounded hover:bg-gray-200">Login</button>
-        <a href="#" class="underline text-xs text-gray-300 hover:text-white text-center">Forgot Password</a>
+        <!-- <a href="#" class="underline text-xs text-gray-300 hover:text-white text-center">Forgot Password</a> -->
       </form>
   </div>
 </div>

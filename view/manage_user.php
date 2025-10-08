@@ -163,7 +163,7 @@ include "../src/components/view/header.php";
       </div>
 
       <!-- Username -->
-      <div class="relative">
+      <div class="relative" hidden>
         <input type="text" id="usernameUpdate" name="username" placeholder=" "
           class="peer block w-full rounded-lg border border-gray-300 px-2.5 pb-2.5 pt-4 
                  text-sm text-gray-900 bg-transparent focus:border-red-900 focus:ring-0 focus:outline-none"/>
