@@ -31,20 +31,23 @@ include "../src/components/view/header.php";
   <!-- Content -->
   <section class="p-6 flex-1">
     <div class="bg-white rounded-xl shadow overflow-hidden">
-      <!-- Table Header -->
-      <div class="flex justify-between items-center  px-4 py-3">
-        <h2 class="text-gray-700 font-semibold">Inventory List</h2>
+      
+      <!-- Tabs Header -->
+      <div class="flex justify-between items-center px-4 py-3 border-b">
+        <div class="flex space-x-4">
+          <button id="activeTab" class="cursor-pointer px-4 py-2 rounded-md bg-gray-200 text-gray-700 font-medium">Active</button>
+          <button id="archiveTab" class="cursor-pointer px-4 py-2 rounded-md hover:bg-gray-100 text-gray-700 font-medium">Archive</button>
+        </div>
 
         <button class="p-2 cursor-pointer rounded-md hover:bg-gray-100" id="addProductBtn" <?= $authorize ?>>
-        <span class="material-icons text-green-600">add_box</span>
+          <span class="material-icons text-green-600">add_box</span>
         </button>
-
       </div>
 
       <!-- Table -->
       <div class="overflow-x-auto">
         <table class="min-w-full border-collapse">
-          <thead class="bg-gray-50 ">
+          <thead class="bg-gray-50">
             <tr>
               <th class="px-4 py-2 text-left text-sm font-medium text-gray-600">Item ID</th>
               <th class="px-4 py-2 text-left text-sm font-medium text-gray-600">Item Name</th>
@@ -63,9 +66,7 @@ include "../src/components/view/header.php";
         </table>
       </div>
     </div>
-
-    
-  </section>
+</section>
 
 
   <!-- Fixed Footer Legend -->

@@ -653,6 +653,74 @@ public function fetch_all_product() {
 
 
 
+public function fetch_archived_product() {
+    // Step 1: Fetch all active products
+    $query = $this->conn->prepare("SELECT * FROM product WHERE prod_status = 0 ORDER BY prod_id DESC");
+    
+    if (!$query) {
+        error_log("Prepare failed: " . $this->conn->error);
+        return [];
+    }
+
+    if (!$query->execute()) {
+        error_log("Execute failed: " . $query->error);
+        return [];
+    }
+
+    $result = $query->get_result();
+    $products = [];
+
+    while ($row = $result->fetch_assoc()) {
+        $row['total_sold_week'] = 0;  
+        $row['movement'] = 'Not moving'; 
+        $products[$row['prod_id']] = $row;
+    }
+
+    // Step 2: Fetch all active transactions in the last 7 days
+    $query2 = $this->conn->prepare("SELECT transaction_item FROM transaction 
+                                    WHERE transaction_status = 1 
+                                    AND transaction_date >= DATE_SUB(NOW(), INTERVAL 7 DAY)");
+    if ($query2) {
+        $query2->execute();
+        $result2 = $query2->get_result();
+
+        while ($row = $result2->fetch_assoc()) {
+            $items = json_decode($row['transaction_item'], true);
+            if (is_array($items)) {
+                foreach ($items as $item) {
+                    $prod_id = $item['prod_id'];
+                    $qty = (int)$item['qty'];
+                    if (isset($products[$prod_id])) {
+                        $products[$prod_id]['total_sold_week'] += $qty;
+                    }
+                }
+            }
+        }
+    }
+
+    // Step 3: Assign movement category
+    foreach ($products as &$prod) {
+        if ($prod['total_sold_week'] == 0) {
+            $prod['movement'] = 'Not moving';
+        } elseif ($prod['total_sold_week'] <= 9) {
+            $prod['movement'] = 'Slow moving';
+        } else {
+            $prod['movement'] = 'Fast moving';
+        }
+    }
+
+    return array_values($products); // Re-index the array
+}
+
+
+
+
+
+
+
+
+
+
 public function fetch_all_transaction($limit = 10, $offset = 0, $filter = "") {
     $sql = "
         SELECT *
@@ -828,6 +896,29 @@ public function UpdateProduct(
 public function removeProduct($prod_id) {
        
         $deleteQuery = "UPDATE product SET prod_status = 0 WHERE prod_id  = ?";
+        $stmt = $this->conn->prepare($deleteQuery);
+        if (!$stmt) {
+            return 'Prepare failed (update): ' . $this->conn->error;
+        }
+
+        $stmt->bind_param("i", $prod_id);
+        $result = $stmt->execute();
+        $stmt->close();
+
+        return $result ? 'success' : 'Error updating menu';
+    }
+
+
+
+
+
+
+
+
+
+    public function restoreProduct($prod_id) {
+       
+        $deleteQuery = "UPDATE product SET prod_status = 1 WHERE prod_id  = ?";
         $stmt = $this->conn->prepare($deleteQuery);
         if (!$stmt) {
             return 'Prepare failed (update): ' . $this->conn->error;

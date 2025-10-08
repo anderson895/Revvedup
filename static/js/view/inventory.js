@@ -124,85 +124,164 @@ $("#frmAddProduct").submit(function (e) {
 
 
 
+// Tabs
+$('#activeTab').on('click', function () {
+    $(this).addClass('bg-gray-200');
+    $('#archiveTab').removeClass('bg-gray-200');
+    fetchProducts('fetch_all_product'); // Active products
+});
 
-$.ajax({
-    url: "../controller/end-points/controller.php",
-    method: "GET",
-    data: { requestType: "fetch_all_product" },
-    dataType: "json",
-    success: function (res) {
-        if (res.status === 200) {
+$('#archiveTab').on('click', function () {
+    $(this).addClass('bg-gray-200');
+    $('#activeTab').removeClass('bg-gray-200');
+    fetchProducts('fetch_archived_product'); // Archived products
+});
+
+// Reusable fetch function
+function fetchProducts(requestType) {
+    $.ajax({
+        url: "../controller/end-points/controller.php",
+        method: "GET",
+        data: { requestType: requestType },
+        dataType: "json",
+        success: function (res) {
             $('#productTableBody').empty();
 
-            let isAdmin = (res.position === "admin"); // ✅ Check session role
+            if (res.status === 200) {
+                let isAdmin = (res.position === "admin");
 
-            if (res.data.length > 0) {
-                res.data.forEach(data => {
-                    let stockColor = '';
-                    if (data.prod_qty > 10) stockColor = 'bg-green-600';
-                    else if (data.prod_qty > 0) stockColor = 'bg-yellow-500';
-                    else stockColor = 'bg-red-600';
+                if (res.data.length > 0) {
+                    res.data.forEach(data => {
+                        let stockColor = '';
+                        if (data.prod_qty > 10) stockColor = 'bg-green-600';
+                        else if (data.prod_qty > 0) stockColor = 'bg-yellow-500';
+                        else stockColor = 'bg-red-600';
 
-                    // Conditionally add buttons
-                    let actionButtons = '';
-                    if (isAdmin) {
-                        actionButtons = `
-                            <button class="updateBtn cursor-pointer text-gray-700 hover:text-blue-600"
-                                data-prod_id ='${data.prod_id}'
-                                data-prod_name='${data.prod_name}'
-                                data-prod_capital='${data.prod_capital}'
-                                data-prod_price='${data.prod_price}'
-                                data-prod_qty='${data.prod_qty}'
-                                data-prod_category='${data.prod_category}'
-                                data-prod_description='${data.prod_description}'
-                            >
-                                <span class="material-icons text-sm">edit</span>
-                            </button>
-                            <button class="removeBtn cursor-pointer text-gray-700 hover:text-red-600"
-                                data-prod_id='${data.prod_id}'
-                                data-prod_name='${data.prod_name}'
-                            >
-                                <span class="material-icons text-sm">delete</span>
-                            </button>
-                        `;
-                    }
+                        let actionButtons = '';
 
+                        if (isAdmin) {
+                            if (requestType === 'fetch_all_product') { // Only active products editable
+                                actionButtons = `
+                                    <button class="updateBtn cursor-pointer text-gray-700 hover:text-blue-600"
+                                        data-prod_id ='${data.prod_id}'
+                                        data-prod_name='${data.prod_name}'
+                                        data-prod_capital='${data.prod_capital}'
+                                        data-prod_price='${data.prod_price}'
+                                        data-prod_qty='${data.prod_qty}'
+                                        data-prod_category='${data.prod_category}'
+                                        data-prod_description='${data.prod_description}'
+                                    >
+                                        <span class="material-icons text-sm">edit</span>
+                                    </button>
+                                   <button class="removeBtn cursor-pointer text-gray-700 hover:text-blue-600"
+                                            data-prod_id='${data.prod_id}'
+                                            data-prod_name='${data.prod_name}'>
+                                        <span class="material-icons text-sm">archive</span>
+                                    </button>
+
+                                `;
+                            } else if (requestType === 'fetch_archived_product') { // Archived products - restore only
+                                actionButtons = `
+                                    <button class="restoreBtn cursor-pointer text-gray-700 hover:text-green-600"
+                                        data-prod_id='${data.prod_id}'
+                                        data-prod_name='${data.prod_name}'
+                                    >
+                                        <span class="material-icons text-sm">restore</span>
+                                    </button>
+                                `;
+                            }
+                        }
+
+
+                        $('#productTableBody').append(`
+                            <tr>
+                                <td class="px-4 py-2">${data.prod_id}</td>
+                                <td class="px-4 py-2 flex items-center space-x-2">
+                                    <img src="../static/upload/${data.prod_img || '../static/images/default.png'}" 
+                                        alt="${data.prod_img}" 
+                                        class="w-8 h-8 object-cover rounded" />
+                                    <span>${data.prod_name}</span>
+                                </td>
+                                <td class="px-4 py-2">₱ ${data.prod_capital}</td>
+                                <td class="px-4 py-2">₱ ${data.prod_price}</td>
+                                <td class="px-4 py-2">${data.prod_qty}</td>
+                                <td class="px-4 py-2 font-semibold">
+                                    ${data.movement} (${data.total_sold_week} pcs per week)
+                                </td>
+                                <td class="px-4 py-2 font-semibold">${data.prod_category}</td>
+                                <td class="px-4 py-2">
+                                    <span class="inline-block w-3 h-3 rounded-full ${stockColor}"></span>
+                                </td>
+                                <td class="px-4 py-2 flex justify-center space-x-2">
+                                    ${actionButtons}
+                                </td>
+                            </tr>
+                        `);
+                    });
+                } else {
                     $('#productTableBody').append(`
                         <tr>
-                            <td class="px-4 py-2">${data.prod_id}</td>
-                            <td class="px-4 py-2 flex items-center space-x-2">
-                                <img src="../static/upload/${data.prod_img || '../static/images/default.png'}" 
-                                    alt="${data.prod_img}" 
-                                    class="w-8 h-8 object-cover rounded" />
-                                <span>${data.prod_name}</span>
-                            </td>
-                            <td class="px-4 py-2">₱ ${data.prod_capital}</td>
-                            <td class="px-4 py-2">₱ ${data.prod_price}</td>
-                            <td class="px-4 py-2">${data.prod_qty}</td>
-                            <td class="px-4 py-2 font-semibold">
-                                ${data.movement} (${data.total_sold_week} pcs per week)
-                            </td>
-                            <td class="px-4 py-2 font-semibold">${data.prod_category}</td>
-                            <td class="px-4 py-2">
-                                <span class="inline-block w-3 h-3 rounded-full ${stockColor}"></span>
-                            </td>
-                            <td class="px-4 py-2 flex justify-center space-x-2">
-                                ${actionButtons}
+                            <td colspan="9" class="p-4 text-center text-gray-400 italic">
+                                No record found
                             </td>
                         </tr>
                     `);
-                });
-            } else {
-                $('#productTableBody').append(`
-                    <tr>
-                        <td colspan="9" class="p-4 text-center text-gray-400 italic">
-                            No record found
-                        </td>
-                    </tr>
-                `);
+                }
             }
         }
-    }
+    });
+}
+
+// Initialize active products on page load
+fetchProducts('fetch_all_product');
+
+// Search filter
+$('#searchInput').on('input', function () {
+    const term = $(this).val().toLowerCase();
+    $('#productTableBody tr').each(function () {
+        $(this).toggle($(this).text().toLowerCase().includes(term));
+    });
+});
+
+
+
+
+
+$(document).on('click', '.restoreBtn', function(e) {
+    e.preventDefault();
+    const prod_id = $(this).data("prod_id");
+    const prod_name = $(this).data("prod_name");
+
+    Swal.fire({
+        title: `Restore <span style="color:green;">${prod_name}</span>?`,
+        text: 'This product will be moved back to active inventory.',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, restore it!',
+        cancelButtonText: 'Cancel',
+    }).then((result) => {
+        if (result.isConfirmed) {
+            $.ajax({
+                url: "../controller/end-points/controller.php",
+                type: 'POST',
+                data: { prod_id: prod_id, requestType: 'restoreProduct' },
+                dataType: 'json',
+                success: function(response) {
+                    if (response.status === 200) {
+                        Swal.fire('Restored!', response.message, 'success')
+                        .then(() => {
+                            fetchProducts('fetch_archived_product'); // Refresh archived list
+                        });
+                    } else {
+                        Swal.fire('Error!', response.message, 'error');
+                    }
+                },
+                error: function() {
+                    Swal.fire('Error!', 'There was a problem with the request.', 'error');
+                }
+            });
+        }
+    });
 });
 
 
@@ -210,17 +289,59 @@ $.ajax({
 
 
 
-  // Search filter
-  $('#searchInput').on('input', function () {
-    const term = $(this).val().toLowerCase();
-    $('#productTableBody tr').each(function () {
-      $(this).toggle($(this).text().toLowerCase().includes(term));
+
+
+
+$(document).on('click', '.removeBtn', function(e) {
+        e.preventDefault();
+        const prod_id = $(this).data("prod_id");
+        const prod_name = $(this).data("prod_name");
+        
+        console.log(prod_id);
+    
+        Swal.fire({
+            title: `Are you sure to Archive <span style="color:red;">${prod_name}</span> ?`,
+            text: 'You won\'t be able to revert this!',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, archive it!',
+            cancelButtonText: 'No, cancel!',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: "../controller/end-points/controller.php",
+                    type: 'POST',
+                    data: { prod_id: prod_id, requestType: 'removeProduct' },
+                    dataType: 'json', 
+                    success: function(response) {
+                      console.log(response);
+                        if (response.status === 200) {
+                            Swal.fire(
+                                'Removed!',
+                                response.message, 
+                                'success'
+                            ).then(() => {
+                                location.reload(); 
+                            });
+                        } else {
+                            Swal.fire(
+                                'Error!',
+                                response.message, 
+                                'error'
+                            );
+                        }
+                    },
+                    error: function() {
+                        Swal.fire(
+                            'Error!',
+                            'There was a problem with the request.',
+                            'error'
+                        );
+                    }
+                });
+            }
+        });
     });
-  });
-
-
-
-
 
 
 
@@ -373,54 +494,3 @@ $(document).on("submit", "#frmUpdateProduct", function (e) {
 
 
 
-
-$(document).on('click', '.removeBtn', function(e) {
-        e.preventDefault();
-        const prod_id = $(this).data("prod_id");
-        const prod_name = $(this).data("prod_name");
-        
-        console.log(prod_id);
-    
-        Swal.fire({
-            title: `Are you sure to Remove <span style="color:red;">${prod_name}</span> ?`,
-            text: 'You won\'t be able to revert this!',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonText: 'Yes, remove it!',
-            cancelButtonText: 'No, cancel!',
-        }).then((result) => {
-            if (result.isConfirmed) {
-                $.ajax({
-                    url: "../controller/end-points/controller.php",
-                    type: 'POST',
-                    data: { prod_id: prod_id, requestType: 'removeProduct' },
-                    dataType: 'json', 
-                    success: function(response) {
-                      console.log(response);
-                        if (response.status === 200) {
-                            Swal.fire(
-                                'Removed!',
-                                response.message, 
-                                'success'
-                            ).then(() => {
-                                location.reload(); 
-                            });
-                        } else {
-                            Swal.fire(
-                                'Error!',
-                                response.message, 
-                                'error'
-                            );
-                        }
-                    },
-                    error: function() {
-                        Swal.fire(
-                            'Error!',
-                            'There was a problem with the request.',
-                            'error'
-                        );
-                    }
-                });
-            }
-        });
-    });
