@@ -176,63 +176,60 @@ $(document).ready(()=>{
 
 
 
+
+
+
+// PRINT REPORT
+
+// Print button function
 $("#printBtn").click(() => {
-    const title = document.querySelector("#chartTitle").innerText;
+    // Grab current labels and values from the chart
+    let labels = chart.w.globals.labels || [];
+    let seriesData = chart.w.globals.series || [];
 
-    // Kunin ang data para sa table
-    let timeButtons = document.querySelectorAll("#timeButtons .timeBtn");
-    let info1 = document.querySelector("#infoValue1").innerText;
-    let info2Visible = !document.querySelector("#infoBox2").classList.contains("hidden");
-    let info2 = document.querySelector("#infoValue2").innerText;
-
-    // Build HTML table
-    let tableHTML = `
-        <table border="1" cellspacing="0" cellpadding="8" style="width:100%; border-collapse: collapse; text-align:center;">
-            <thead>
-                <tr style="background:#991b1b; color:white;">
-                    <th>${currentScope === 'weekly' ? 'Week' : 'Month'}</th>
-                    <th>Sales</th>
-                    ${info2Visible ? '<th>Revenue</th>' : ''}
-                </tr>
-            </thead>
-            <tbody>
-    `;
-
-    timeButtons.forEach(btn => {
-        let label = btn.dataset.label;
-        // Kunin sales value mula sa chart data (kung available)
-        let salesValue = info1; // pwede palitan kung per week/month value available
-        let revenueValue = info2Visible ? info2 : '';
-        tableHTML += `<tr>
-            <td>${label}</td>
-            <td>${salesValue}</td>
-            ${info2Visible ? `<td>${revenueValue}</td>` : ''}
-        </tr>`;
-    });
-
-    tableHTML += `</tbody></table>`;
-
-    // Print
-    const printWindow = window.open('', '_blank');
-    printWindow.document.write(`
+    // Prepare HTML for printing
+    let printHtml = `
         <html>
         <head>
-            <title>${title}</title>
+            <title>Sales Report</title>
             <style>
                 body { font-family: Arial, sans-serif; padding: 20px; }
-                h1 { text-align: center; color: #991b1b; margin-bottom: 20px; }
-                table th, table td { padding: 10px; }
+                h2 { color: #b91c1c; }
+                table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+                th, td { border: 1px solid #333; padding: 8px; text-align: center; }
+                th { background-color: #f87171; color: #fff; }
             </style>
         </head>
         <body>
-            <h1>${title}</h1>
-            ${tableHTML}
-        </body>
-        </html>
-    `);
+            <h2>${$("#chartTitle").text()}</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Time</th>
+    `;
+
+    // Add series names as table headers
+    chart.w.config.series.forEach(s => {
+        printHtml += `<th>${s.name}</th>`;
+    });
+
+    printHtml += `</tr></thead><tbody>`;
+
+    // Add each row of data
+    labels.forEach((label, i) => {
+        printHtml += `<tr><td>${label}</td>`;
+        seriesData.forEach(series => {
+            printHtml += `<td>${series[i]}</td>`;
+        });
+        printHtml += `</tr>`;
+    });
+
+    printHtml += `</tbody></table></body></html>`;
+
+    // Open new window and print
+    let printWindow = window.open('', '', 'width=900,height=600');
+    printWindow.document.write(printHtml);
     printWindow.document.close();
     printWindow.focus();
     printWindow.print();
 });
-
-

@@ -178,12 +178,10 @@ public function fetch_transaction_record($transactionId) {
     }
 }
 
-
 public function fetch_analytics($scope = "weekly") {
     $conn = $this->conn;
     $analytics = [];
 
-    // Fetch transactions
     $sql = "SELECT transaction_id, transaction_date, transaction_item
             FROM transaction
             WHERE transaction_status = 1
@@ -196,7 +194,7 @@ public function fetch_analytics($scope = "weekly") {
         $transactionId = intval($row['transaction_id']);
         $date = strtotime($row['transaction_date']);
 
-        // Determine label based on scope
+        // Determine label
         if ($scope === "weekly") {
             $year = date("o", $date);
             $week = date("W", $date);
@@ -208,9 +206,9 @@ public function fetch_analytics($scope = "weekly") {
         }
 
         $items = json_decode($row['transaction_item'], true);
-        if (!is_array($items)) continue;
+        if (!is_array($items) || empty($items)) continue; // skip empty
 
-        // Fetch returns/exchanges for this transaction
+        // Fetch returns
         $sqlReturns = "SELECT return_transaction_item, return_qty 
                        FROM `returns` 
                        WHERE return_transaction_id = $transactionId";
@@ -219,7 +217,7 @@ public function fetch_analytics($scope = "weekly") {
         $refundMap = [];
         while ($ret = mysqli_fetch_assoc($resReturns)) {
             $retItem = json_decode($ret['return_transaction_item'], true);
-            if (isset($retItem[0]['name']) && isset($retItem[0]['type']) && $retItem[0]['type'] === 'refund') {
+            if (isset($retItem[0]['name'], $retItem[0]['type']) && $retItem[0]['type'] === 'refund') {
                 $refundMap[$retItem[0]['name']] = intval($ret['return_qty']);
             }
         }
@@ -229,18 +227,18 @@ public function fetch_analytics($scope = "weekly") {
             $originalQty = intval($it['qty']);
             $qty = $originalQty;
 
-            // Subtract refund qty
             if (isset($refundMap[$name])) {
                 $qty = max(0, $qty - $refundMap[$name]);
             }
 
             $subtotal = (float)$it['subtotal'];
             $capital = (float)$it['capital'];
-
-            // Pro-rate subtotal based on net quantity
             $netSubtotal = $subtotal * ($qty / max(1, $originalQty));
             $capitalTotal = $capital * $qty;
             $revenue = $netSubtotal - $capitalTotal;
+
+            // Skip items with zero subtotal
+            if ($netSubtotal <= 0) continue;
 
             if (!isset($analytics[$label])) {
                 $analytics[$label] = [

@@ -33,11 +33,11 @@ include "../src/components/view/header.php";
       </h2>
       <div class="flex gap-2">
         <button id="revenueBtn" 
-          class="bg-gray-300 text-black font-semibold text-sm px-4 py-2 rounded min-w-[220px] whitespace-nowrap hover:bg-gray-400 transition">
+          class="cursor-pointer bg-gray-300 text-black font-semibold text-sm px-4 py-2 rounded min-w-[220px] whitespace-nowrap hover:bg-gray-400 transition">
           Total Sales & Revenue
         </button>
         <button id="printBtn" 
-          class="bg-red-900 text-white font-semibold text-sm px-4 py-2 rounded hover:bg-red-700 transition">
+          class="cursor-pointer bg-red-900 text-white font-semibold text-sm px-4 py-2 rounded hover:bg-red-700 transition">
           Print Report
         </button>
       </div>
