@@ -1586,17 +1586,49 @@ private function populateEmployeeNames(&$employees, $empIds) {
     }
 }
 
+
+
+// private function populateDeductions(&$employees) {
+//     foreach ($employees as $empId => &$empData) {
+//         if ($empId > 0 && isset($empData["_deduction_filters"])) {
+//             $dedFilters = $empData["_deduction_filters"];
+//             $dedQuery = "SELECT SUM(deduction_amount) as total_deduction
+//                          FROM deduction 
+//                          WHERE deduction_user_id = ?
+//                          AND YEARWEEK(deduction_date, 1) = ?";
+//             $stmtDed = $this->conn->prepare($dedQuery);
+//             $yearWeek = intval($dedFilters["year"] . str_pad($dedFilters["week"], 2, '0', STR_PAD_LEFT));
+//             $stmtDed->bind_param("ii", $empId, $yearWeek);
+//             $stmtDed->execute();
+//             $stmtDed->bind_result($totalDeduction);
+//             if ($stmtDed->fetch()) {
+//                 $empData["deductions"] = $totalDeduction ? floatval($totalDeduction) : 0;
+//             }
+//             $stmtDed->close();
+//             unset($empData["_deduction_filters"]);
+//         }
+//     }
+// }
+
 private function populateDeductions(&$employees) {
     foreach ($employees as $empId => &$empData) {
         if ($empId > 0 && isset($empData["_deduction_filters"])) {
             $dedFilters = $empData["_deduction_filters"];
-            $dedQuery = "SELECT SUM(deduction_amount) as total_deduction
+            
+            // Build deduction_date string (e.g. "October 2025 Week 42")
+            $dateObj = new DateTime();
+            $dateObj->setISODate($dedFilters["year"], $dedFilters["week"]);
+            $monthName = $dateObj->format('F');
+            $yearNum   = $dedFilters["year"];
+            $weekNum   = $dedFilters["week"];
+            $deductionDateString = "$monthName $yearNum Week $weekNum";
+            
+            $dedQuery = "SELECT SUM(deduction_amount) AS total_deduction
                          FROM deduction 
                          WHERE deduction_user_id = ?
-                         AND YEARWEEK(deduction_date, 1) = ?";
+                         AND deduction_date = ?";
             $stmtDed = $this->conn->prepare($dedQuery);
-            $yearWeek = intval($dedFilters["year"] . str_pad($dedFilters["week"], 2, '0', STR_PAD_LEFT));
-            $stmtDed->bind_param("ii", $empId, $yearWeek);
+            $stmtDed->bind_param("is", $empId, $deductionDateString);
             $stmtDed->execute();
             $stmtDed->bind_result($totalDeduction);
             if ($stmtDed->fetch()) {
@@ -1607,7 +1639,6 @@ private function populateDeductions(&$employees) {
         }
     }
 }
-
 
 
 
